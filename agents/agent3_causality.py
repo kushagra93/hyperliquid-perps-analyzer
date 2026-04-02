@@ -39,6 +39,8 @@ Respond ONLY with a JSON object, no markdown, no preamble:
 }}"""
 
 def _call_openrouter(prompt: str) -> str:
+    if not OPENROUTER_API_KEY:
+        raise RuntimeError("OPENROUTER_API_KEY is missing")
     response = requests.post(
         "https://openrouter.ai/api/v1/chat/completions",
         headers={
@@ -89,6 +91,13 @@ def run_causality_analysis(price_trigger, news_report, oi_report, condition) -> 
         logger.info(f"[Agent3] Verdict: {result.get('verdict')} | confidence={result.get('confidence')}")
         return result
 
+    except requests.HTTPError as e:
+        status = e.response.status_code if e.response is not None else "unknown"
+        if status == 401:
+            logger.error("[Agent3] OpenRouter auth failed (401). Check OPENROUTER_API_KEY.")
+        else:
+            logger.error(f"[Agent3] LLM HTTP error ({status}): {e}")
+        return _fallback_verdict()
     except Exception as e:
         logger.error(f"[Agent3] LLM call failed: {e}")
         return _fallback_verdict()

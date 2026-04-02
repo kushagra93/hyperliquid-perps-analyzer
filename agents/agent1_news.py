@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 def _summarize_articles(articles: list, asset: str) -> str:
     if not articles:
         return "No recent news found."
+    if not OPENROUTER_API_KEY:
+        logger.warning("[Agent1] OPENROUTER_API_KEY is missing. Falling back to headline list.")
+        return "\n".join(f"- {a['title']} [{a['source']}]" for a in articles[:5])
 
     context_parts = []
     for i, a in enumerate(articles[:8]):
@@ -48,6 +51,13 @@ Respond in plain prose. No bullet points. No headers. Be direct and specific."""
         )
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"].strip()
+    except requests.HTTPError as e:
+        status = e.response.status_code if e.response is not None else "unknown"
+        if status == 401:
+            logger.warning("[Agent1] OpenRouter auth failed (401). Check OPENROUTER_API_KEY.")
+        else:
+            logger.warning(f"[Agent1] LLM summarization HTTP error ({status}): {e}")
+        return "\n".join(f"- {a['title']} [{a['source']}]" for a in articles[:5])
     except Exception as e:
         logger.warning(f"[Agent1] LLM summarization failed: {e}")
         return "\n".join(f"- {a['title']} [{a['source']}]" for a in articles[:5])
