@@ -10,12 +10,12 @@ import logging
 from collections import deque
 from datetime import datetime, timedelta, timezone
 from config.settings import ASSET, HL_PERP_DEX, OI_WINDOW_HOURS
+from core.hl_client import fetch_meta_and_asset_ctxs
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
-HL_INFO_URL = "https://api.hyperliquid.xyz/info"
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
@@ -25,12 +25,9 @@ def fetch_open_interest(asset: str) -> float | None:
     OI is returned in the asset's native units.
     """
     try:
-        payload = {"type": "metaAndAssetCtxs"}
-        if HL_PERP_DEX:
-            payload["dex"] = HL_PERP_DEX
-        resp = requests.post(HL_INFO_URL, json=payload, timeout=10, verify=False)
-        resp.raise_for_status()
-        data = resp.json()
+        data = fetch_meta_and_asset_ctxs()
+        if not data:
+            return None
 
         meta = data[0]
         asset_ctxs = data[1]

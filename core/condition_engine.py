@@ -1,14 +1,16 @@
 # core/condition_engine.py
 # ─────────────────────────────────────────────────────────────────
-# Evaluates the four conditions (C1–C4) from price and OI direction,
-# then applies causality rules to decide whether to fire an alert.
+# Evaluates C1-C4 from price + OI direction.
+#
+# Fix 2: should_alert now allows volume-triggered C3/C4 through.
+# A volume-only trigger on C3/C4 is treated as a signal worth
+# alerting on, consistent with volume being a first-class trigger.
 # ─────────────────────────────────────────────────────────────────
 
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Condition definitions
 CONDITIONS = {
     "C1": {
         "label": "Strong bull",
@@ -29,14 +31,14 @@ CONDITIONS = {
         "description": "Price down + OI down — longs exiting, no fresh conviction",
         "price_dir": "down",
         "oi_dir": "down",
-        "always_alert": False,   # only alert if news found
+        "always_alert": False,
     },
     "C4": {
         "label": "Weak rally",
         "description": "Price up + OI down — shorts exiting, no fresh conviction",
         "price_dir": "up",
         "oi_dir": "down",
-        "always_alert": False,   # only alert if news found
+        "always_alert": False,
     },
 }
 
@@ -51,18 +53,8 @@ def classify_price_direction(price_change_pct: float) -> str:
 
 def evaluate_condition(price_trigger: dict, oi_snapshot: dict) -> dict | None:
     """
-    Matches price and OI direction to one of C1–C4.
-
-    Returns:
-    {
-        "condition_id": "C1" | "C2" | "C3" | "C4",
-        "label": str,
-        "description": str,
-        "always_alert": bool,
-        "price_change_pct": float,
-        "oi_change_pct": float,
-    }
-    or None if no condition matched (e.g. price up + OI flat).
+    Matches price + OI direction to C1-C4.
+    If price is flat but volume triggered, uses volume direction as fallback.
     """
     price_dir = classify_price_direction(price_trigger["price_change_pct"])
     oi_dir = oi_snapshot["direction"]
@@ -110,12 +102,10 @@ def evaluate_condition(price_trigger: dict, oi_snapshot: dict) -> dict | None:
 
 def should_alert(condition: dict, news_report: dict) -> bool:
     """
-    Applies causality alert rules:
-    - C1 or C2: always alert
-    - C3: alert only if news found
-    - C4: alert only if news found
-
-    news_report["has_news"] must be True for news-gated conditions.
+    Alert rules:
+    - C1 / C2: always alert
+    - C3 / C4: alert if news found OR triggered by volume
+      (volume-triggered C3/C4 = unusual flow, worth surfacing)
     """
     if condition["always_alert"]:
         logger.info(f"[ConditionEngine] {condition['condition_id']} — always alert. Firing.")
@@ -123,12 +113,21 @@ def should_alert(condition: dict, news_report: dict) -> bool:
 
     has_news = news_report.get("has_news", False)
     if has_news:
+        logger.info(f"[ConditionEngine] {condition['condition_id']} — news found. Firing.")
+        return True
+
+    # Fix 2: volume-triggered C3/C4 should also fire
+    trigger_source = condition.get("trigger_source", "price")
+    volume_triggered = "volume" in trigger_source
+    if volume_triggered:
         logger.info(
-            f"[ConditionEngine] {condition['condition_id']} — news found. Firing."
+            f"[ConditionEngine] {condition['condition_id']} — "
+            f"volume trigger (source={trigger_source}). Firing."
         )
         return True
 
     logger.info(
-        f"[ConditionEngine] {condition['condition_id']} — no news. Suppressing alert."
+        f"[ConditionEngine] {condition['condition_id']} — "
+        "no news, no volume trigger. Suppressing alert."
     )
     return False

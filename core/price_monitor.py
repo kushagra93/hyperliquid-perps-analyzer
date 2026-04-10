@@ -15,12 +15,12 @@ from config.settings import (
     PRICE_CHANGE_THRESHOLD_PCT,
     PRICE_WINDOW_MINUTES,
 )
+from core.hl_client import fetch_meta_and_asset_ctxs
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
-HL_INFO_URL = "https://api.hyperliquid.xyz/info"
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
@@ -30,12 +30,9 @@ def fetch_mark_price(asset: str) -> float | None:
     Uses the public unauthenticated metaAndAssetCtxs endpoint.
     """
     try:
-        payload = {"type": "metaAndAssetCtxs"}
-        if HL_PERP_DEX:
-            payload["dex"] = HL_PERP_DEX
-        resp = requests.post(HL_INFO_URL, json=payload, timeout=10, verify=False)
-        resp.raise_for_status()
-        data = resp.json()
+        data = fetch_meta_and_asset_ctxs()
+        if not data:
+            return None
 
         # data is [meta, assetCtxs]
         # meta["universe"] is a list of asset dicts with "name"
