@@ -2,7 +2,7 @@
 
 Concurrent multi-ticker market monitoring for Hyperliquid with per-ticker thresholds, OI + news + causality analysis, and Google Sheets alert logging.
 
-The current codebase is fully centered around `TickerWorker` and `config/tickers.py`. Legacy single-ticker monitor files have been removed.
+The current codebase is fully centered around `TickerWorker` and `config/tickers.py`.
 
 ---
 
