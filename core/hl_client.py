@@ -29,7 +29,13 @@ def _build_session() -> requests.Session:
         allowed_methods=frozenset(["POST"]),
         raise_on_status=False,
     )
-    adapter = HTTPAdapter(max_retries=retry)
+    # Keep pool size above concurrent worker count to avoid
+    # "Connection pool is full, discarding connection" warnings.
+    adapter = HTTPAdapter(
+        max_retries=retry,
+        pool_connections=32,
+        pool_maxsize=32,
+    )
     session.mount("https://", adapter)
     session.mount("http://", adapter)
     return session

@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 from config.settings import CRON_INTERVAL_SECONDS
 from config.tickers import TICKERS
+from core.hl_client import fetch_meta_and_asset_ctxs
 from core.ticker_worker import TickerWorker
 
 # Instantiate one worker per ticker at startup
@@ -44,8 +45,15 @@ def run_all_tickers():
     """
     logger.info(f"── Cron tick — {len(workers)} tickers ────────────────────────")
 
+    # Fetch once per cron tick and share across workers.
+    # This avoids N concurrent duplicate HL requests.
+    shared_data = fetch_meta_and_asset_ctxs()
+    if shared_data is None:
+        logger.warning("[Main] HL data unavailable for this tick. Skipping all workers.")
+        return
+
     with ThreadPoolExecutor(max_workers=len(workers)) as executor:
-        futures = {executor.submit(w.run_tick): w.symbol for w in workers}
+        futures = {executor.submit(w.run_tick, shared_data): w.symbol for w in workers}
         for future in as_completed(futures):
             symbol = futures[future]
             try:

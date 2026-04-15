@@ -162,9 +162,11 @@ class TickerWorker:
 
     # ── Main tick ─────────────────────────────────────────────────
 
-    def run_tick(self):
-        # Single HL API call per ticker per tick (uses shared session + retry)
-        data = fetch_meta_and_asset_ctxs()
+    def run_tick(self, data: list | None = None):
+        # Reuse shared data passed from main loop when available.
+        # Fallback to direct fetch for backward compatibility.
+        if data is None:
+            data = fetch_meta_and_asset_ctxs()
         ctx = _extract_ctx(data, self.hl_asset)
         if ctx is None:
             logger.warning(f"[{self.symbol}] Not found in HL universe. Skipping.")
