@@ -1,172 +1,188 @@
 # Hyperliquid Multi-Ticker Alert Flow
 
-Concurrent, multi-agent monitoring for Hyperliquid markets with per-ticker thresholds, cooldowns, and dedicated Google Sheets tabs.
+Concurrent multi-ticker market monitoring for Hyperliquid with per-ticker thresholds, OI + news + causality analysis, and Google Sheets alert logging.
 
-The system detects price and/or volume threshold breaches, evaluates OI-based market conditions, enriches signals with news + LLM causality analysis, and writes structured alerts to Sheets.
+The current codebase is fully centered around `TickerWorker` and `config/tickers.py`. Legacy single-ticker monitor files have been removed.
 
 ---
 
-## Quick Start (2 Minutes)
+## Quick Start
 
 1. Install dependencies:
-   ```bash
-   python3 -m pip install -r requirements.txt
-   ```
-2. Create your local config from sample:
-   ```bash
-   cp config/Settings_sample.py config/settings.py
-   ```
-3. Set secrets via `.env` or environment:
-   ```bash
-   export OPENROUTER_API_KEY="..."
-   export SERP_API_KEY="..."
-   ```
-4. Set Google Sheets values in `config/settings.py`:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+2. Create a local settings file:
+
+```bash
+cp config/Settings_sample.py config/settings.py
+```
+
+3. Set secrets via environment or `.env`:
+
+```bash
+export OPENROUTER_API_KEY="..."
+export SERP_API_KEY="..."
+```
+
+4. Update Google Sheets values in `config/settings.py`:
    - `GOOGLE_CREDENTIALS_FILE`
    - `GOOGLE_SHEET_ID`
-5. Adjust ticker list + thresholds in `config/tickers.py`.
-6. Start monitor:
-   ```bash
-   python3 main.py
-   ```
-7. Optional dry test:
-   ```bash
-   python3 test_full_flow.py NVDA TSLA
-   ```
+
+5. Tune ticker configs in `config/tickers.py`.
+
+6. Run:
+
+```bash
+python3 main.py
+```
+
+Optional dry-run test:
+
+```bash
+python3 test_full_flow.py NVDA TSLA
+```
 
 ---
 
-## Features
-
-- Multi-ticker concurrent scanning from one process
-- Fully isolated state per ticker (history, cooldown, tab)
-- Trigger gate based on price and/or volume movement
-- Condition classification (`C1` to `C4`) using price + OI direction
-- Parallel enrichment pipeline:
-  - Agent 1: news fetch/summarization
-  - Agent 2: OI/funding/volume report
-  - Agent 3: causality verdict via LLM
-- Per-ticker Google Sheets tabs with lazy auto-creation
-- Backward compatibility retained in key agent interfaces
-
----
-
-## Repository Layout
+## Current Repository Layout
 
 ```text
 flow/
 ├── main.py
+├── test_full_flow.py
 ├── config/
 │   ├── settings.py
 │   ├── Settings_sample.py
 │   └── tickers.py
 ├── core/
-│   ├── ticker_worker.py
 │   ├── hl_client.py
-│   ├── condition_engine.py
-│   ├── oi_tracker.py          # legacy single-ticker utility
-│   ├── price_monitor.py       # legacy single-ticker utility
-│   └── volume_monitor.py      # legacy single-ticker utility
+│   ├── ticker_worker.py
+│   └── condition_engine.py
 ├── agents/
 │   ├── agent1_news.py
 │   ├── agent2_oi.py
 │   └── agent3_causality.py
-├── notifiers/
-│   └── sheets.py
-└── test_full_flow.py
+└── notifiers/
+    └── sheets.py
 ```
 
 ---
 
-## Architecture
+## Architecture Overview
 
-## Main Loop
+## Main Loop (`main.py`)
 
-`main.py`:
+- Loads all ticker configs from `config/tickers.py`.
+- Builds one `TickerWorker` per ticker.
+- Fetches Hyperliquid `metaAndAssetCtxs` once per cron tick.
+- Fan-outs workers concurrently using `ThreadPoolExecutor`.
+- Passes shared payload to each worker to avoid duplicate HL requests.
 
-- loads `TICKERS`
-- creates one `TickerWorker` per symbol
-- fetches Hyperliquid market payload once per cron tick
-- fan-outs workers concurrently using shared market payload
+## Shared HL Client (`core/hl_client.py`)
 
-This design avoids duplicate network calls and prevents connection-pool pressure when tracking many symbols.
+- Uses a shared `requests.Session`.
+- Retries transient failures (`Retry`).
+- Uses enlarged connection pool:
+  - `pool_connections=32`
+  - `pool_maxsize=32`
+- Exposes:
+  - `fetch_meta_and_asset_ctxs()`
 
-## Per-Ticker Worker
+## Per-Ticker Worker (`core/ticker_worker.py`)
 
-`core/ticker_worker.py`:
+Each worker owns isolated state:
 
-- keeps independent per-symbol rolling histories:
-  - price history
-  - volume history
-  - OI history
-- keeps per-symbol cooldown timer
-- processes one full decision pipeline in `run_tick(...)`
+- price history deque
+- volume history deque
+- OI history deque
+- volume reset tracking
+- cooldown timer
 
-## Hyperliquid Client
+`run_tick(shared_data)` flow:
 
-`core/hl_client.py`:
+1. Extract ticker ctx from shared HL payload.
+2. Read price, volume, OI from ctx.
+3. Prune per-ticker history windows.
+4. Update OI snapshot.
+5. Evaluate price trigger.
+6. Evaluate volume trigger.
+7. If no trigger, exit.
+8. Apply per-ticker cooldown.
+9. Build effective trigger context.
+10. Evaluate condition (`C1`–`C4`).
+11. Run Agent 1 + Agent 2 in parallel.
+12. Apply alert gate (`should_alert`).
+13. Run Agent 3 causality analysis.
+14. Log to per-ticker sheet tab.
 
-- shared `requests.Session`
-- retry policy for transient transport failures
-- enlarged connection pool for concurrent workloads
+## Condition Engine (`core/condition_engine.py`)
 
-## Condition Engine
-
-`core/condition_engine.py`:
-
-- maps trigger + OI movement to `C1`/`C2`/`C3`/`C4`
-- applies `should_alert()` policy gate
+- `evaluate_condition(price_trigger, oi_snapshot)`:
+  - maps trigger + OI direction to `C1`/`C2`/`C3`/`C4`.
+  - supports volume-direction fallback if price is flat.
+- `should_alert(condition, news_report)`:
+  - C1/C2 always alert.
+  - C3/C4 alert when news exists or trigger source includes volume.
 
 ## Agents
 
-- `agent1_news.py`
-  - `fetch_news(symbol, full_name)` for per-ticker queries
-  - still supports default single-asset usage
+### Agent 1 (`agents/agent1_news.py`)
 
-- `agent2_oi.py`
-  - `build_oi_report_for_ticker(oi_snapshot, volume_trigger, ctx)`
-  - consumes pre-fetched ctx (no duplicate HL call per ticker)
-  - `build_oi_report()` retained for backward compatibility
+- `fetch_news(symbol, full_name)` fetches ticker-targeted news via SerpAPI.
+- Summarizes results via OpenRouter LLM.
+- Keeps default args for backward compatibility.
 
-- `agent3_causality.py`
-  - uses `price_trigger["asset"]`
-  - includes volume context in prompt
-  - returns structured JSON verdict
+### Agent 2 (`agents/agent2_oi.py`)
 
-## Sheets Notifier
+- `build_oi_report_for_ticker(oi_snapshot, volume_trigger, ctx)` is the active multi-ticker path.
+- Uses already-fetched ticker ctx to avoid extra HL API calls.
+- `build_oi_report()` and `fetch_asset_context()` are retained compatibility helpers.
 
-`notifiers/sheets.py`:
+### Agent 3 (`agents/agent3_causality.py`)
 
-- `log_alert(..., sheets_tab=...)`
-- creates missing tabs automatically
-- caches client + worksheet handles in-process
+- Builds causality prompt with price, OI, volume, news, and condition context.
+- Uses `price_trigger["asset"]` for multi-ticker awareness.
+- Calls OpenRouter and expects JSON output.
+- Returns fallback verdict on errors.
+
+## Sheets Notifier (`notifiers/sheets.py`)
+
+- `log_alert(..., sheets_tab=...)` writes one row per alert.
+- Auto-creates missing tabs.
+- Caches:
+  - gspread client (`_sheet_client`)
+  - worksheet handles (`_ws_cache`)
+- Handles concurrent tab-create races safely.
 
 ---
 
-## Configuration Reference
+## Configuration
 
-## 1) Global Config: `config/settings.py`
+## 1) Global settings (`config/settings.py`)
 
-Use `config/Settings_sample.py` as template.
+Template file: `config/Settings_sample.py`.
 
-Key fields:
+Most relevant keys:
 
 - runtime:
   - `CRON_INTERVAL_SECONDS`
   - `HL_PERP_DEX`
-- APIs:
+- news/LLM:
   - `SERP_API_KEY`
   - `OPENROUTER_API_KEY`
   - `OPENROUTER_MODEL`
   - `LLM_PROVIDER`
-- Sheets:
+- sheets:
   - `GOOGLE_CREDENTIALS_FILE`
   - `GOOGLE_SHEET_ID`
   - `GOOGLE_SHEET_TAB` (fallback/default tab)
 
-## 2) Per-Ticker Config: `config/tickers.py`
+## 2) Per-ticker settings (`config/tickers.py`)
 
-Each ticker entry is independent:
+Every ticker has independent configuration:
 
 - `hl_asset`
 - `full_name`
@@ -180,92 +196,13 @@ Each ticker entry is independent:
 - `alert_cooldown_seconds`
 - `sheets_tab`
 
-Example:
-
-```python
-"NVDA": {
-    "hl_asset": "xyz:NVDA",
-    "full_name": "Nvidia",
-    "price_change_threshold_pct": 2.0,
-    "price_window_minutes": 5,
-    "volume_change_threshold_pct": 15.0,
-    "volume_window_minutes": 180,
-    "volume_reset_drop_pct": 30.0,
-    "oi_window_hours": 3,
-    "enable_volume_trigger": True,
-    "alert_cooldown_seconds": 300,
-    "sheets_tab": "NVDA",
-}
-```
-
----
-
-## Setup Guide
-
-## 1) Python and dependencies
-
-```bash
-python3 -m pip install -r requirements.txt
-```
-
-## 2) Local settings file
-
-```bash
-cp config/Settings_sample.py config/settings.py
-```
-
-Then edit `config/settings.py`.
-
-## 3) Secrets
-
-Set via environment or `.env`:
-
-```bash
-OPENROUTER_API_KEY=...
-SERP_API_KEY=...
-```
-
-## 4) Google Sheets service account
-
-1. Create Google Cloud project
-2. Enable Google Sheets API
-3. Create service account and download JSON key
-4. Save key path in `GOOGLE_CREDENTIALS_FILE`
-5. Share sheet with service account email
-
----
-
-## Runtime Behavior (Per Tick)
-
-1. Main loop fetches HL market payload once.
-2. Worker extracts ticker context from shared payload.
-3. Worker updates OI history.
-4. Worker evaluates price and volume triggers.
-5. If no trigger, worker returns early.
-6. Cooldown check is applied.
-7. Effective trigger is built (price/volume/combined).
-8. Condition engine computes `C1`–`C4`.
-9. Agent 1 + Agent 2 run in parallel.
-10. `should_alert()` gate runs.
-11. Agent 3 builds final causality verdict.
-12. Alert is appended to ticker-specific Sheets tab.
-
----
-
-## Condition Model
-
-| Condition | Signal | Alert behavior |
-|---|---|---|
-| C1 | Price up + OI up | Always alert |
-| C2 | Price down + OI up | Always alert |
-| C3 | Price down + OI down | Alert only if news confirms |
-| C4 | Price up + OI down | Alert only if news confirms |
+Current default ticker set includes 15 symbols (NVDA, TSLA, AAPL, MSFT, GOOGL, META, AMZN, GOLD, SP500, PLTR, AMD, MSTR, COIN, HOOD, INTC).
 
 ---
 
 ## Running
 
-Start live monitor:
+Start continuous monitoring:
 
 ```bash
 python3 main.py
@@ -275,31 +212,32 @@ python3 main.py
 
 ## Testing
 
-`test_full_flow.py` is a dry-run harness for multi-ticker APIs.
+`test_full_flow.py` is the current dry-run validation harness.
 
-Run specific symbols:
+Run specific tickers:
 
 ```bash
 python3 test_full_flow.py NVDA TSLA
 ```
 
-Run default first three symbols:
+Run default first 3 tickers:
 
 ```bash
 python3 test_full_flow.py
 ```
 
-The test:
+What it validates:
 
-- forces deterministic trigger conditions
-- executes condition + agents + notifier flow
-- validates per-ticker sheet tab behavior
+- condition classification
+- Agent 1/2/3 pipeline integration
+- alert gating
+- per-ticker Sheets tab logging
 
 ---
 
-## Google Sheets Schema
+## Alert Output Schema (Google Sheets)
 
-Each alert row includes:
+Columns written by `notifiers/sheets.py`:
 
 - Timestamp (IST)
 - Ticker
@@ -320,40 +258,35 @@ Each alert row includes:
 
 ---
 
-## Backward Compatibility Notes
-
-- `agent1_news.fetch_news()` still works without params.
-- `agent2_oi.build_oi_report()` is retained for legacy flow.
-- Legacy single-ticker monitor modules remain in repo.
-
----
-
 ## Troubleshooting
 
-- **`Connection pool is full` warnings**
-  - Resolved by shared-per-tick HL fetch + larger pool in `hl_client.py`.
+### HL fetch failures
 
-- **Ticker not found in HL universe**
-  - Check `hl_asset` and `HL_PERP_DEX`.
+- Check network/proxy access to `https://api.hyperliquid.xyz/info`.
+- Verify `HL_PERP_DEX` and ticker `hl_asset` values.
 
-- **No alerts firing**
-  - Lower thresholds in `config/tickers.py`.
-  - Check cooldown (`alert_cooldown_seconds`).
-  - Verify condition gating in `core/condition_engine.py`.
+### No alerts
 
-- **News/LLM requests failing**
-  - Validate API keys.
-  - Check outbound network/proxy.
-  - Fallback paths may still produce low-confidence output.
+- Lower thresholds in `config/tickers.py`.
+- Check `alert_cooldown_seconds`.
+- Verify `condition_engine` rules.
 
-- **Sheets write fails**
-  - Confirm service account is shared on target sheet.
-  - Confirm `GOOGLE_SHEET_ID` and credentials path.
+### News/LLM failures
+
+- Confirm `SERP_API_KEY`, `OPENROUTER_API_KEY`.
+- Check outbound network rules.
+- Fallback responses may still allow pipeline completion.
+
+### Sheets failures
+
+- Ensure sheet is shared with service account email.
+- Validate `GOOGLE_SHEET_ID` and credentials path.
+- Check service account JSON permissions/scopes.
 
 ---
 
 ## Security and Repo Hygiene
 
-- Do not commit `config/settings.py` if it contains secrets.
-- Commit `config/Settings_sample.py` instead.
-- Keep API keys only in `.env` or environment variables.
+- Keep secrets in `.env` or environment variables.
+- Do not commit real keys in `config/settings.py`.
+- Use `config/Settings_sample.py` as the public-safe template.
