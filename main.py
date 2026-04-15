@@ -25,7 +25,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-from config.settings import CRON_INTERVAL_SECONDS
+from config.settings import CRON_INTERVAL_SECONDS, validate_runtime_settings
 from config.tickers import TICKERS
 from core.hl_client import fetch_meta_and_asset_ctxs
 from core.ticker_worker import TickerWorker
@@ -63,6 +63,8 @@ def run_all_tickers():
 
 
 def main():
+    validate_runtime_settings()
+
     logger.info("=" * 60)
     logger.info(f"  Multi-ticker HL analyzer starting")
     logger.info(f"  Tickers ({len(workers)}): {[w.symbol for w in workers]}")

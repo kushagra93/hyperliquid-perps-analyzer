@@ -42,6 +42,7 @@ OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "deepseek/deepseek-chat").
 
 # ── Google Sheets ────────────────────────────────────────────────
 GOOGLE_CREDENTIALS_FILE = "credentials.json"  # Path to service account JSON
+GOOGLE_CREDENTIALS_JSON = ""                  # Optional: full JSON string for hosted platforms
 GOOGLE_SHEET_ID = "your_google_sheet_id_here"
 GOOGLE_SHEET_TAB = "Alerts"                   # Fallback/default worksheet name
 

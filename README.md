@@ -308,3 +308,74 @@ Columns written by `notifiers/sheets.py`:
 - Keep secrets in `.env` or environment variables.
 - Do not commit real keys in `config/settings.py`.
 - Use `config/Settings_sample.py` as the public-safe template.
+
+---
+
+## Railway Deployment Runbook
+
+Use Railway as a **single long-running worker** (not serverless).
+
+## 1) Add required repo artifacts
+
+This repo now includes:
+
+- `Procfile` with `worker: python3 main.py`
+- `runtime.txt` with pinned Python version
+
+## 2) Configure Railway service
+
+1. Connect the GitHub repo to a Railway project.
+2. Set service type to worker/background process.
+3. Set **Start Command** explicitly:
+   - `python3 main.py`
+4. Set **replica count = 1**.
+
+Important: This app has in-memory per-ticker state. Multiple replicas can duplicate alerts.
+
+## 3) Set environment variables in Railway
+
+Minimum required:
+
+- `SERP_API_KEY`
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_MODEL` (optional override)
+- `LLM_PROVIDER` (default `openrouter`)
+- `GOOGLE_SHEET_ID`
+- `GOOGLE_SHEET_TAB` (optional override)
+- `HL_PERP_DEX` (optional override)
+
+Google credentials (choose one):
+
+- `GOOGLE_CREDENTIALS_FILE` pointing to a mounted file path, or
+- `GOOGLE_CREDENTIALS_JSON` containing full service-account JSON string
+
+If `GOOGLE_CREDENTIALS_JSON` is set, the app writes it to `/tmp/credentials.json` at startup.
+
+## 4) Startup validation behavior
+
+At startup, the app fails fast if required config is missing:
+
+- `SERP_API_KEY`
+- `OPENROUTER_API_KEY`
+- `GOOGLE_SHEET_ID`
+- and one of:
+  - readable `GOOGLE_CREDENTIALS_FILE`
+  - `GOOGLE_CREDENTIALS_JSON`
+
+## 5) Post-deploy checks
+
+Inspect Railway logs and confirm:
+
+- startup banner appears
+- ticker list count is correct
+- cron ticks continue every interval
+- no config/credential exceptions
+- alert rows append to expected tabs
+
+## 6) Rollback
+
+If a deployment fails:
+
+1. Open Railway Deployments.
+2. Redeploy previous successful version.
+3. Verify ticker loop resumes in logs.
