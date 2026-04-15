@@ -1,7 +1,5 @@
 import json
 import os
-import sys
-import time
 
 try:
     from dotenv import load_dotenv
@@ -92,37 +90,6 @@ def _materialize_google_credentials_from_env() -> str:
 GOOGLE_CREDENTIALS_FILE = _materialize_google_credentials_from_env()
 
 
-# #region agent log
-def _agent_log(hypothesis_id: str, location: str, message: str, data: dict) -> None:
-    """NDJSON debug line to stderr (Railway) and session log file; never log secrets."""
-    payload = {
-        "sessionId": "2796ff",
-        "hypothesisId": hypothesis_id,
-        "location": location,
-        "message": message,
-        "data": data,
-        "timestamp": int(time.time() * 1000),
-    }
-    line = json.dumps(payload, default=str) + "\n"
-    for path in (
-        "/Users/aditya.vaish/Downloads/files/.cursor/debug-2796ff.log",
-        "/tmp/debug-2796ff.ndjson",
-    ):
-        try:
-            with open(path, "a", encoding="utf-8") as f:
-                f.write(line)
-            break
-        except Exception:
-            continue
-    try:
-        print(line, end="", file=sys.stderr, flush=True)
-    except Exception:
-        pass
-
-
-# #endregion
-
-
 def validate_runtime_settings() -> None:
     """
     Fail fast at startup with actionable configuration errors.
@@ -139,23 +106,6 @@ def validate_runtime_settings() -> None:
         GOOGLE_CREDENTIALS_FILE
     )
     has_json = bool(GOOGLE_CREDENTIALS_JSON)
-    raw_json_present = "GOOGLE_CREDENTIALS_JSON" in os.environ
-    raw_json_len = len(os.environ.get("GOOGLE_CREDENTIALS_JSON", ""))
-    stripped_json_len = len(GOOGLE_CREDENTIALS_JSON)
-    _agent_log(
-        "A,B,C,D",
-        "config/settings.py:validate_runtime_settings",
-        "google creds gate",
-        {
-            "cred_file_path_resolved": GOOGLE_CREDENTIALS_FILE,
-            "cred_file_configured": _GOOGLE_CREDENTIALS_PATH,
-            "has_file": has_file,
-            "has_json_stripped_nonempty": has_json,
-            "env_has_GOOGLE_CREDENTIALS_JSON_key": raw_json_present,
-            "raw_GOOGLE_CREDENTIALS_JSON_len": raw_json_len,
-            "stripped_GOOGLE_CREDENTIALS_JSON_len": stripped_json_len,
-        },
-    )
     if not (has_file or has_json):
         missing.append(
             "GOOGLE_CREDENTIALS_FILE (existing path) or GOOGLE_CREDENTIALS_JSON"
