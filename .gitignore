@@ -1,6 +1,5 @@
 .env
 credentials.json
-config/settings.py
 __pycache__/
 */__pycache__/
 *.pyc

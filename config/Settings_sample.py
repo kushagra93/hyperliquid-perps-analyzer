@@ -1,50 +1,22 @@
-import os
+"""
+Reference: environment variables read by `config/settings.py`.
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except Exception:
-    # Optional dependency; environment variables may already be set.
-    pass
+`config/settings.py` is committed and contains no secrets. Copy variable
+names into `.env` or your host's secret store — do not duplicate keys here.
 
-# config/Settings_sample.py
-# ─────────────────────────────────────────────
-# Sample configuration for documentation/GitHub.
-# Copy this to config/settings.py and update values.
-# ─────────────────────────────────────────────
+Required for production (`validate_runtime_settings`):
+  SERP_API_KEY
+  OPENROUTER_API_KEY
+  GOOGLE_SHEET_ID
+  Plus either a readable GOOGLE_CREDENTIALS_FILE path or GOOGLE_CREDENTIALS_JSON
 
-# ── Asset (single-ticker legacy compatibility) ───────────────────
-ASSET = "NVDA"
-SPOT_ASSET = "NVDA"
-# Perp dex to query in Hyperliquid `metaAndAssetCtxs` requests.
-# Use "xyz" for deployer-listed markets.
-HL_PERP_DEX = os.environ.get("HL_PERP_DEX", "xyz").strip()
+Optional / tuning (see settings.py for defaults):
+  ASSET, SPOT_ASSET, HL_PERP_DEX
+  PRICE_CHANGE_THRESHOLD_PCT, PRICE_WINDOW_MINUTES
+  VOLUME_CHANGE_THRESHOLD_PCT, VOLUME_WINDOW_MINUTES, ENABLE_VOLUME_TRIGGER
+  CRON_INTERVAL_SECONDS, OI_WINDOW_HOURS
+  NEWS_API_KEY, LLM_PROVIDER, OPENROUTER_MODEL
+  GOOGLE_CREDENTIALS_FILE, GOOGLE_SHEET_TAB
 
-# ── Thresholds (used by legacy single-ticker path) ───────────────
-PRICE_CHANGE_THRESHOLD_PCT = 2.0     # % move that triggers agents
-PRICE_WINDOW_MINUTES = 5             # Rolling window for price delta calculation
-VOLUME_CHANGE_THRESHOLD_PCT = 15.0   # % change in 24h notional volume to trigger agents
-VOLUME_WINDOW_MINUTES = 180          # Rolling window for volume baseline comparison
-ENABLE_VOLUME_TRIGGER = True         # Feature toggle for volume-based trigger
-CRON_INTERVAL_SECONDS = 60           # How often workers run
-
-# ── OI Tracking ───────────────────────────────────────────────────
-OI_WINDOW_HOURS = 3                  # Rolling window for OI baseline comparison
-
-# ── News / APIs ───────────────────────────────────────────────────
-NEWS_API_KEY = os.environ.get("NEWS_API_KEY", "your_news_api_key_here").strip()
-SERP_API_KEY = os.environ.get("SERP_API_KEY", "your_serp_api_key_here").strip()
-
-# ── LLM ───────────────────────────────────────────────────────────
-LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openrouter").strip().lower()
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "your_openrouter_api_key_here").strip()
-OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "deepseek/deepseek-chat").strip()
-
-# ── Google Sheets ────────────────────────────────────────────────
-GOOGLE_CREDENTIALS_FILE = "credentials.json"  # Path to service account JSON
-GOOGLE_SHEET_ID = "your_google_sheet_id_here"
-GOOGLE_SHEET_TAB = "Alerts"                   # Fallback/default worksheet name
-
-# ── Notes ─────────────────────────────────────────────────────────
-# Multi-ticker production config lives in config/tickers.py.
-# This sample file is intentionally safe for public repos.
+Multi-ticker thresholds live in `config/tickers.py`.
+"""

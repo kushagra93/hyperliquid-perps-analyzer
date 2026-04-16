@@ -14,26 +14,21 @@ The current codebase is fully centered around `TickerWorker` and `config/tickers
 python3 -m pip install -r requirements.txt
 ```
 
-2. Create a local settings file:
-
-```bash
-cp config/Settings_sample.py config/settings.py
-```
-
-3. Set secrets via environment or `.env`:
+2. Configure via environment variables or a local `.env` file (see `config/settings.py`). Minimum secrets:
 
 ```bash
 export OPENROUTER_API_KEY="..."
 export SERP_API_KEY="..."
+export GOOGLE_SHEET_ID="..."
+# Plus either GOOGLE_CREDENTIALS_JSON (full JSON string) or a readable
+# GOOGLE_CREDENTIALS_FILE path (defaults to credentials.json).
 ```
 
-4. Update Google Sheets values in `config/settings.py`:
-   - `GOOGLE_CREDENTIALS_FILE`
-   - `GOOGLE_SHEET_ID`
+3. Optional: place a service-account JSON at `credentials.json` (gitignored) or set `GOOGLE_CREDENTIALS_JSON`.
 
-5. Tune ticker configs in `config/tickers.py`.
+4. Tune ticker configs in `config/tickers.py`.
 
-6. Run:
+5. Run:
 
 ```bash
 python3 main.py
@@ -180,9 +175,9 @@ Each worker owns isolated state:
 
 ## 1) Global settings (`config/settings.py`)
 
-Template file: `config/Settings_sample.py`.
+This file is **committed** and loads **only** from environment variables (non-secret defaults only). See [config/Settings_sample.py](config/Settings_sample.py) for a checklist of variable names.
 
-Most relevant keys:
+Most relevant env vars:
 
 - runtime:
   - `CRON_INTERVAL_SECONDS`
@@ -194,6 +189,7 @@ Most relevant keys:
   - `LLM_PROVIDER`
 - sheets:
   - `GOOGLE_CREDENTIALS_FILE`
+  - `GOOGLE_CREDENTIALS_JSON` (hosted platforms)
   - `GOOGLE_SHEET_ID`
   - `GOOGLE_SHEET_TAB` (fallback/default tab)
 
@@ -305,6 +301,78 @@ Columns written by `notifiers/sheets.py`:
 
 ## Security and Repo Hygiene
 
-- Keep secrets in `.env` or environment variables.
-- Do not commit real keys in `config/settings.py`.
-- Use `config/Settings_sample.py` as the public-safe template.
+- Keep secrets in `.env` or environment variables (e.g. Railway secrets).
+- Do not put real keys in git — `config/settings.py` has no secret defaults; it reads env only.
+- Use `config/Settings_sample.py` as a quick reference list of env var names.
+
+---
+
+## Railway Deployment Runbook
+
+Use Railway as a **single long-running worker** (not serverless).
+
+## 1) Add required repo artifacts
+
+This repo now includes:
+
+- `Procfile` with `worker: python3 main.py`
+- `runtime.txt` with pinned Python version
+- committed `config/settings.py` (env-only), so you do **not** need to generate or inject a settings file at deploy time
+
+## 2) Configure Railway service
+
+1. Connect the GitHub repo to a Railway project.
+2. Set service type to worker/background process.
+3. Set **Start Command** explicitly:
+   - `python3 main.py`
+4. Set **replica count = 1**.
+
+Important: This app has in-memory per-ticker state. Multiple replicas can duplicate alerts.
+
+## 3) Set environment variables in Railway
+
+Minimum required:
+
+- `SERP_API_KEY`
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_MODEL` (optional override)
+- `LLM_PROVIDER` (default `openrouter`)
+- `GOOGLE_SHEET_ID`
+- `GOOGLE_SHEET_TAB` (optional override)
+- `HL_PERP_DEX` (optional override)
+
+Google credentials (choose one):
+
+- `GOOGLE_CREDENTIALS_FILE` pointing to a mounted file path, or
+- `GOOGLE_CREDENTIALS_JSON` containing full service-account JSON string
+
+If `GOOGLE_CREDENTIALS_JSON` is set, the app writes it to `/tmp/credentials.json` at startup.
+
+## 4) Startup validation behavior
+
+At startup, the app fails fast if required config is missing:
+
+- `SERP_API_KEY`
+- `OPENROUTER_API_KEY`
+- `GOOGLE_SHEET_ID`
+- and one of:
+  - readable `GOOGLE_CREDENTIALS_FILE`
+  - `GOOGLE_CREDENTIALS_JSON`
+
+## 5) Post-deploy checks
+
+Inspect Railway logs and confirm:
+
+- startup banner appears
+- ticker list count is correct
+- cron ticks continue every interval
+- no config/credential exceptions
+- alert rows append to expected tabs
+
+## 6) Rollback
+
+If a deployment fails:
+
+1. Open Railway Deployments.
+2. Redeploy previous successful version.
+3. Verify ticker loop resumes in logs.

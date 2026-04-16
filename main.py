@@ -10,22 +10,33 @@
 # three into one class per ticker.
 # ─────────────────────────────────────────────────────────────────
 
-import time
 import logging
-import schedule
+import sys
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import schedule
 from dotenv import load_dotenv
 
 load_dotenv()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s",
+# INFO/DEBUG → stdout (hosts like Railway treat stderr as "error" severity).
+# WARNING+ → stderr.
+_log_fmt = logging.Formatter(
+    "%(asctime)s | %(levelname)s | %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
+_out = logging.StreamHandler(sys.stdout)
+_out.setLevel(logging.DEBUG)
+_out.addFilter(lambda r: r.levelno < logging.WARNING)
+_out.setFormatter(_log_fmt)
+_err = logging.StreamHandler(sys.stderr)
+_err.setLevel(logging.WARNING)
+_err.setFormatter(_log_fmt)
+logging.basicConfig(level=logging.INFO, handlers=[_out, _err], force=True)
 logger = logging.getLogger(__name__)
 
-from config.settings import CRON_INTERVAL_SECONDS
+from config.settings import CRON_INTERVAL_SECONDS, validate_runtime_settings
 from config.tickers import TICKERS
 from core.hl_client import fetch_meta_and_asset_ctxs
 from core.ticker_worker import TickerWorker
@@ -63,6 +74,8 @@ def run_all_tickers():
 
 
 def main():
+    validate_runtime_settings()
+
     logger.info("=" * 60)
     logger.info(f"  Multi-ticker HL analyzer starting")
     logger.info(f"  Tickers ({len(workers)}): {[w.symbol for w in workers]}")
