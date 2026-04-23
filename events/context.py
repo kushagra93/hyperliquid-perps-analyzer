@@ -46,6 +46,68 @@ def _env_int(key: str, default: int) -> int:
         return default
 
 
+def _compute_tags(next_earnings, days_to_earnings, forecast, expected_move) -> list[dict]:
+    """
+    Return a short list of tag dicts summarizing expectations for the
+    upcoming earnings release. Each dict has: {kind, code, label, emoji}.
+    Downstream (Telegram, Sheets, JSONL) sees structured `code` values
+    and can render or filter consistently.
+    """
+    tags: list[dict] = []
+    if not next_earnings:
+        return tags
+
+    # Expectation tag from forward-lean score (-4..+4)
+    score = (forecast or {}).get("score")
+    if score is not None:
+        if score >= 3:
+            tags.append({"kind": "expectation", "code": "beat_high",
+                          "emoji": "🔥", "label": "HIGH-CONVICTION BEAT"})
+        elif score >= 1:
+            tags.append({"kind": "expectation", "code": "beat_lean",
+                          "emoji": "📈", "label": "BEAT LEAN"})
+        elif score <= -3:
+            tags.append({"kind": "expectation", "code": "miss_high",
+                          "emoji": "🚨", "label": "HIGH MISS RISK"})
+        elif score <= -1:
+            tags.append({"kind": "expectation", "code": "miss_lean",
+                          "emoji": "📉", "label": "MISS LEAN"})
+        else:
+            tags.append({"kind": "expectation", "code": "mixed",
+                          "emoji": "⚖️", "label": "MIXED / TOO CLOSE"})
+
+    # Urgency tag
+    dte = days_to_earnings
+    if dte is not None:
+        if dte <= 1:
+            tags.append({"kind": "urgency", "code": "imminent",
+                          "emoji": "⚡", "label": "IMMINENT (≤1d)"})
+        elif dte <= 7:
+            tags.append({"kind": "urgency", "code": "this_week",
+                          "emoji": "🕐", "label": "THIS WEEK"})
+        elif dte <= 30:
+            tags.append({"kind": "urgency", "code": "this_month",
+                          "emoji": "📅", "label": "THIS MONTH"})
+        else:
+            tags.append({"kind": "urgency", "code": "distant",
+                          "emoji": "🌑", "label": f"IN {dte}d"})
+
+    # Volatility tag (from expected-move band if computed)
+    em_pct = (expected_move or {}).get("expected_pct")
+    if em_pct is not None:
+        if em_pct >= 8:
+            tags.append({"kind": "volatility", "code": "high",
+                          "emoji": "🌋", "label": f"HIGH VOL (±{em_pct:.1f}%)"})
+        elif em_pct >= 4:
+            tags.append({"kind": "volatility", "code": "medium",
+                          "emoji": "🌊", "label": f"MEDIUM VOL (±{em_pct:.1f}%)"})
+        else:
+            tags.append({"kind": "volatility", "code": "low",
+                          "emoji": "💤", "label": f"LOW VOL (±{em_pct:.1f}%)"})
+
+    return tags
+
+
 def _macro_within(macro_events: list, max_days: int, us_only: bool = True) -> list:
     """
     Keep only macro events happening within max_days from today.
@@ -104,6 +166,12 @@ def _render(ctx: dict) -> str:
         eps = ner.get("eps_estimate")
         eps_str = f" · EPS est <code>{eps}</code>" if eps is not None else ""
         parts.append(f"📅 <b>Next earnings in {dte}d</b> — {ner.get('date')}{when_str}{eps_str}")
+
+        # Expectation tags line (structured + rendered together)
+        tags = ctx.get("tags") or []
+        if tags:
+            tag_str = "  ·  ".join(f"{t['emoji']} <b>{t['label']}</b>" for t in tags)
+            parts.append(f"   🏷️ {tag_str}")
 
         fcst = ctx.get("forecast") or {}
         if fcst.get("lean"):
@@ -196,6 +264,7 @@ def get_event_context(symbol: str, hl_asset: str, current_price: float) -> dict:
             "days_to_earnings": dte,
             "forecast": forecast,
             "expected_move": em,
+            "tags": _compute_tags(ner, dte, forecast, em),
             "macro_events_soon": _macro_within(
                 bundle.get("macro_events") or [], macro_horizon
             ),

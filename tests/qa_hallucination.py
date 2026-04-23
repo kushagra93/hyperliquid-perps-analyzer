@@ -395,6 +395,47 @@ def test_a3_invalid_confidence():
     assert "invalid_confidence_coerced" in result["flags"]
 
 
+# ── 7b. Earnings expectation tags ────────────────────────────────
+
+print("\n─── 7b. Earnings expectation tags ───")
+
+@check("tags: high score → HIGH-CONVICTION BEAT, low → HIGH MISS RISK")
+def test_tags_expectation():
+    from events.context import _compute_tags
+    high = _compute_tags({"date": "x"}, 5, {"score": 4}, None)
+    assert any(t["code"] == "beat_high" for t in high)
+    low = _compute_tags({"date": "x"}, 5, {"score": -4}, None)
+    assert any(t["code"] == "miss_high" for t in low)
+    mixed = _compute_tags({"date": "x"}, 5, {"score": 0}, None)
+    assert any(t["code"] == "mixed" for t in mixed)
+
+
+@check("tags: urgency bucket matches days_to_earnings")
+def test_tags_urgency():
+    from events.context import _compute_tags
+    assert any(t["code"] == "imminent"  for t in _compute_tags({"date": "x"}, 0, {"score": 0}, None))
+    assert any(t["code"] == "this_week" for t in _compute_tags({"date": "x"}, 5, {"score": 0}, None))
+    assert any(t["code"] == "this_month" for t in _compute_tags({"date": "x"}, 20, {"score": 0}, None))
+    assert any(t["code"] == "distant"   for t in _compute_tags({"date": "x"}, 90, {"score": 0}, None))
+
+
+@check("tags: volatility bucket matches expected_pct")
+def test_tags_volatility():
+    from events.context import _compute_tags
+    hi = _compute_tags({"date": "x"}, 3, {"score": 0}, {"expected_pct": 12.0})
+    assert any(t["code"] == "high" for t in hi)
+    mid = _compute_tags({"date": "x"}, 3, {"score": 0}, {"expected_pct": 5.0})
+    assert any(t["code"] == "medium" for t in mid)
+    lo = _compute_tags({"date": "x"}, 3, {"score": 0}, {"expected_pct": 2.0})
+    assert any(t["code"] == "low" for t in lo)
+
+
+@check("tags: empty when no upcoming earnings")
+def test_tags_empty():
+    from events.context import _compute_tags
+    assert _compute_tags(None, None, None, None) == []
+
+
 # ── 8. Agent 1 fabrication guard ─────────────────────────────────
 
 print("\n─── 8. Agent 1 fabrication guard ───")
