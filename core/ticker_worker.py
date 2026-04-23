@@ -10,11 +10,14 @@
 # so tickers are fully isolated from each other.
 # ─────────────────────────────────────────────────────────────────
 
+import json
+import os
 import time
 import logging
 from collections import deque
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 from core.hl_client import fetch_meta_and_asset_ctxs
 from core.condition_engine import evaluate_condition, should_alert
@@ -22,6 +25,8 @@ from agents.agent1_news import fetch_news
 from agents.agent2_oi import build_oi_report_for_ticker
 from agents.agent3_causality import run_causality_analysis
 from notifiers.sheets import log_alert
+from notifiers.telegram import send_alert_if_enabled
+from core.freshness import feed_freshness_ok
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +42,29 @@ def _truncate_on_sentence(text: str, max_len: int) -> str:
     if end == -1:
         return text
     return text[: end + 1]
+
+
+def _jsonable(d: dict) -> dict:
+    """Deep-copy a dict, converting datetime values to ISO strings."""
+    out = {}
+    for k, v in d.items():
+        if isinstance(v, datetime):
+            out[k] = v.isoformat()
+        elif isinstance(v, dict):
+            out[k] = _jsonable(v)
+        elif isinstance(v, (list, tuple)):
+            out[k] = [_jsonable(x) if isinstance(x, dict) else x for x in v]
+        else:
+            out[k] = v
+    return out
+
+
+def _append_alert_jsonl(alert: dict) -> None:
+    """Append one alert as a JSON line to the shared alerts log."""
+    path = Path(os.environ.get("ALERTS_JSONL_PATH", "eval/alerts.jsonl"))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a") as f:
+        f.write(json.dumps(alert, default=str) + "\n")
 
 
 def _extract_ctx(data: list, hl_asset: str) -> dict | None:
@@ -272,6 +300,33 @@ class TickerWorker:
             sheets_tab=self.sheets_tab,
         )
         self._last_alert_time = time.time()
+
+        alert_payload = {
+            "symbol": self.symbol,
+            "full_name": self.full_name,
+            "hl_asset": self.hl_asset,
+            "price_trigger": _jsonable(effective_trigger),
+            "oi_report": oi_report,
+            "condition": condition,
+            "causality": causality,
+            "news_report": {
+                "summary": news_report.get("summary"),
+                "has_news": news_report.get("has_news"),
+                # drop full article list to keep JSONL line compact
+            },
+        }
+
+        # Telegram notifier (no-op unless TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID set)
+        try:
+            send_alert_if_enabled(alert_payload)
+        except Exception as e:
+            logger.warning(f"[{self.symbol}] Telegram notifier failed: {e}")
+
+        # Append to JSONL stream (consumed by paper_trade + eval harness)
+        try:
+            _append_alert_jsonl(alert_payload)
+        except Exception as e:
+            logger.warning(f"[{self.symbol}] alert JSONL append failed: {e}")
 
         logger.info(
             f"[{self.symbol}] Alert logged — {condition['condition_id']} | "

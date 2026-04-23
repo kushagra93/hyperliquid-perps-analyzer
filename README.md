@@ -8,6 +8,44 @@ The current codebase is fully centered around `TickerWorker` and `config/tickers
 
 ## Changelog
 
+### `feat/reliability-backlog` (unreleased, stacks on `feat/anti-hallucination`)
+
+Goal: ship the 6 reliability items that were on the roadmap after the anti-hallucination patch.
+
+**1. Two-model cross-check for high-priority alerts — `agents/agent3_causality.py`**
+- `_is_high_priority()` gates on C1/C2 + news_present + signal score ≥ 6.0.
+- `_run_cross_check()` calls a second LLM via `CROSS_CHECK_MODEL`. If `primary_driver` disagrees, appends `cross_check_disagree:<model>:<alt_driver>` flag and downgrades confidence one notch.
+- Enabled via `ENABLE_CROSS_CHECK=true` + `CROSS_CHECK_MODEL=<slug>` (e.g. `anthropic/claude-haiku-4.5`).
+
+**2. Feed-freshness gate — `core/freshness.py` (new) + `main.py`**
+- Hashes `(symbol, markPx)` tuples across all tickers each tick. If the hash repeats `FRESHNESS_REPEAT_LIMIT` times (default 3) consecutively, the tick is skipped — prevents fleet-wide ghost alerts from a frozen HL feed.
+- `get_stats()` exposes counters for healthchecks.
+- Disable with `FRESHNESS_ENABLED=false`.
+
+**3. 52-day chunked backtest — `backtest/run_backtest.py` (new)**
+- Fetches 15m candles in 4.5k-bar chunks (handles HL's ~5k cap) across all tickers in `config/tickers.py`.
+- Simulates four strategies: EMA Ribbon, RSI Reversion, Donchian 20-breakout, MACD cross — with ATR-based stops/targets and per-strategy bar-holding limits.
+- Writes `backtest/results.csv` + prints an aggregate win-rate table.
+- CLI: `--days`, `--tickers`, `--out`.
+
+**4. Weekly eval harness — `eval/harness.py` (new)**
+- `sample` subcommand: pulls recent alerts from Google Sheets (or `eval/alerts.jsonl` fallback), samples N random rows, writes `eval/to_label.csv` with blank `correct_driver` column.
+- `score` subcommand: reads a human-labeled CSV and prints overall accuracy, per-driver accuracy, and a full confusion matrix. Warns when accuracy drops below 0.8.
+
+**5. Paper-trade simulator — `paper_trade/simulator.py` (new)**
+- Tails the alerts JSONL (see #6), opens a long on C1 / short on C2, sizes stops and TPs with ATR14 fetched live from HL.
+- Marks every open position to market via HL candleSnapshot each poll cycle.
+- Persists `paper_trade/positions.csv` + `paper_trade/summary.json` (win rate, avg PnL, totals).
+- CLI: `--alerts`, `--poll`, `--positions`, `--summary`.
+
+**6. Telegram notifier wired into live pipeline — `notifiers/telegram.py` (new) + `core/ticker_worker.py`**
+- `send_alert_if_enabled()` is a no-op unless `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` are set.
+- `TELEGRAM_STRONG_ONLY=true` filters to C1/C2 + confidence ≥ medium. `TELEGRAM_MIN_SCORE` sets a score floor.
+- Message format mirrors the v4 channel format (no India-specific section).
+- Also writes each alert to `eval/alerts.jsonl` (path overridable via `ALERTS_JSONL_PATH`) — feeds both the paper-trader and the eval harness.
+
+---
+
 ### `feat/anti-hallucination` (unreleased)
 
 Goal: eliminate LLM hallucination in Agent 1 (news summarizer) and Agent 3 (causality verdict).

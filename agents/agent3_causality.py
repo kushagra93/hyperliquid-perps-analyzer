@@ -114,7 +114,7 @@ Return ONLY a JSON object, no markdown, no preamble:
 }}"""
 
 
-def _call_openrouter(prompt: str) -> str:
+def _call_openrouter(prompt: str, model: str | None = None) -> str:
     if not OPENROUTER_API_KEY:
         raise RuntimeError("OPENROUTER_API_KEY is missing")
     response = requests.post(
@@ -124,7 +124,7 @@ def _call_openrouter(prompt: str) -> str:
             "Content-Type": "application/json",
         },
         json={
-            "model": OPENROUTER_MODEL,
+            "model": model or OPENROUTER_MODEL,
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": 512,
             "temperature": 0.2,
@@ -134,6 +134,66 @@ def _call_openrouter(prompt: str) -> str:
     )
     response.raise_for_status()
     return response.json()["choices"][0]["message"]["content"]
+
+
+def _is_high_priority(condition: dict, news_report: dict) -> bool:
+    """
+    Lightweight rule mirroring the Telegram scorer's 'PN candidate' bar.
+    A high-priority alert deserves the extra cost of a second model call.
+    """
+    cid = condition.get("condition_id", "")
+    if cid not in ("C1", "C2"):
+        return False
+    score = abs(condition.get("price_change_pct") or 0) * abs(condition.get("oi_change_pct") or 0)
+    if score < 6.0:  # ≈ 2% price × 3% OI
+        return False
+    return bool(news_report.get("has_news"))
+
+
+def _run_cross_check(primary: dict, prompt: str, asset: str) -> dict:
+    """
+    Run Agent 3 against a second, independent model. If the two disagree
+    on `primary_driver`, append a flag and downgrade confidence one notch.
+    Controlled by env vars:
+      ENABLE_CROSS_CHECK=true         master switch
+      CROSS_CHECK_MODEL=<slug>        e.g. anthropic/claude-haiku-4.5
+    """
+    import os, json as _json
+    if os.environ.get("ENABLE_CROSS_CHECK", "").lower() not in ("1", "true", "yes"):
+        return primary
+    alt_model = os.environ.get("CROSS_CHECK_MODEL", "").strip()
+    if not alt_model:
+        logger.info(f"[Agent3/{asset}] cross-check skipped: CROSS_CHECK_MODEL not set")
+        return primary
+    try:
+        raw = _call_openrouter(prompt, model=alt_model).strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        second = _json.loads(raw.strip())
+        flags = primary.get("flags") or []
+        alt_driver = (second.get("primary_driver") or "").strip()
+        if alt_driver and alt_driver != primary.get("primary_driver"):
+            flags.append(f"cross_check_disagree:{alt_model}:{alt_driver}")
+            # Downgrade confidence one notch
+            cur = (primary.get("confidence") or "low").lower()
+            primary["confidence"] = {"high": "medium", "medium": "low", "low": "low"}[cur]
+            logger.warning(
+                f"[Agent3/{asset}] cross-check DISAGREES "
+                f"(primary='{primary.get('primary_driver')}' vs '{alt_driver}' from {alt_model}); "
+                f"confidence downgraded to {primary['confidence']}."
+            )
+        else:
+            flags.append("cross_check_agree")
+            logger.info(f"[Agent3/{asset}] cross-check agreed ({alt_model}).")
+        primary["flags"] = flags
+    except Exception as e:
+        logger.warning(f"[Agent3/{asset}] cross-check errored: {e} — keeping primary verdict.")
+        flags = primary.get("flags") or []
+        flags.append("cross_check_error")
+        primary["flags"] = flags
+    return primary
 
 
 _VALID_CONFIDENCE = {"high", "medium", "low"}
@@ -235,6 +295,8 @@ def run_causality_analysis(price_trigger, news_report, oi_report, condition) -> 
 
         result = json.loads(raw.strip())
         result = _validate_and_ground(result, price_trigger, news_report, condition, asset)
+        if _is_high_priority(condition, news_report):
+            result = _run_cross_check(result, prompt, asset)
         logger.info(f"[Agent3/{asset}] Verdict: {result.get('verdict')} | confidence={result.get('confidence')} | flags={result.get('flags')}")
         return result
 

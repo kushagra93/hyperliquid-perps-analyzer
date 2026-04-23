@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 from config.settings import CRON_INTERVAL_SECONDS, validate_runtime_settings
 from config.tickers import TICKERS
 from core.hl_client import fetch_meta_and_asset_ctxs
+from core.freshness import feed_freshness_ok
 from core.ticker_worker import TickerWorker
 
 # Instantiate one worker per ticker at startup
@@ -61,6 +62,10 @@ def run_all_tickers():
     shared_data = fetch_meta_and_asset_ctxs()
     if shared_data is None:
         logger.warning("[Main] HL data unavailable for this tick. Skipping all workers.")
+        return
+
+    if not feed_freshness_ok(shared_data):
+        # feed_freshness_ok already logged a warning.
         return
 
     with ThreadPoolExecutor(max_workers=len(workers)) as executor:
