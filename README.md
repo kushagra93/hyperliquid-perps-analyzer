@@ -25,6 +25,7 @@ Goal: earnings calendar, macro-event calendar, and statistical "expected move" a
   - Reported move = `max(statistical, historical)`. Returns upper/lower band in USD.
 - `events/context.py` — `get_event_context(symbol, hl_asset, price)` facade returning a pre-rendered HTML string for Telegram + the raw dict for JSONL. Always safe: returns `{"enabled": False}` on any error.
 - `events/preview.py` — CLI to inspect calendar + expected move for one or more tickers without running the full pipeline. `python3 events/preview.py NVDA TSLA --days 30`.
+- `events/monthly_review.py` + `preview.py --monthly` — month-long earnings review (past reports reviewed + upcoming yet-to-release). Forward lean for upcoming earnings is **rule-based, not LLM**: beat/miss streak, analyst recommendation tilt, price-target vs spot (free-tier permitting), and ticker news keyword sentiment — scored −4…+4 and bucketed into STRONG/MODERATE BULL/BEAR/NEUTRAL. Supports `--telegram` to push the whole report to the channel.
 
 **Integrations**
 - `core/ticker_worker.py` — attaches `event_context` to the alert payload; also lands in `eval/alerts.jsonl` so paper-trader / eval harness can slice alerts by earnings proximity.
