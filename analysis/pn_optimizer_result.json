@@ -1,0 +1,946 @@
+{
+  "as_of": "2026-04-29T16:19:09+00:00",
+  "scan_days": 60,
+  "n_signals": 52,
+  "all_combos_ranked": [
+    {
+      "combo": [
+        "atr_min_0.8",
+        "cash_hours",
+        "score_60"
+      ],
+      "eligible_total": 9,
+      "pns": 7,
+      "closed": 7,
+      "wins": 7,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 2.24,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 2.241
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "cash_hours"
+      ],
+      "eligible_total": 10,
+      "pns": 8,
+      "closed": 8,
+      "wins": 8,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 2.14,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 2.14
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "atr_min_0.8",
+        "cash_hours"
+      ],
+      "eligible_total": 10,
+      "pns": 8,
+      "closed": 8,
+      "wins": 8,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 2.14,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 2.14
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "cash_hours",
+        "sustained"
+      ],
+      "eligible_total": 10,
+      "pns": 8,
+      "closed": 8,
+      "wins": 8,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 2.14,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 2.14
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_60"
+      ],
+      "eligible_total": 15,
+      "pns": 10,
+      "closed": 10,
+      "wins": 9,
+      "win_rate_pct": 90.0,
+      "avg_win_pct": 2.09,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 1.757
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "atr_min_0.8",
+        "score_60"
+      ],
+      "eligible_total": 15,
+      "pns": 10,
+      "closed": 10,
+      "wins": 9,
+      "win_rate_pct": 90.0,
+      "avg_win_pct": 2.09,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 1.757
+    },
+    {
+      "combo": [
+        "atr_min_0.8"
+      ],
+      "eligible_total": 16,
+      "pns": 11,
+      "closed": 11,
+      "wins": 10,
+      "win_rate_pct": 90.9,
+      "avg_win_pct": 2.03,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 1.727
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "atr_min_0.8"
+      ],
+      "eligible_total": 16,
+      "pns": 11,
+      "closed": 11,
+      "wins": 10,
+      "win_rate_pct": 90.9,
+      "avg_win_pct": 2.03,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 1.727
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_60",
+        "sustained"
+      ],
+      "eligible_total": 13,
+      "pns": 10,
+      "closed": 10,
+      "wins": 9,
+      "win_rate_pct": 90.0,
+      "avg_win_pct": 2.09,
+      "avg_loss_pct": -1.84,
+      "expectancy_per_pn": 1.7
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "sustained"
+      ],
+      "eligible_total": 14,
+      "pns": 11,
+      "closed": 11,
+      "wins": 10,
+      "win_rate_pct": 90.9,
+      "avg_win_pct": 2.03,
+      "avg_loss_pct": -1.84,
+      "expectancy_per_pn": 1.675
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "atr_min_0.8",
+        "sustained"
+      ],
+      "eligible_total": 14,
+      "pns": 11,
+      "closed": 11,
+      "wins": 10,
+      "win_rate_pct": 90.9,
+      "avg_win_pct": 2.03,
+      "avg_loss_pct": -1.84,
+      "expectancy_per_pn": 1.675
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_70",
+        "sustained"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 1.66
+    },
+    {
+      "combo": [
+        "score_60",
+        "score_70",
+        "sustained"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 1.66
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "cash_hours",
+        "score_70"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 1.66
+    },
+    {
+      "combo": [
+        "score_70",
+        "sustained"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 1.66
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_70",
+        "sustained"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 1.66
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_70",
+        "sustained"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 1.66
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "cash_hours",
+        "score_70"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 1.66
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "cash_hours",
+        "sustained"
+      ],
+      "eligible_total": 14,
+      "pns": 11,
+      "closed": 11,
+      "wins": 9,
+      "win_rate_pct": 81.8,
+      "avg_win_pct": 1.93,
+      "avg_loss_pct": -1.15,
+      "expectancy_per_pn": 1.372
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_60",
+        "sustained"
+      ],
+      "eligible_total": 14,
+      "pns": 11,
+      "closed": 11,
+      "wins": 9,
+      "win_rate_pct": 81.8,
+      "avg_win_pct": 1.87,
+      "avg_loss_pct": -1.15,
+      "expectancy_per_pn": 1.324
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "sustained"
+      ],
+      "eligible_total": 18,
+      "pns": 15,
+      "closed": 15,
+      "wins": 13,
+      "win_rate_pct": 86.7,
+      "avg_win_pct": 1.51,
+      "avg_loss_pct": -1.15,
+      "expectancy_per_pn": 1.157
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "sustained"
+      ],
+      "eligible_total": 18,
+      "pns": 13,
+      "closed": 13,
+      "wins": 10,
+      "win_rate_pct": 76.9,
+      "avg_win_pct": 1.8,
+      "avg_loss_pct": -1.38,
+      "expectancy_per_pn": 1.063
+    },
+    {
+      "combo": [
+        "score_60",
+        "sustained"
+      ],
+      "eligible_total": 18,
+      "pns": 12,
+      "closed": 12,
+      "wins": 9,
+      "win_rate_pct": 75.0,
+      "avg_win_pct": 1.84,
+      "avg_loss_pct": -1.38,
+      "expectancy_per_pn": 1.032
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_60",
+        "sustained"
+      ],
+      "eligible_total": 17,
+      "pns": 12,
+      "closed": 12,
+      "wins": 9,
+      "win_rate_pct": 75.0,
+      "avg_win_pct": 1.84,
+      "avg_loss_pct": -1.38,
+      "expectancy_per_pn": 1.032
+    },
+    {
+      "combo": [
+        "sustained"
+      ],
+      "eligible_total": 28,
+      "pns": 16,
+      "closed": 16,
+      "wins": 13,
+      "win_rate_pct": 81.2,
+      "avg_win_pct": 1.49,
+      "avg_loss_pct": -1.38,
+      "expectancy_per_pn": 0.952
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "cash_hours"
+      ],
+      "eligible_total": 16,
+      "pns": 12,
+      "closed": 12,
+      "wins": 8,
+      "win_rate_pct": 66.7,
+      "avg_win_pct": 1.7,
+      "avg_loss_pct": -1.15,
+      "expectancy_per_pn": 0.747
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "cash_hours",
+        "score_60"
+      ],
+      "eligible_total": 15,
+      "pns": 11,
+      "closed": 11,
+      "wins": 7,
+      "win_rate_pct": 63.6,
+      "avg_win_pct": 1.74,
+      "avg_loss_pct": -1.15,
+      "expectancy_per_pn": 0.685
+    },
+    {
+      "combo": [
+        "cash_hours"
+      ],
+      "eligible_total": 23,
+      "pns": 17,
+      "closed": 17,
+      "wins": 12,
+      "win_rate_pct": 70.6,
+      "avg_win_pct": 1.32,
+      "avg_loss_pct": -1.04,
+      "expectancy_per_pn": 0.626
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_60"
+      ],
+      "eligible_total": 17,
+      "pns": 13,
+      "closed": 13,
+      "wins": 8,
+      "win_rate_pct": 61.5,
+      "avg_win_pct": 1.63,
+      "avg_loss_pct": -1.04,
+      "expectancy_per_pn": 0.605
+    },
+    {
+      "combo": [
+        "atr_min_0.5"
+      ],
+      "eligible_total": 23,
+      "pns": 14,
+      "closed": 14,
+      "wins": 9,
+      "win_rate_pct": 64.3,
+      "avg_win_pct": 1.57,
+      "avg_loss_pct": -1.18,
+      "expectancy_per_pn": 0.591
+    },
+    {
+      "combo": [
+        "baseline"
+      ],
+      "eligible_total": 52,
+      "pns": 18,
+      "closed": 18,
+      "wins": 12,
+      "win_rate_pct": 66.7,
+      "avg_win_pct": 1.3,
+      "avg_loss_pct": -0.97,
+      "expectancy_per_pn": 0.54
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_60",
+        "score_70"
+      ],
+      "eligible_total": 2,
+      "pns": 2,
+      "closed": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -0.58,
+      "expectancy_per_pn": 0.54
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_70"
+      ],
+      "eligible_total": 2,
+      "pns": 2,
+      "closed": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -0.58,
+      "expectancy_per_pn": 0.54
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_60"
+      ],
+      "eligible_total": 22,
+      "pns": 13,
+      "closed": 13,
+      "wins": 8,
+      "win_rate_pct": 61.5,
+      "avg_win_pct": 1.59,
+      "avg_loss_pct": -1.18,
+      "expectancy_per_pn": 0.526
+    },
+    {
+      "combo": [
+        "score_60"
+      ],
+      "eligible_total": 34,
+      "pns": 14,
+      "closed": 14,
+      "wins": 8,
+      "win_rate_pct": 57.1,
+      "avg_win_pct": 1.59,
+      "avg_loss_pct": -0.97,
+      "expectancy_per_pn": 0.491
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_60",
+        "score_70"
+      ],
+      "eligible_total": 3,
+      "pns": 2,
+      "closed": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 0.195
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_70"
+      ],
+      "eligible_total": 4,
+      "pns": 2,
+      "closed": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 0.195
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "atr_min_0.8",
+        "score_70"
+      ],
+      "eligible_total": 3,
+      "pns": 2,
+      "closed": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 0.195
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_70"
+      ],
+      "eligible_total": 3,
+      "pns": 2,
+      "closed": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 0.195
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_60",
+        "score_70"
+      ],
+      "eligible_total": 4,
+      "pns": 2,
+      "closed": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -1.27,
+      "expectancy_per_pn": 0.195
+    },
+    {
+      "combo": [
+        "score_70"
+      ],
+      "eligible_total": 10,
+      "pns": 3,
+      "closed": 3,
+      "wins": 1,
+      "win_rate_pct": 33.3,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -0.61,
+      "expectancy_per_pn": 0.143
+    },
+    {
+      "combo": [
+        "score_60",
+        "score_70"
+      ],
+      "eligible_total": 10,
+      "pns": 3,
+      "closed": 3,
+      "wins": 1,
+      "win_rate_pct": 33.3,
+      "avg_win_pct": 1.66,
+      "avg_loss_pct": -0.61,
+      "expectancy_per_pn": 0.143
+    },
+    {
+      "combo": [
+        "score_70",
+        "score_80",
+        "sustained"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_80",
+        "sustained"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "cash_hours",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_70",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "score_80",
+        "sustained"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_80",
+        "sustained"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_70",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_80",
+        "sustained"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "score_60",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "atr_min_0.8",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.5",
+        "cash_hours",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "atr_min_0.8",
+        "score_60",
+        "score_80"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "score_60",
+        "score_80",
+        "sustained"
+      ],
+      "eligible_total": 0,
+      "pns": 0,
+      "closed": 0,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": 0.0,
+      "expectancy_per_pn": 0.0
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_60",
+        "score_80"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": -0.58,
+      "expectancy_per_pn": -0.58
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_70",
+        "score_80"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": -0.58,
+      "expectancy_per_pn": -0.58
+    },
+    {
+      "combo": [
+        "cash_hours",
+        "score_80"
+      ],
+      "eligible_total": 1,
+      "pns": 1,
+      "closed": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": -0.58,
+      "expectancy_per_pn": -0.58
+    },
+    {
+      "combo": [
+        "score_70",
+        "score_80"
+      ],
+      "eligible_total": 6,
+      "pns": 2,
+      "closed": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": -0.61,
+      "expectancy_per_pn": -0.615
+    },
+    {
+      "combo": [
+        "score_60",
+        "score_80"
+      ],
+      "eligible_total": 6,
+      "pns": 2,
+      "closed": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": -0.61,
+      "expectancy_per_pn": -0.615
+    },
+    {
+      "combo": [
+        "score_60",
+        "score_70",
+        "score_80"
+      ],
+      "eligible_total": 6,
+      "pns": 2,
+      "closed": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": -0.61,
+      "expectancy_per_pn": -0.615
+    },
+    {
+      "combo": [
+        "score_80"
+      ],
+      "eligible_total": 6,
+      "pns": 2,
+      "closed": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_win_pct": 0.0,
+      "avg_loss_pct": -0.61,
+      "expectancy_per_pn": -0.615
+    }
+  ],
+  "winner": {
+    "combo": [
+      "atr_min_0.8",
+      "cash_hours",
+      "score_60"
+    ],
+    "eligible_total": 9,
+    "pns": 7,
+    "closed": 7,
+    "wins": 7,
+    "win_rate_pct": 100.0,
+    "avg_win_pct": 2.24,
+    "avg_loss_pct": 0.0,
+    "expectancy_per_pn": 2.241
+  },
+  "note": "Sample size is small. The leaderboard is directional, not statistically significant. The mechanism \u2014 persisting a deterministic filter combo for the daily 1-PN budget \u2014 is the deliverable; refine over time as more signals accrue."
+}

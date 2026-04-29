@@ -60,6 +60,85 @@ def _is_enabled() -> bool:
     return bool(os.environ.get("TELEGRAM_BOT_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"))
 
 
+_PN_FILTER_CACHE: dict | None = None
+_PN_DAILY_STATE: dict = {"date": None, "best_score": -1}
+
+
+def _load_pn_filter_cfg() -> dict | None:
+    """Load config/pn_filter.json once; cache."""
+    global _PN_FILTER_CACHE
+    if _PN_FILTER_CACHE is not None:
+        return _PN_FILTER_CACHE
+    try:
+        import os, json
+        from pathlib import Path
+        path = Path(__file__).resolve().parent.parent / "config" / "pn_filter.json"
+        if not path.exists():
+            _PN_FILTER_CACHE = {}
+            return None
+        _PN_FILTER_CACHE = json.loads(path.read_text())
+        return _PN_FILTER_CACHE
+    except Exception:
+        _PN_FILTER_CACHE = {}
+        return None
+
+
+def _alert_passes_pn_filter(alert: dict) -> tuple[bool, str]:
+    """
+    Apply the persisted PN filter (from analysis/pn_optimizer.py --apply)
+    plus the once-per-UTC-day cap. Returns (eligible, reason_if_not).
+    """
+    from datetime import datetime, timezone
+    cfg = _load_pn_filter_cfg()
+    if not cfg or not cfg.get("filter"):
+        return True, ""  # no filter configured → don't gate
+
+    filter_names = cfg["filter"]
+    pt = alert.get("price_trigger") or {}
+    price = float(pt.get("current_price") or 0)
+    tech = alert.get("technical_outlook") or {}
+    atr = float(tech.get("atr") or 0)
+    score = int(alert.get("score") or 0)
+
+    # Re-derive the filter signals at alert time
+    when_iso = (pt.get("triggered_at") or
+                datetime.now(timezone.utc).astimezone().isoformat())
+    try:
+        hour = datetime.fromisoformat(str(when_iso)).hour
+        minute = datetime.fromisoformat(str(when_iso)).minute
+    except Exception:
+        hour, minute = 12, 0
+
+    cash_hours = (hour >= 19) or (hour < 1) or (hour == 1 and minute <= 30)
+    atr_pct = (atr / price * 100) if price > 0 else 0.0
+
+    for f in filter_names:
+        if f == "cash_hours" and not cash_hours:
+            return False, "outside US cash hours"
+        if f.startswith("atr_min_"):
+            min_p = float(f.split("_")[-1])
+            if atr_pct < min_p:
+                return False, f"ATR {atr_pct:.2f}% < {min_p}%"
+        if f.startswith("score_"):
+            min_s = int(f.split("_")[-1])
+            if score < min_s:
+                return False, f"score {score} < {min_s}"
+        # 'sustained' is post-hoc; can't evaluate at alert time → permissive
+        if f == "sustained":
+            continue
+
+    # Daily cap: keep only highest-scoring alert per UTC day
+    today = datetime.now(timezone.utc).date().isoformat()
+    if _PN_DAILY_STATE["date"] != today:
+        _PN_DAILY_STATE["date"] = today
+        _PN_DAILY_STATE["best_score"] = -1
+    if score <= _PN_DAILY_STATE["best_score"]:
+        return False, (f"already PNed score {_PN_DAILY_STATE['best_score']} today "
+                        f"(this is {score})")
+    _PN_DAILY_STATE["best_score"] = score
+    return True, ""
+
+
 def _should_send(alert: dict) -> tuple[bool, str]:
     """Filter logic. Returns (should_send, reason_if_not)."""
     condition = alert.get("condition") or {}
@@ -77,6 +156,12 @@ def _should_send(alert: dict) -> tuple[bool, str]:
             return False, f"condition {cid} not C1/C2"
         if conf not in ("high", "medium"):
             return False, f"confidence {conf} too low"
+
+    # PN-tier filter (only gates when TELEGRAM_PN_TIER_ONLY=true)
+    if _env_bool("TELEGRAM_PN_TIER_ONLY", False):
+        ok, reason = _alert_passes_pn_filter(alert)
+        if not ok:
+            return False, f"PN filter: {reason}"
 
     return True, ""
 

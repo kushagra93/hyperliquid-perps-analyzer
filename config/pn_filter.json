@@ -1,0 +1,12 @@
+{
+  "filter": [
+    "atr_min_0.8",
+    "cash_hours",
+    "score_60"
+  ],
+  "as_of": "2026-04-29T16:19:09+00:00",
+  "scan_days": 60,
+  "expected_pns_per_day": 0.117,
+  "expected_win_rate_pct": 100.0,
+  "expected_expectancy_per_pn": 2.241
+}

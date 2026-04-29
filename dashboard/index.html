@@ -73,6 +73,10 @@
           </select>
           <label class="text-slate-400 ml-3">Ticker</label>
           <input id="f-ticker" placeholder="e.g. NVDA" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 w-24"/>
+          <label class="text-slate-400 ml-3 flex items-center gap-1">
+            <input type="checkbox" id="f-pn-only" class="accent-amber-400"/>
+            <span>🔔 PN only</span>
+          </label>
         </div>
       </div>
       <div class="rounded-lg border border-slate-800 overflow-x-auto">
@@ -147,6 +151,28 @@ async function load() {
   document.getElementById("f-stars").addEventListener("change", renderSignals);
   document.getElementById("f-outcome").addEventListener("change", renderSignals);
   document.getElementById("f-ticker").addEventListener("input", renderSignals);
+  document.getElementById("f-pn-only").addEventListener("change", renderSignals);
+
+  // PN summary card if a filter is active
+  const pn = data.pn_aggregate;
+  const filt = data.pn_filter || {};
+  if (filt.applied && pn) {
+    const wrColor = pn.win_rate_pct >= 50 ? "text-emerald-400" : "text-rose-400";
+    const banner = `<div class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 mb-6">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <div class="text-xs uppercase tracking-wide text-amber-400">🔔 PN tier — daily 1-PN budget</div>
+          <div class="text-sm text-slate-300">filter: <code class="text-amber-300">${filt.filter.join(" & ")}</code></div>
+        </div>
+        <div class="flex items-center gap-6 text-sm">
+          <div><span class="text-slate-400">PNs</span> <span class="font-semibold">${pn.n}</span></div>
+          <div><span class="text-slate-400">Win rate</span> <span class="font-semibold ${wrColor}">${pn.win_rate_pct}%</span></div>
+          <div><span class="text-slate-400">Avg PnL</span> <span class="font-semibold ${pn.avg_pnl_pct>=0?"text-emerald-400":"text-rose-400"}">${pn.avg_pnl_pct>=0?"+":""}${pn.avg_pnl_pct}%</span></div>
+        </div>
+      </div>
+    </div>`;
+    document.getElementById("kpis").insertAdjacentHTML("beforebegin", banner);
+  }
 }
 
 function renderSignals() {
@@ -154,10 +180,12 @@ function renderSignals() {
   const minStars = parseInt(document.getElementById("f-stars").value, 10);
   const outFilt = document.getElementById("f-outcome").value;
   const tickFilt = document.getElementById("f-ticker").value.trim().toUpperCase();
+  const pnOnly = document.getElementById("f-pn-only").checked;
   const sigs = data.signals.filter(s =>
     s.stars >= minStars
     && (!outFilt || s.outcome === outFilt)
     && (!tickFilt || s.ticker.includes(tickFilt))
+    && (!pnOnly || s.pn_today)
   );
 
   const outBadge = (o) => {
@@ -171,9 +199,11 @@ function renderSignals() {
     const pnl = s.pnl_pct === null || s.pnl_pct === undefined ? "—" :
                 `<span class="${s.pnl_pct >= 0 ? "text-emerald-400" : "text-rose-400"}">${s.pnl_pct >= 0 ? "+" : ""}${s.pnl_pct}%</span>`;
     const move = `<span class="${s.move_pct >= 0 ? "text-emerald-400" : "text-rose-400"}">${s.move_pct >= 0 ? "+" : ""}${s.move_pct}%</span>`;
-    return `<tr class="border-t border-slate-800/60 hover:bg-slate-900/30">
+    const pnTag = s.pn_today ? `<span class="badge bg-amber-500/20 text-amber-300 ml-1">🔔 PN</span>`
+                   : (s.pn_eligible ? `<span class="badge bg-amber-500/10 text-amber-400 ml-1" title="eligible but not picked as the day's PN">elig</span>` : "");
+    return `<tr class="${s.pn_today ? "bg-amber-500/5" : ""} border-t border-slate-800/60 hover:bg-slate-900/30">
       <td class="px-3 py-1.5 text-slate-400">${s.when_ist.replace("T"," ").slice(0,16)}</td>
-      <td class="px-3 font-medium">${s.ticker}</td>
+      <td class="px-3 font-medium">${s.ticker}${pnTag}</td>
       <td class="px-3">${s.condition_id}</td>
       <td class="px-3 text-right">${move}</td>
       <td class="px-3 text-right">${s.score}</td>

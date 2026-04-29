@@ -216,6 +216,44 @@ def _resolve(sig: Signal, candles: list, max_bars: int = 24) -> None:
     sig.bars_to_resolution = max_bars
 
 
+def _load_pn_filter() -> tuple[list[str], dict]:
+    """Read config/pn_filter.json if present; return (filter_names, raw_cfg)."""
+    p = ROOT / "config" / "pn_filter.json"
+    if not p.exists():
+        return [], {}
+    try:
+        cfg = json.loads(p.read_text())
+        return list(cfg.get("filter") or []), cfg
+    except Exception:
+        return [], {}
+
+
+def _apply_pn_filter_to_dicts(signal_dicts: list[dict]) -> dict:
+    """
+    Stamps pn_eligible / pn_today on each signal dict using the
+    persisted filter. Returns a metadata dict describing the filter.
+    """
+    filter_names, cfg = _load_pn_filter()
+    if not filter_names:
+        return {"applied": False}
+    from analysis.pn_optimizer import FILTERS, _daily_cap
+
+    eligible = [s for s in signal_dicts if all(FILTERS[f](s, signal_dicts) for f in filter_names)]
+    pn = _daily_cap(eligible)
+    pn_keys = {(s["ticker"], s["ts_ms"]) for s in pn}
+    elig_keys = {(s["ticker"], s["ts_ms"]) for s in eligible}
+    for s in signal_dicts:
+        s["pn_eligible"] = (s["ticker"], s["ts_ms"]) in elig_keys
+        s["pn_today"] = (s["ticker"], s["ts_ms"]) in pn_keys
+    return {
+        "applied": True,
+        "filter": filter_names,
+        "config": cfg,
+        "eligible": len(eligible),
+        "pn_count": len(pn),
+    }
+
+
 def aggregate(signals: list[Signal]) -> dict:
     closed = [s for s in signals if s.outcome in ("tp1", "sl", "timeout")]
     wins = [s for s in closed if (s.pnl_pct or 0) > 0]
@@ -259,12 +297,34 @@ def run(days: int) -> dict:
 
     all_sigs.sort(key=lambda s: -s.ts_ms)
     agg = aggregate(all_sigs)
+
+    sig_dicts = [asdict(s) for s in all_sigs]
+    pn_meta = _apply_pn_filter_to_dicts(sig_dicts)
+
+    # Aggregate of PN-only subset
+    pn_only = [s for s in sig_dicts if s.get("pn_today")]
+    pn_agg = None
+    if pn_only:
+        closed = [s for s in pn_only if s.get("outcome") in ("tp1", "sl", "timeout")]
+        wins = [s for s in closed if (s.get("pnl_pct") or 0) > 0]
+        pn_agg = {
+            "n": len(pn_only),
+            "closed": len(closed),
+            "wins": len(wins),
+            "win_rate_pct": round(len(wins) / len(closed) * 100, 1) if closed else 0.0,
+            "avg_pnl_pct": round(
+                sum((s.get("pnl_pct") or 0) for s in closed) / len(closed), 2
+            ) if closed else 0.0,
+        }
+
     return {
         "as_of": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "scan_days": days,
         "tickers_scanned": list(TICKERS.keys()),
         "aggregate": agg,
-        "signals": [asdict(s) for s in all_sigs],
+        "pn_filter": pn_meta,
+        "pn_aggregate": pn_agg,
+        "signals": sig_dicts,
     }
 
 
