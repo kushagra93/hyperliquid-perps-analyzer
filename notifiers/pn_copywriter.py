@@ -150,6 +150,21 @@ DISCLAIMERS = [
 ]
 
 
+# ── Pro-trader rule rotation (one-liner reference per PN) ────────
+PRO_QUOTES = [
+    ("Druckenmiller",  "When you've got it right, size up. When you don't, get out."),
+    ("Soros",          "It's not whether you're right or wrong, but how much you make when right."),
+    ("Livermore",      "Markets are never wrong; opinions often are."),
+    ("Marks (Howard)", "You can't predict, but you can prepare."),
+    ("Jhunjhunwala",   "Bull markets begin in pessimism, die in euphoria."),
+    ("Tudor Jones",    "The most important rule of trading: play great defense, not great offense."),
+    ("Dalio",          "He who lives by the crystal ball is destined to eat broken glass."),
+    ("Lynch",          "Know what you own and why you own it."),
+    ("Buffett",        "Be fearful when others are greedy."),
+    ("Niederhoffer",   "Risk is what's left over when you think you've thought of everything."),
+]
+
+
 # ── Daypart anchors (IST, 24h) ──────────────────────────────────
 # Each entry: (hour_start, hour_end, label, [variant headlines])
 # These produce *ambient* channel posts — NOT push notifications.
@@ -406,6 +421,168 @@ def _build_copy(alert: dict, rng: random.Random, *, force_seasonal: bool) -> dic
 def format_pn(alert: dict) -> str:
     """Drop-in replacement for the verbose format_alert when in PN mode."""
     return generate_pn_copy(alert)["full"]
+
+
+# ── Trade-reference card ─────────────────────────────────────────
+
+def _historical_pattern_stats(sym: str, condition_id: str) -> dict | None:
+    """
+    Best-effort lookup of recent same-(ticker, condition) outcomes from
+    analysis/report.json, if it exists. Returns {n, wins, win_rate_pct}
+    or None when the report isn't available or has no matching rows.
+    """
+    import json as _json
+    from pathlib import Path as _P
+    p = _P(__file__).resolve().parent.parent / "analysis" / "report.json"
+    if not p.exists():
+        return None
+    try:
+        rep = _json.loads(p.read_text())
+    except Exception:
+        return None
+    matches = [
+        s for s in rep.get("signals", [])
+        if s.get("ticker") == sym and s.get("condition_id") == condition_id
+        and s.get("outcome") in ("tp1", "sl", "timeout")
+    ]
+    if not matches:
+        return None
+    wins = sum(1 for s in matches if (s.get("pnl_pct") or 0) > 0)
+    return {
+        "n": len(matches),
+        "wins": wins,
+        "win_rate_pct": round(wins / len(matches) * 100, 0),
+    }
+
+
+def _build_trade_card(alert: dict, rng: random.Random) -> str:
+    """
+    Render a concrete TRADE CARD with entry zone, multi-target TPs,
+    R:R per target, position-sizing guidance, trend / volume
+    confirmation, historical pattern win rate, and a rotating
+    pro-trader quote.
+
+    Returns an HTML-formatted string suitable for direct concat
+    into the PN body.
+    """
+    sym = alert.get("symbol", "?")
+    cond = alert.get("condition") or {}
+    cid = cond.get("condition_id", "")
+    pt = alert.get("price_trigger") or {}
+    price = float(pt.get("current_price") or 0)
+    move = float(pt.get("price_change_pct") or 0)
+    long_side = move >= 0  # C1/C4 → long, C2/C3 → short (best-effort)
+
+    tech = alert.get("technical_outlook") or {}
+    atr = float(tech.get("atr") or 0)
+    if atr <= 0 and price > 0:
+        atr = price * 0.01  # 1% fallback
+    e20 = tech.get("ema20"); e50 = tech.get("ema50"); e200 = tech.get("ema200")
+    rsi_v = tech.get("rsi")
+
+    # Entry zone — half-ATR around current
+    if long_side:
+        entry_lo = price - 0.3 * atr
+        entry_hi = price + 0.1 * atr
+        sl       = price - 1.5 * atr
+        tp1      = price + 1.0 * atr
+        tp2      = price + 2.0 * atr
+        tp3      = price + 3.5 * atr
+    else:
+        entry_lo = price - 0.1 * atr
+        entry_hi = price + 0.3 * atr
+        sl       = price + 1.5 * atr
+        tp1      = price - 1.0 * atr
+        tp2      = price - 2.0 * atr
+        tp3      = price - 3.5 * atr
+
+    risk = abs(price - sl)
+    rr = lambda t: round(abs(t - price) / risk, 2) if risk > 0 else 0.0
+    pct = lambda t: ((t - price) / price * 100) if long_side else ((price - t) / price * 100)
+
+    # Trend confirm
+    trend_line = "—"
+    if e20 and e50 and e200:
+        if e20 > e50 > e200 and price > e20:
+            trend_line = "🟢 above EMA20 &gt; 50 &gt; 200 — trend intact"
+        elif e20 < e50 < e200 and price < e20:
+            trend_line = "🔴 below EMA20 &lt; 50 &lt; 200 — downtrend intact"
+        else:
+            trend_line = "🟡 mixed EMAs — trend unclear"
+    rsi_line = f"RSI {rsi_v:.0f}" if isinstance(rsi_v, (int, float)) else "RSI n/a"
+
+    # Volume confirm — use 24h vol from oi_report when present
+    oi = alert.get("oi_report") or {}
+    vol24 = float(oi.get("volume_24h") or 0)
+    vol_line = (f"24h ${vol24/1e6:.1f}M" if vol24 else "vol n/a")
+
+    # Historical reference
+    hist = _historical_pattern_stats(sym, cid)
+    if hist:
+        hist_line = (f"📚 Past {hist['n']}× {sym} {cid} — "
+                      f"{hist['wins']}W/{hist['n']-hist['wins']}L "
+                      f"<b>{hist['win_rate_pct']:.0f}%</b>")
+    else:
+        hist_line = "📚 No prior {sym} {cid} samples in window".format(sym=sym, cid=cid)
+
+    quote = rng.choice(PRO_QUOTES)
+    quote_line = f"<i>“{quote[1]}”</i> — {quote[0]}"
+
+    # Position sizing snippet (1% account risk → contracts/qty depends on price+stop)
+    # We can't know account size; surface the rule + the per-share risk in $.
+    per_share_risk = round(abs(price - sl), 2)
+    pos_line = (f"⚖️ Risk 1% of account · per-share risk <b>${per_share_risk:.2f}</b> "
+                f"({per_share_risk/price*100:.1f}%)")
+
+    side_emoji = "🟢 LONG" if long_side else "🔴 SHORT"
+    card = (
+        f"\n<b>📋 TRADE CARD · {side_emoji}</b>\n"
+        f"Entry zone: <b>${entry_lo:.2f} – ${entry_hi:.2f}</b>\n"
+        f"Stop loss:  <b>${sl:.2f}</b> ({pct(sl):+.2f}%)\n"
+        f"TP1: ${tp1:.2f} ({pct(tp1):+.2f}% · R:R {rr(tp1)})\n"
+        f"TP2: ${tp2:.2f} ({pct(tp2):+.2f}% · R:R {rr(tp2)})\n"
+        f"TP3: ${tp3:.2f} ({pct(tp3):+.2f}% · R:R {rr(tp3)})\n"
+        f"Time horizon: <b>intraday 1–4h</b> · trail TP3 if hit\n"
+        f"{pos_line}\n"
+        f"📊 Trend: {trend_line} · {rsi_line} · vol {vol_line}\n"
+        f"{hist_line}\n"
+        f"{quote_line}"
+    )
+    return card
+
+
+def generate_pn_with_card(alert: dict, *, force_seasonal: bool = False) -> dict:
+    """
+    Same as generate_pn_copy but appends a concrete TRADE CARD with
+    entry/exit levels, R:R, sizing guidance, trend confirmation,
+    historical stats, and a rotating pro-trader quote.
+    """
+    today_iso = date.today().isoformat()
+    cid = (alert.get("condition") or {}).get("condition_id", "")
+    rng = _seed(alert.get("symbol", "?"), today_iso, cid)
+    base = _build_copy(alert, rng, force_seasonal=force_seasonal)
+    card = _build_trade_card(alert, rng)
+    base["trade_card"] = card
+    base["full"] = base["full"] + card
+    return base
+
+
+def generate_pn_variants_with_card(alert: dict, n: int = 3) -> list[dict]:
+    """Variants of generate_pn_variants() that each include a trade card.
+    The trade card is the SAME across variants (data is data) — only the
+    headline / body voice differs."""
+    base_variants = generate_pn_variants(alert, n=n)
+    today_iso = date.today().isoformat()
+    cid = (alert.get("condition") or {}).get("condition_id", "")
+    rng = _seed(alert.get("symbol", "?"), today_iso, cid, "card")
+    card = _build_trade_card(alert, rng)
+    out = []
+    for v in base_variants:
+        v2 = dict(v)
+        v2["trade_card"] = card
+        v2["full"] = v["full"] + card
+        out.append(v2)
+    return out
 
 
 # ── Daypart / activity copy ──────────────────────────────────────
