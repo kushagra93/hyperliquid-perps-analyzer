@@ -150,6 +150,82 @@ DISCLAIMERS = [
 ]
 
 
+# ── Daypart anchors (IST, 24h) ──────────────────────────────────
+# Each entry: (hour_start, hour_end, label, [variant headlines])
+# These produce *ambient* channel posts — NOT push notifications.
+# The 1-PN-per-day budget is reserved for actual signal triggers.
+DAYPARTS = [
+    (7, 9,   "morning_chai", [
+        "☕ Morning. US shut 5h ago. Overnight recap inside.",
+        "🌅 Chai time. US tape last said: {recap}.",
+        "🌞 Fresh day. Yesterday's S&P closed {sp_dir}. Coffee, then charts.",
+    ]),
+    (9, 11,  "office_grind", [
+        "💼 India open. USD/INR steady. US futures {futures_dir}.",
+        "📰 Asian session calm — and the day is long.",
+        "⏰ Don't trade pre-US on impulse. Set alerts. Do work.",
+    ]),
+    (11, 13, "midday_macro", [
+        "🍱 Lunch in 1h. EU opens soon. No FOMO trades, please.",
+        "📊 Halfway to lunch. India range-bound. US 6h away.",
+        "🥗 EU pre-open in 30. Watch DAX for cues.",
+    ]),
+    (13, 15, "post_lunch", [
+        "🍵 Post-lunch slump. So is the chart. Be patient.",
+        "📈 India close approaching. Watch FII data.",
+        "💤 Most retail loses money in this hour. Don't be most retail.",
+    ]),
+    (15, 17, "india_close_us_warmup", [
+        "🔔 India shutting. Now the real game: US.",
+        "☕ Tea break. US futures warming up. Watchlist ready?",
+        "📊 India done. 2 hours till the US bell.",
+    ]),
+    (17, 19, "us_pre_open", [
+        "⚡ US opens in 90m. Set stops, set alarms, set discipline.",
+        "🎬 Showtime in 1h. Indian retail on US perps — buckle in.",
+        "🚦 Pre-market movers: {pre_movers}.",
+    ]),
+    (19, 20, "us_open", [
+        "🇺🇸 US OPEN. First 15min = chaos. Sit. Tight.",
+        "🔔 NYSE bell rang. Volatility on tap.",
+        "🎯 Open is loud. Real signals come after.",
+    ]),
+    (20, 22, "early_session", [
+        "📊 First hour done. Pattern: {pattern}.",
+        "🔍 Now watching: {watch}. Big moves usually post-9:30 ET.",
+        "💼 The boring hour. Best for entries on the right setup.",
+    ]),
+    (22, 24, "dinner_late", [
+        "🍽️ Dinner? Markets eat at all hours.",
+        "🌙 Late shift. Power-hour in 2h.",
+        "👀 Mid-session check: {top_mover}.",
+    ]),
+    (0, 2,   "power_hour_close", [
+        "⏳ Power hour live. Position-mgmt > entries.",
+        "🔔 US closes in 30. Booking or holding?",
+        "🌙 Bell rings soon. Tomorrow's setup is from tonight's tape.",
+    ]),
+    (2, 7,   "sleep", []),   # quiet zone — bot stays off the lock-screen
+]
+
+# Activity / cultural anchors — fire when the calendar matches
+ACTIVITY_HOOKS = {
+    "ipl_evening":     "🏏 IPL on tonight. Trade or watch — pick one.",
+    "weekend":         "🛋️ Markets shut today. Catch up on Varsity / read 10-Ks.",
+    "diwali":          "🪔 Diwali. Stay safe. Tape is thin.",
+    "diwali_eve":      "🪔 Diwali eve. Liquidity will vanish. Adjust size.",
+    "holi":            "🎨 Holi. Markets closed in India. US still open.",
+    "republic_day":    "🇮🇳 Republic Day. Indian markets shut. US tape on.",
+    "independence":    "🇮🇳 Independence Day. India shut. US live.",
+    "fed_today":       "🏛️ FOMC day. Volatility doubles. Size halves.",
+    "cpi_today":       "📊 CPI prints today. Brace for whips.",
+    "nfp_today":       "💼 NFP day. First 30 min = no-trade zone.",
+    "us_holiday":      "🇺🇸 US holiday today. Tape thin. Skip the chase.",
+    "earnings_mega":   "📈 {sym} earnings AMC today. Whole sector will move.",
+    "weekend_prep":    "🛠️ Friday close in 2h. Plan Monday. Don't carry weak setups.",
+}
+
+
 # ── Helpers ──────────────────────────────────────────────────────
 
 def _seed(*parts: Any) -> random.Random:
@@ -330,3 +406,60 @@ def _build_copy(alert: dict, rng: random.Random, *, force_seasonal: bool) -> dic
 def format_pn(alert: dict) -> str:
     """Drop-in replacement for the verbose format_alert when in PN mode."""
     return generate_pn_copy(alert)["full"]
+
+
+# ── Daypart / activity copy ──────────────────────────────────────
+
+def _is_weekend(d: date) -> bool:
+    return d.weekday() >= 5  # Sat=5, Sun=6
+
+
+def _ipl_window(d: date) -> bool:
+    # IPL season is approx late March through end of May in most years
+    return d.month in (3, 4, 5) and d.weekday() in (1, 2, 4, 5, 6)
+
+
+def daypart_copy_for(dt_ist: datetime, *, recap: str = "", sp_dir: str = "—",
+                     futures_dir: str = "flat", pre_movers: str = "—",
+                     pattern: str = "—", watch: str = "—",
+                     top_mover: str = "—") -> dict | None:
+    """
+    Pick the daypart anchor variant for a given IST datetime. Returns
+    a dict {label, headline, body} or None for the sleep window.
+    """
+    h = dt_ist.hour
+    for start, end, label, variants in DAYPARTS:
+        if start <= h < end:
+            if not variants:
+                return None
+            rng = _seed("daypart", dt_ist.date().isoformat(), label)
+            tmpl = rng.choice(variants)
+            headline = tmpl.format(recap=recap, sp_dir=sp_dir, futures_dir=futures_dir,
+                                    pre_movers=pre_movers, pattern=pattern,
+                                    watch=watch, top_mover=top_mover)
+            return {"label": label, "headline": headline}
+    return None
+
+
+def activity_hooks_for(d: date, *, fed_today: bool = False, cpi_today: bool = False,
+                        nfp_today: bool = False, mega_earnings: list[str] | None = None,
+                        us_holiday: bool = False) -> list[str]:
+    """Return a list of activity-anchor lines that apply to date d."""
+    hooks: list[str] = []
+    if _is_weekend(d):
+        hooks.append(ACTIVITY_HOOKS["weekend"])
+    if d.weekday() == 4:  # Friday
+        hooks.append(ACTIVITY_HOOKS["weekend_prep"])
+    if d.month == 1 and d.day == 26:
+        hooks.append(ACTIVITY_HOOKS["republic_day"])
+    if d.month == 8 and d.day == 15:
+        hooks.append(ACTIVITY_HOOKS["independence"])
+    if fed_today: hooks.append(ACTIVITY_HOOKS["fed_today"])
+    if cpi_today: hooks.append(ACTIVITY_HOOKS["cpi_today"])
+    if nfp_today: hooks.append(ACTIVITY_HOOKS["nfp_today"])
+    if us_holiday: hooks.append(ACTIVITY_HOOKS["us_holiday"])
+    if _ipl_window(d):
+        hooks.append(ACTIVITY_HOOKS["ipl_evening"])
+    for sym in (mega_earnings or []):
+        hooks.append(ACTIVITY_HOOKS["earnings_mega"].format(sym=sym))
+    return hooks
