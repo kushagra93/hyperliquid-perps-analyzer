@@ -273,7 +273,17 @@ def send_alert_if_enabled(alert: dict) -> bool:
     if not should:
         logger.info(f"[Telegram/{alert.get('symbol')}] filtered out: {reason}")
         return False
-    text = format_alert(alert)
+    # Allow runtime selection of the simple sentiment-first format
+    # (set TELEGRAM_SIMPLE_FORMAT=true to use it instead of the verbose card)
+    if _env_bool("TELEGRAM_SIMPLE_FORMAT", False):
+        try:
+            from notifiers.pn_copywriter import format_pn_simple
+            text = format_pn_simple(alert)
+        except Exception as e:
+            logger.warning(f"[Telegram] simple format failed, using verbose: {e}")
+            text = format_alert(alert)
+    else:
+        text = format_alert(alert)
     ok = send_message(text)
     if ok:
         logger.info(f"[Telegram/{alert.get('symbol')}] alert sent")

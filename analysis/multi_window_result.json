@@ -1,0 +1,132 @@
+{
+  "as_of": "2026-05-04T10:33:40+00:00",
+  "windows_days": [
+    30,
+    60,
+    90,
+    120,
+    180
+  ],
+  "by_window": {
+    "30": {
+      "baseline": {
+        "n": 29,
+        "wins": 10,
+        "win_rate_pct": 34.5,
+        "total_pnl_pct": 1.78,
+        "avg_pnl_pct": 0.061
+      },
+      "time_gate_only": {
+        "n": 10,
+        "wins": 5,
+        "win_rate_pct": 50.0,
+        "total_pnl_pct": 0.81,
+        "avg_pnl_pct": 0.081
+      },
+      "v3_stack": {
+        "n": 0,
+        "wins": 0,
+        "win_rate_pct": 0.0,
+        "total_pnl_pct": 0.0,
+        "avg_pnl_pct": 0.0
+      },
+      "n_in_window": 29
+    },
+    "60": {
+      "baseline": {
+        "n": 63,
+        "wins": 23,
+        "win_rate_pct": 36.5,
+        "total_pnl_pct": 2.93,
+        "avg_pnl_pct": 0.046
+      },
+      "time_gate_only": {
+        "n": 18,
+        "wins": 12,
+        "win_rate_pct": 66.7,
+        "total_pnl_pct": 10.25,
+        "avg_pnl_pct": 0.569
+      },
+      "v3_stack": {
+        "n": 3,
+        "wins": 2,
+        "win_rate_pct": 66.7,
+        "total_pnl_pct": 0.51,
+        "avg_pnl_pct": 0.17
+      },
+      "n_in_window": 63
+    },
+    "90": {
+      "baseline": {
+        "n": 63,
+        "wins": 23,
+        "win_rate_pct": 36.5,
+        "total_pnl_pct": 2.93,
+        "avg_pnl_pct": 0.046
+      },
+      "time_gate_only": {
+        "n": 18,
+        "wins": 12,
+        "win_rate_pct": 66.7,
+        "total_pnl_pct": 10.25,
+        "avg_pnl_pct": 0.569
+      },
+      "v3_stack": {
+        "n": 3,
+        "wins": 2,
+        "win_rate_pct": 66.7,
+        "total_pnl_pct": 0.51,
+        "avg_pnl_pct": 0.17
+      },
+      "n_in_window": 63
+    },
+    "120": {
+      "baseline": {
+        "n": 63,
+        "wins": 23,
+        "win_rate_pct": 36.5,
+        "total_pnl_pct": 2.93,
+        "avg_pnl_pct": 0.046
+      },
+      "time_gate_only": {
+        "n": 18,
+        "wins": 12,
+        "win_rate_pct": 66.7,
+        "total_pnl_pct": 10.25,
+        "avg_pnl_pct": 0.569
+      },
+      "v3_stack": {
+        "n": 3,
+        "wins": 2,
+        "win_rate_pct": 66.7,
+        "total_pnl_pct": 0.51,
+        "avg_pnl_pct": 0.17
+      },
+      "n_in_window": 63
+    },
+    "180": {
+      "baseline": {
+        "n": 63,
+        "wins": 23,
+        "win_rate_pct": 36.5,
+        "total_pnl_pct": 2.93,
+        "avg_pnl_pct": 0.046
+      },
+      "time_gate_only": {
+        "n": 18,
+        "wins": 12,
+        "win_rate_pct": 66.7,
+        "total_pnl_pct": 10.25,
+        "avg_pnl_pct": 0.569
+      },
+      "v3_stack": {
+        "n": 3,
+        "wins": 2,
+        "win_rate_pct": 66.7,
+        "total_pnl_pct": 0.51,
+        "avg_pnl_pct": 0.17
+      },
+      "n_in_window": 63
+    }
+  }
+}
