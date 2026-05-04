@@ -214,8 +214,10 @@ def main():
                 print(f"  [warn] jsonl log failed: {e}", flush=True)
 
             sent = send_alert_if_enabled(alert)
+            # Stamp cooldown regardless of whether Telegram pushed —
+            # otherwise off-hours fires spam JSONL every tick.
+            last_alert_ts[sym] = time.time()
             if sent:
-                last_alert_ts[sym] = time.time()
                 print(f"[t{tick_n}] 🔔 {sym} {move_pct:+.2f}% → sent "
                       f"({verdict_dict['condition_id']} {verdict_dict['confidence']})",
                       flush=True)
