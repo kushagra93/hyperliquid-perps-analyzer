@@ -140,7 +140,11 @@ def _alert_passes_pn_filter(alert: dict) -> tuple[bool, str]:
 
 
 def _should_send(alert: dict) -> tuple[bool, str]:
-    """Filter logic. Returns (should_send, reason_if_not)."""
+    """Filter logic. Returns (should_send, reason_if_not).
+    Note: this only gates the Telegram push. The alert is still
+    logged to eval/alerts.jsonl regardless, so off-hours fires
+    are captured for the off-hours analyzer.
+    """
     condition = alert.get("condition") or {}
     causality = alert.get("causality") or {}
     score = int(alert.get("score") or 0)
@@ -162,6 +166,21 @@ def _should_send(alert: dict) -> tuple[bool, str]:
         ok, reason = _alert_passes_pn_filter(alert)
         if not ok:
             return False, f"PN filter: {reason}"
+
+    # Time gate (Option 3): only push during US-cash IST window
+    # when TELEGRAM_TIME_GATE=true. Configurable via TELEGRAM_TIME_GATE_HOURS
+    # (default "19-22"). Off-hours fires still log to JSONL.
+    if _env_bool("TELEGRAM_TIME_GATE", False):
+        from datetime import datetime, timezone, timedelta
+        IST = timezone(timedelta(hours=5, minutes=30))
+        gate_str = os.environ.get("TELEGRAM_TIME_GATE_HOURS", "19-22")
+        try:
+            lo, hi = (int(x) for x in gate_str.split("-"))
+        except Exception:
+            lo, hi = 19, 22
+        h = datetime.now(IST).hour
+        if not (lo <= h <= hi):
+            return False, f"time gate {lo:02d}-{hi:02d} IST (now {h:02d})"
 
     return True, ""
 

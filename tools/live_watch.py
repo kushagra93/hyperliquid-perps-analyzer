@@ -29,9 +29,11 @@ production alerting use main.py with the full key set.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 import time
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -196,11 +198,30 @@ def main():
                 "technical_outlook": get_technical_outlook(coin, price),
             }
 
-            if send_alert_if_enabled(alert):
+            # Always log to JSONL (regardless of whether Telegram pushed)
+            # — this is the source of truth for the off-hours analyzer.
+            try:
+                jsonl_path = Path(os.environ.get(
+                    "ALERTS_JSONL_PATH", "eval/alerts.jsonl"))
+                jsonl_path.parent.mkdir(parents=True, exist_ok=True)
+                with jsonl_path.open("a") as f:
+                    f.write(json.dumps({
+                        **alert,
+                        "fired_at_iso": datetime.now(timezone.utc).isoformat(),
+                        "fired_at_ist_hour": datetime.now(timezone(timedelta(hours=5, minutes=30))).hour,
+                    }, default=str) + "\n")
+            except Exception as e:
+                print(f"  [warn] jsonl log failed: {e}", flush=True)
+
+            sent = send_alert_if_enabled(alert)
+            if sent:
                 last_alert_ts[sym] = time.time()
                 print(f"[t{tick_n}] 🔔 {sym} {move_pct:+.2f}% → sent "
                       f"({verdict_dict['condition_id']} {verdict_dict['confidence']})",
                       flush=True)
+            else:
+                print(f"[t{tick_n}] 🔕 {sym} {move_pct:+.2f}% → logged-only "
+                      f"({verdict_dict['condition_id']})", flush=True)
 
             prev_oi[sym] = float(ctx.get("openInterest") or 0)
 
