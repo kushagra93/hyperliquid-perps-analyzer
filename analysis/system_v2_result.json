@@ -1,0 +1,136 @@
+{
+  "as_of": "2026-05-04T10:05:05+00:00",
+  "scan_days": 60,
+  "fixes_applied": [
+    "score_v2 = mean of historical WR per (hour, size, ticker, cluster) bucket",
+    "time + size filters (19-22 IST, |move| \u2264 3%)",
+    "score_v2 \u2265 50 floor",
+    "event blackout \u00b14h around US macro dates",
+    "correlation cluster cap (1 active per cluster within 1h)",
+    "vol regime = medium \u2192 size \u00d7 0.6"
+  ],
+  "regime_detected": "medium",
+  "size_multiplier": 0.6,
+  "lookup_tables": {
+    "hour_wr": {
+      "0": 50.0,
+      "1": 9.1,
+      "2": 50.0,
+      "3": 0.0,
+      "6": 100.0,
+      "11": 50.0,
+      "12": 50.0,
+      "13": 50.0,
+      "15": 50.0,
+      "16": 0.0,
+      "18": 66.7,
+      "19": 50.0,
+      "20": 50.0,
+      "21": 50.0
+    },
+    "size_wr": {
+      "3-5": 21.2,
+      "5-8": 0.0,
+      "2-3": 11.1,
+      "8+": 50.0,
+      "1-2": 53.3
+    },
+    "ticker_wr": {
+      "AAPL": 33.3,
+      "AMD": 0.0,
+      "AMZN": 16.7,
+      "COIN": 25.0,
+      "GOLD": 50.0,
+      "GOOGL": 0.0,
+      "HOOD": 0.0,
+      "INTC": 33.3,
+      "META": 50.0,
+      "MSFT": 0.0,
+      "MSTR": 50.0,
+      "NVDA": 50.0,
+      "PLTR": 66.7,
+      "SP500": 50.0,
+      "TSLA": 50.0
+    },
+    "cluster_wr": {
+      "commodity": 50.0,
+      "crypto-proxy": 12.5,
+      "high-beta": 40.0,
+      "index": 50.0,
+      "mega-tech": 10.5,
+      "semi": 20.0
+    }
+  },
+  "score_v2_wr_buckets": {
+    "0": 0.0,
+    "10": 0.0,
+    "20": 25.0,
+    "30": 23.1,
+    "40": 100.0,
+    "50": 40.0,
+    "60": 100.0
+  },
+  "v1_baseline": {
+    "n": 64,
+    "wins": 16,
+    "win_rate_pct": 25.0,
+    "total_pnl_pct": -9.61,
+    "avg_pnl_pct": -0.15
+  },
+  "v2_after_filters_only": {
+    "n": 3,
+    "wins": 2,
+    "win_rate_pct": 66.7,
+    "total_pnl_pct": 0.37,
+    "avg_pnl_pct": 0.123
+  },
+  "v2_after_cluster_dedupe": {
+    "n": 3,
+    "wins": 2,
+    "win_rate_pct": 66.7,
+    "total_pnl_pct": 0.37,
+    "avg_pnl_pct": 0.123
+  },
+  "v2_after_vol_sizing": {
+    "n": 3,
+    "wins": 2,
+    "win_rate_pct": 66.7,
+    "total_pnl_pct": 0.22,
+    "avg_pnl_pct": 0.074
+  },
+  "kept_signals": [
+    {
+      "when_ist": "2026-03-19T19:15+05:30",
+      "ticker": "GOLD",
+      "condition_id": "C1",
+      "move_pct": 1.22,
+      "score": 39,
+      "score_v2": 51,
+      "outcome": "tp1",
+      "pnl_pct": 0.3,
+      "sized_pnl_pct": 0.18
+    },
+    {
+      "when_ist": "2026-03-23T21:15+05:30",
+      "ticker": "GOLD",
+      "condition_id": "C2",
+      "move_pct": -1.07,
+      "score": 38,
+      "score_v2": 51,
+      "outcome": "sl",
+      "pnl_pct": -0.24,
+      "sized_pnl_pct": -0.144
+    },
+    {
+      "when_ist": "2026-03-27T20:15+05:30",
+      "ticker": "GOLD",
+      "condition_id": "C1",
+      "move_pct": 1.04,
+      "score": 38,
+      "score_v2": 51,
+      "outcome": "tp1",
+      "pnl_pct": 0.31,
+      "sized_pnl_pct": 0.186
+    }
+  ]
+}

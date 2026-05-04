@@ -1,0 +1,60 @@
+{
+  "as_of": "2026-05-04T10:08:13+00:00",
+  "regime_multi_asset": "high",
+  "friction_model": {
+    "taker_fee_pct_each_side": 0.035,
+    "slippage_bps_each_side": 5,
+    "funding_pct_per_bar": 0.001
+  },
+  "ablation": {
+    "baseline (no filter)": {
+      "n": 64,
+      "win_rate_pct": 25.0,
+      "total_pnl_pct": -9.61
+    },
+    "time": {
+      "n": 18,
+      "win_rate_pct": 50.0,
+      "total_pnl_pct": 0.87
+    },
+    "size": {
+      "n": 24,
+      "win_rate_pct": 37.5,
+      "total_pnl_pct": -0.8
+    },
+    "score": {
+      "n": 30,
+      "win_rate_pct": 16.7,
+      "total_pnl_pct": -9.42
+    },
+    "blackout": {
+      "n": 63,
+      "win_rate_pct": 23.8,
+      "total_pnl_pct": -10.08
+    },
+    "cluster (alone)": {
+      "n": 40,
+      "win_rate_pct": 37.5,
+      "total_pnl_pct": -1.62
+    }
+  },
+  "bootstrap_ci_baseline": {
+    "lo": 14.1,
+    "hi": 35.9
+  },
+  "v3_stack_after_all_filters_and_dedupe": {
+    "n": 1,
+    "win_rate_pct": 100.0,
+    "gross_pnl_pct": 0.3,
+    "net_pnl_pct_after_frictions": 0.13,
+    "win_rate_ci_95": {
+      "lo": 100.0,
+      "hi": 100.0
+    }
+  },
+  "kill_switch_sim": {
+    "n_survived": 1,
+    "n_blocked": 0
+  },
+  "verdict": "v3 reports OUT-OF-SAMPLE numbers with realistic frictions and a 95% bootstrap CI. With current sample size the CI is wide; do not act on point estimates."
+}
