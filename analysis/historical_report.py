@@ -63,16 +63,25 @@ def _candles(coin: str, interval: str, lb_ms: int) -> list[dict]:
         "coin": coin, "interval": interval,
         "startTime": now - lb_ms, "endTime": now,
     }}
-    r = subprocess.run(
-        ["curl", "-s", "-X", "POST", HL,
-         "-H", "Content-Type: application/json",
-         "-d", json.dumps(payload)],
-        capture_output=True, text=True, timeout=20,
-    )
-    try:
-        return json.loads(r.stdout) or []
-    except Exception:
-        return []
+    # Retry once with a longer timeout — HL can be slow when sharing
+    # the connection pool with a live watcher.
+    for attempt in (1, 2):
+        try:
+            r = subprocess.run(
+                ["curl", "-s", "-X", "POST", HL,
+                 "-H", "Content-Type: application/json",
+                 "-d", json.dumps(payload)],
+                capture_output=True, text=True,
+                timeout=45 if attempt == 1 else 90,
+            )
+            return json.loads(r.stdout) or []
+        except subprocess.TimeoutExpired:
+            if attempt == 2:
+                return []
+            time.sleep(2)
+        except Exception:
+            return []
+    return []
 
 
 def _atr(candles: list, n: int = 14) -> float:
