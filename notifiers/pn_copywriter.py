@@ -551,6 +551,90 @@ def _build_trade_card(alert: dict, rng: random.Random) -> str:
     return card
 
 
+# ── India-trader-friendly simple format ─────────────────────────
+# Goal: anyone who has used Zerodha / Groww / INDmoney can read it
+# in 5 seconds. No "ATR", "OI", "C1/C2", "primary_driver". Plain
+# English BUY/SELL/WAIT + the three numbers that matter.
+
+def format_pn_simple(alert: dict) -> str:
+    """
+    Sentiment-first PN. No INR conversion, no jargon. Each level
+    explains WHY it's there in one line.
+    """
+    sym = alert.get("symbol", "?")
+    full = alert.get("full_name", sym)
+    pt = alert.get("price_trigger") or {}
+    cond = alert.get("condition") or {}
+    cid = cond.get("condition_id", "")
+    price = float(pt.get("current_price") or 0)
+    move = float(pt.get("price_change_pct") or 0)
+    stars = int(alert.get("stars") or 0)
+
+    tech = alert.get("technical_outlook") or {}
+    atr = float(tech.get("atr") or 0) or price * 0.01
+
+    long_side = cid in ("C1", "C4") or (cid == "" and move > 0)
+
+    # Sentiment-first headline (bull/bear/cautious)
+    if cid == "C1":
+        sentiment = "🐂 BULLISH"
+        why = (f"{full} jumped +{abs(move):.2f}% with FRESH BUYERS stepping in "
+               f"(not short-covering). Real conviction.")
+        action = "BUY"
+    elif cid == "C2":
+        sentiment = "🐻 BEARISH"
+        why = (f"{full} fell {move:.2f}% with NEW SHORTS entering. "
+               f"Sellers in control.")
+        action = "SHORT"
+    elif cid == "C4":
+        sentiment = "⚠️ WEAK BOUNCE"
+        why = (f"{full} up +{abs(move):.2f}%, but it's just shorts covering — "
+               f"NO fresh buyers. Treat as fade, not chase.")
+        action = "WAIT"
+    elif cid == "C3":
+        sentiment = "⚠️ WEAK FALL"
+        why = (f"{full} down {move:.2f}%, longs just exiting. "
+               f"No real selling pressure — bounce likely.")
+        action = "WAIT"
+    else:
+        sentiment = "🐂 BULLISH" if long_side else "🐻 BEARISH"
+        why = f"{full} moved {move:+.2f}% with conviction."
+        action = "BUY" if long_side else "SHORT"
+
+    if action == "WAIT":
+        # Watch-only signals — much shorter card
+        return (
+            f"<b>{sentiment} — {sym}</b>\n"
+            f"Action: <b>WAIT</b> · don't chase\n\n"
+            f"{why}\n\n"
+            f"<i>Confidence {'⭐' * stars}{'☆' * (5 - stars)}</i>"
+        )
+
+    # Levels (long vs short)
+    if action == "BUY":
+        entry_lo = price - 0.3 * atr; entry_hi = price + 0.1 * atr
+        stop = price - 1.5 * atr
+        target = price + 2.0 * atr
+        stop_why = "below recent low — if price drops here, the move has failed"
+        target_why = "size of typical move after this kind of setup"
+    else:
+        entry_lo = price - 0.1 * atr; entry_hi = price + 0.3 * atr
+        stop = price + 1.5 * atr
+        target = price - 2.0 * atr
+        stop_why = "above recent high — if price climbs here, the move has failed"
+        target_why = "size of typical drop after this kind of setup"
+
+    return (
+        f"<b>{sentiment} — {sym}</b>\n"
+        f"Action: <b>{action} ${entry_lo:.2f} – ${entry_hi:.2f}</b>\n\n"
+        f"{why}\n\n"
+        f"<b>Stop:</b> ${stop:.2f} — {stop_why}\n"
+        f"<b>Target:</b> ${target:.2f} — {target_why}\n\n"
+        f"<i>Close before 1:30 AM IST · "
+        f"{'⭐' * stars}{'☆' * (5 - stars)}</i>"
+    )
+
+
 def generate_pn_with_card(alert: dict, *, force_seasonal: bool = False) -> dict:
     """
     Same as generate_pn_copy but appends a concrete TRADE CARD with
