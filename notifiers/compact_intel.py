@@ -142,61 +142,65 @@ def fetch_intel_signals(symbol: str, hl_asset: str | None = None,
 # ── Body composer ───────────────────────────────────────────────
 
 def _facts(inp: IntelInputs) -> list[str]:
-    """Order by how surprising each fact is. Each must be < 30 chars."""
+    """
+    Plain-English fact phrases. Order by how surprising each is
+    vs the per-ticker baseline. Each ≤ 30 chars.
+    """
     facts: list[str] = []
 
-    # Volume spike — the loudest signal
+    # Volume — translated to "Nx normal"
     if inp.volume_zscore is not None and inp.volume_zscore >= 2.5:
-        facts.append(f"Vol {inp.volume_zscore:.1f}σ")
+        facts.append(f"vol {inp.volume_zscore:.0f}× normal")
     elif inp.volume_zscore is not None and inp.volume_zscore >= 1.5:
-        facts.append(f"Vol +{inp.volume_zscore:.1f}σ")
+        facts.append("heavy volume")
 
-    # OI / funding (whichever is cleaner)
-    if inp.oi_change_pct is not None and abs(inp.oi_change_pct) >= 1.5:
-        sign = "+" if inp.oi_change_pct > 0 else ""
-        facts.append(f"OI {sign}{inp.oi_change_pct:.1f}%")
-    elif inp.funding != 0:
-        bps = inp.funding * 10000
-        if abs(bps) >= 0.5:
-            facts.append(f"Fund {bps:+.1f}bp")
+    # OI / funding direction in human terms
+    if inp.oi_change_pct is not None and inp.oi_change_pct >= 1.5:
+        facts.append("fresh longs")
+    elif inp.oi_change_pct is not None and inp.oi_change_pct <= -1.5:
+        facts.append("longs leaving")
+    elif inp.funding > 0.0001:
+        facts.append("longs paying")
+    elif inp.funding < -0.0001:
+        facts.append("shorts paying")
 
-    # ATR expansion
+    # ATR expansion / coiling
     if inp.atr_ratio is not None:
         if inp.atr_ratio >= 2.0:
-            facts.append(f"ATR {inp.atr_ratio:.1f}×")
+            facts.append("big swings")
         elif inp.atr_ratio <= 0.5:
-            facts.append("Coiling")
+            facts.append("tight range")
 
-    # VWAP context
+    # VWAP-relative
     if inp.near_vwap == "above":
-        facts.append("Above VWAP")
+        facts.append("above day avg")
     elif inp.near_vwap == "below":
-        facts.append("Below VWAP")
+        facts.append("below day avg")
 
-    # Range squeeze
+    # Range compression
     if inp.range_compression:
-        facts.append("Squeeze")
+        facts.append("pre-breakout")
 
-    # Cluster narrative
+    # Cluster context
     if inp.cluster_tilt == "broad_off":
-        facts.append("Tape wide")
+        facts.append("market-wide sell")
     elif inp.cluster_tilt == "broad_on":
-        facts.append("Tape wide")
+        facts.append("market-wide bid")
     elif inp.cluster_tilt == "idio":
-        facts.append("Idio")
+        facts.append("single-name story")
 
     return facts
 
 
 def _action(inp: IntelInputs) -> str:
-    """Single short verb tied to setup."""
+    """Plain-English action phrase."""
     cid = (inp.condition_id or "").upper()
-    if cid == "C1":  return "Buy"
-    if cid == "C2":  return "Short"
+    if cid == "C1":  return "Buy zone"
+    if cid == "C2":  return "Sell zone"
     if cid == "C3":  return "Wait"
-    if cid == "C4":  return "Fade"
-    if inp.move_pct > 0.5:  return "Buy"
-    if inp.move_pct < -0.5: return "Short"
+    if cid == "C4":  return "Don't chase"
+    if inp.move_pct > 0.5:  return "Buy zone"
+    if inp.move_pct < -0.5: return "Sell zone"
     return "Wait"
 
 

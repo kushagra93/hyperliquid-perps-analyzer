@@ -86,9 +86,19 @@ def _meta_and_ctxs() -> tuple[dict, list]:
 
 # ── Compute mover row per ticker ────────────────────────────────
 
+FOCUS_CLUSTERS = {
+    "indices_commodities": {"index", "commodity", "fx"},
+    "indices":             {"index"},
+    "commodities":         {"commodity"},
+    "macro":               {"index", "commodity", "fx"},
+    "all":                 None,  # no filter
+}
+
+
 def compute_movers(window_min: int = 30,
                     universe_mode: str = "all",
-                    min_volume_24h: float = 100_000) -> list[dict]:
+                    min_volume_24h: float = 100_000,
+                    focus: str | None = None) -> list[dict]:
     """
     Scan tickers and compute the per-ticker move over the last
     `window_min` minutes.
@@ -128,7 +138,11 @@ def compute_movers(window_min: int = 30,
                 continue
             candidates.append((sym, {"hl_asset": coin, "ctx": ctxs[idx] if idx < len(ctxs) else {}}))
 
+    # Apply focus-cluster filter
+    cluster_whitelist = FOCUS_CLUSTERS.get(focus or "all")
+
     rows: list[dict] = []
+    fetch_window_ms = 25 * 3600 * 1000  # 25h cushion → ensures 24h ref
     for sym, info in candidates:
         coin = info["hl_asset"]
         ctx = info["ctx"]
@@ -137,26 +151,65 @@ def compute_movers(window_min: int = 30,
         oi = float(ctx.get("openInterest") or 0)
         vol24 = float(ctx.get("dayNtlVlm") or 0)
 
-        cs = _candles(coin, since_ms, now_ms)
+        cluster = TICKER_CLUSTER.get(sym, "other")
+        if cluster_whitelist is not None and cluster not in cluster_whitelist:
+            continue
+
+        cs = _candles(coin, now_ms - fetch_window_ms, now_ms)
         if not cs or cur_price <= 0:
             continue
-        target_ms = now_ms - window_min * 60 * 1000
-        ref_c = min(cs, key=lambda c: abs(int(c["t"]) - target_ms))
-        ref_price = float(ref_c["c"])
-        if ref_price <= 0:
-            continue
-        move_pct = (cur_price - ref_price) / ref_price * 100
+
+        # Move over short window
+        target_ms_short = now_ms - window_min * 60 * 1000
+        ref_short = min(cs, key=lambda c: abs(int(c["t"]) - target_ms_short))
+        rp_short = float(ref_short["c"])
+        move_short = ((cur_price - rp_short) / rp_short * 100) if rp_short > 0 else 0.0
+
+        # Move over 24h
+        target_ms_day = now_ms - 24 * 3600 * 1000
+        ref_day = min(cs, key=lambda c: abs(int(c["t"]) - target_ms_day))
+        rp_day = float(ref_day["c"])
+        move_day = ((cur_price - rp_day) / rp_day * 100) if rp_day > 0 else 0.0
 
         rows.append({
             "symbol": sym,
-            "cluster": TICKER_CLUSTER.get(sym, "other"),
+            "cluster": cluster,
             "price": cur_price,
-            "move_pct": round(move_pct, 2),
+            "move_pct": round(move_short, 2),  # short window = "primary" sort key
+            "move_24h_pct": round(move_day, 2),
             "oi": oi,
             "funding": funding,
             "vol24": vol24,
         })
     return rows
+
+
+# ── Reasoning: combine 24h + short-window directions ───────────
+
+def _reason_pair(move_24h: float, move_short: float) -> str:
+    """
+    Human-readable narrative comparing 24h trend with the recent
+    short-window move. Returns ≤ 35 chars so it fits the line.
+    """
+    same_dir = (move_24h * move_short) > 0
+    big_24h = abs(move_24h) >= 1.0
+    big_short = abs(move_short) >= 0.5
+
+    if not big_24h and not big_short:
+        return "tape quiet"
+    if same_dir and big_24h and big_short:
+        if move_24h > 0:
+            return "trend up, momentum holds"
+        return "trend down, momentum holds"
+    if same_dir and big_24h:
+        return "day trend extending"
+    if same_dir and big_short:
+        return "short burst, no day trend yet"
+    if not same_dir and big_24h and big_short:
+        if move_short > 0:
+            return "bounce vs 24h downtrend"
+        return "pullback vs 24h uptrend"
+    return "mixed signal"
 
 
 def classify_condition(move_pct: float, funding: float) -> str:
@@ -264,48 +317,81 @@ def _fetch_headlines(symbol: str, days: int = 1) -> list[str]:
 # ── Render ──────────────────────────────────────────────────────
 
 def render_digest(rows: list[dict], top_n: int = 5,
-                   include_headlines: bool = False) -> str:
-    rows_sorted = sorted(rows, key=lambda r: -abs(r["move_pct"]))
+                   include_headlines: bool = False,
+                   focus_label: str | None = None) -> str:
+    """
+    Per-ticker block layout:
+      📊 GOLD  ·  24h +1.5% · 30m +0.6%
+      Trend up, momentum holds. Heavy volume, fresh longs.
+    """
+    # Sort by combined size (24h + short, weighted)
+    def _score(r):
+        return abs(r.get("move_24h_pct", 0)) + abs(r["move_pct"])
+    rows_sorted = sorted(rows, key=_score, reverse=True)
     top = rows_sorted[:top_n]
 
     heatmap = cluster_heatmap(rows)
     narrative = infer_narrative(rows, heatmap)
     now_ist = datetime.now(IST).strftime("%H:%M IST")
 
+    title_focus = f" · {focus_label}" if focus_label else ""
     lines = [
-        f"<b>📊 Top movers · {now_ist}</b>",
+        f"<b>📊 Top movers{title_focus} · {now_ist}</b>",
         f"<i>{narrative}</i>",
         "",
     ]
-    for r in top:
-        cond = classify_condition(r["move_pct"], r["funding"])
-        emoji, tag = SENTIMENT_TAG[cond]
-        sign = "+" if r["move_pct"] > 0 else ""
-        lines.append(
-            f"{emoji} <b>{r['symbol']:5}</b> {sign}{r['move_pct']:.1f}% "
-            f"· {tag} ({cond})"
-        )
 
-    # Cluster breakdown (1-2 lines max)
+    # Per-ticker readable block
+    from notifiers.compact_intel import (
+        IntelInputs, fetch_intel_signals, _facts as _intel_facts,
+    )
+    for r in top:
+        sym = r["symbol"]
+        m_d = r.get("move_24h_pct", 0)
+        m_s = r["move_pct"]
+        emoji = "🟢" if m_s > 0.3 else "🔴" if m_s < -0.3 else "⚪"
+        line1 = (f"{emoji} <b>{sym}</b>  ·  "
+                 f"24h <b>{m_d:+.1f}%</b>  ·  30m <b>{m_s:+.1f}%</b>")
+
+        # Reasoning: pair direction + intel facts (≤ 90 chars total)
+        reason = _reason_pair(m_d, m_s)
+        intel = fetch_intel_signals(sym, f"xyz:{sym}")
+        inp = IntelInputs(
+            symbol=sym, move_pct=m_s, funding=r["funding"],
+            volume_zscore=intel.get("volume_zscore"),
+            atr_ratio=intel.get("atr_ratio"),
+            near_vwap=intel.get("near_vwap"),
+            range_compression=intel.get("range_compression", False),
+        )
+        intel_facts = _intel_facts(inp)[:2]
+        why = reason
+        if intel_facts:
+            why = f"{reason.capitalize()}. {', '.join(intel_facts)}."
+        else:
+            why = f"{reason.capitalize()}."
+        if len(why) > 110:
+            why = why[:109] + "…"
+        lines.append(line1)
+        lines.append(f"  <i>{why}</i>")
+        lines.append("")
+
+    # Cluster breakdown
     cluster_line = " · ".join(
         f"{c} {v['avg_move']:+.1f}%"
         for c, v in sorted(heatmap.items(), key=lambda kv: kv[1]["avg_move"])
         if v["n"] >= 2
     )
     if cluster_line:
-        lines.append("")
-        lines.append(f"<b>Clusters:</b> {cluster_line}")
+        lines.append(f"<b>Clusters (30m avg):</b> {cluster_line}")
 
-    if include_headlines:
-        # Pull headlines only for the single biggest mover (rate-limit polite)
-        big = top[0] if top else None
-        if big:
-            hl = _fetch_headlines(big["symbol"])
-            if hl:
-                lines.append("")
-                lines.append(f"<b>{big['symbol']} news (last 24h):</b>")
-                for h in hl[:2]:
-                    lines.append(f"  • {h[:90]}")
+    if include_headlines and top:
+        big = top[0]
+        hl = _fetch_headlines(big["symbol"])
+        if hl:
+            lines.append("")
+            lines.append(f"<b>{big['symbol']} news (last 24h):</b>")
+            for h in hl[:2]:
+                lines.append(f"  • {h[:90]}")
 
     return "\n".join(lines)
 
@@ -403,12 +489,17 @@ def main():
     p.add_argument("--interval-min", type=int, default=30)
     p.add_argument("--spotlight", action="store_true",
                    help="render a single compact PN for the biggest mover (instead of the full digest)")
+    p.add_argument("--focus", default="indices_commodities",
+                   choices=list(FOCUS_CLUSTERS.keys()),
+                   help="restrict universe to cluster group "
+                         "(default: indices_commodities)")
     args = p.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s")
 
     def _once(send_tg: bool):
-        rows = compute_movers(args.window_min, args.universe, args.min_volume)
+        rows = compute_movers(args.window_min, args.universe, args.min_volume,
+                                focus=args.focus)
         if not rows:
             print("No HL data — skipping.")
             return
@@ -416,7 +507,8 @@ def main():
             text = render_spotlight(rows)
         else:
             text = render_digest(rows, top_n=args.top,
-                                  include_headlines=args.headlines)
+                                  include_headlines=args.headlines,
+                                  focus_label=args.focus.replace("_", "+"))
         print(text)
         if send_tg and text:
             ok = _send(text)
