@@ -86,19 +86,52 @@ def _meta_and_ctxs() -> tuple[dict, list]:
 
 # ── Compute mover row per ticker ────────────────────────────────
 
-def compute_movers(window_min: int = 30) -> list[dict]:
+def compute_movers(window_min: int = 30,
+                    universe_mode: str = "all",
+                    min_volume_24h: float = 100_000) -> list[dict]:
+    """
+    Scan tickers and compute the per-ticker move over the last
+    `window_min` minutes.
+
+    universe_mode:
+      "all"        — every non-delisted xyz: ticker on Hyperliquid
+                      (70+ names). Tickers below `min_volume_24h`
+                      are filtered to avoid illiquid noise.
+      "configured" — only the 15 in config/tickers.py.
+    """
     now_ms = int(time.time() * 1000)
-    since_ms = now_ms - (window_min + 30) * 60 * 1000  # cushion for boundaries
+    since_ms = now_ms - (window_min + 30) * 60 * 1000
 
     meta, ctxs = _meta_and_ctxs()
     universe = (meta or {}).get("universe", [])
-    name_to_idx = {a.get("name"): i for i, a in enumerate(universe)}
+
+    # Build candidate ticker list
+    if universe_mode == "all":
+        candidates: list[tuple[str, dict]] = []
+        for i, a in enumerate(universe):
+            if a.get("isDelisted"):
+                continue
+            name = a.get("name", "")
+            ctx = ctxs[i] if i < len(ctxs) else {}
+            vol = float(ctx.get("dayNtlVlm") or 0)
+            if vol < min_volume_24h:
+                continue
+            sym = name.split(":")[-1]  # "xyz:NVDA" → "NVDA"
+            candidates.append((sym, {"hl_asset": name, "ctx": ctx}))
+    else:
+        name_to_idx = {a.get("name"): i for i, a in enumerate(universe)}
+        candidates = []
+        for sym, cfg in TICKERS.items():
+            coin = cfg["hl_asset"]
+            idx = name_to_idx.get(coin)
+            if idx is None:
+                continue
+            candidates.append((sym, {"hl_asset": coin, "ctx": ctxs[idx] if idx < len(ctxs) else {}}))
 
     rows: list[dict] = []
-    for sym, cfg in TICKERS.items():
-        coin = cfg["hl_asset"]
-        idx = name_to_idx.get(coin)
-        ctx = ctxs[idx] if idx is not None and idx < len(ctxs) else {}
+    for sym, info in candidates:
+        coin = info["hl_asset"]
+        ctx = info["ctx"]
         cur_price = float(ctx.get("markPx") or 0)
         funding = float(ctx.get("funding") or 0)
         oi = float(ctx.get("openInterest") or 0)
@@ -107,8 +140,6 @@ def compute_movers(window_min: int = 30) -> list[dict]:
         cs = _candles(coin, since_ms, now_ms)
         if not cs or cur_price <= 0:
             continue
-
-        # Closest candle to (now - window_min)
         target_ms = now_ms - window_min * 60 * 1000
         ref_c = min(cs, key=lambda c: abs(int(c["t"]) - target_ms))
         ref_price = float(ref_c["c"])
@@ -325,6 +356,11 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--window-min", type=int, default=30)
     p.add_argument("--top", type=int, default=5)
+    p.add_argument("--universe", default="all", choices=("all", "configured"),
+                   help="all = every non-delisted xyz: ticker (70+); "
+                         "configured = only the 15 in config/tickers.py")
+    p.add_argument("--min-volume", type=float, default=100_000,
+                   help="filter illiquid names by 24h notional volume")
     p.add_argument("--headlines", action="store_true",
                    help="append Finnhub headlines for biggest mover (needs key)")
     p.add_argument("--telegram", action="store_true")
@@ -333,10 +369,29 @@ def main():
     args = p.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s")
+
+    def _once(send_tg: bool):
+        rows = compute_movers(args.window_min, args.universe, args.min_volume)
+        if not rows:
+            print("No HL data — skipping.")
+            return
+        digest = render_digest(rows, top_n=args.top,
+                                include_headlines=args.headlines)
+        print(digest)
+        if send_tg:
+            ok = _send(digest)
+            print(f"\nTelegram: {'sent' if ok else 'FAILED'}")
+
     if args.daemon:
-        run_daemon(args.window_min, args.top, args.headlines, args.interval_min)
+        print(f"Top-movers daemon · every {args.interval_min}m · window {args.window_min}m · universe={args.universe}")
+        while True:
+            try:
+                _once(send_tg=True)
+            except Exception as e:
+                logger.warning(f"[movers] tick failed: {e}")
+            time.sleep(args.interval_min * 60)
     else:
-        run_once(args.window_min, args.top, args.headlines, args.telegram)
+        _once(args.telegram)
 
 
 if __name__ == "__main__":
