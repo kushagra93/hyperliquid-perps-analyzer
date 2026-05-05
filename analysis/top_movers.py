@@ -412,13 +412,15 @@ def render_digest(rows: list[dict], top_n: int = 5,
         from events.news_search import reason_for_ticker
     except Exception:
         reason_for_ticker = None  # type: ignore
+    from analysis.system_v2 import ticker_display
 
     for r in top:
         sym = r["symbol"]
+        display = ticker_display(sym)
         m_d = r.get("move_24h_pct", 0)
         m_s = r["move_pct"]
         emoji = "🟢" if m_s > 0.3 else "🔴" if m_s < -0.3 else "⚪"
-        line1 = (f"{emoji} <b>{sym}</b>  ·  "
+        line1 = (f"{emoji} <b>{display}</b>  ·  "
                  f"24h <b>{m_d:+.1f}%</b>  ·  30m <b>{m_s:+.1f}%</b>")
 
         # 1-line news catalyst from Google News RSS (free, no key)
@@ -456,7 +458,18 @@ def render_digest(rows: list[dict], top_n: int = 5,
             why = why[:109] + "…"
 
         lines.append(line1)
-        catalyst = catalyst_attrib   # alias for legacy variable name
+        # Prefer real headline; if only clickbait was available, render
+        # the synthesized answer-statement instead so we never push a question.
+        catalyst = catalyst_attrib
+        if not catalyst:
+            try:
+                if reason_for_ticker:
+                    rx_alt = reason_for_ticker(sym, r.get("cluster", "other")) or {}
+                    statement = rx_alt.get("answer_statement")
+                    if statement:
+                        catalyst = statement
+            except Exception:
+                pass
         if catalyst:
             lines.append(f"  📰 <i>{catalyst}</i>")
         lines.append(f"  📈 <i>{why}</i>")

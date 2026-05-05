@@ -97,9 +97,27 @@ def _strip_html(s: str) -> str:
 
 
 _QUESTION_RE = re.compile(
-    r"^(why|is|are|should|can|will|does|do|how)\b", re.IGNORECASE)
-_PROMO_RE = re.compile(r"by investing\.com|sponsored|paid partner", re.IGNORECASE)
+    r"^(why|is|are|should|can|will|does|do|how|what'?s|what is|what does|"
+    r"where|when|will|wonder)\b", re.IGNORECASE)
+_PROMO_RE = re.compile(
+    r"by investing\.com|sponsored|paid partner|presented by", re.IGNORECASE)
+_CLICKBAIT_RE = re.compile(
+    r"(here'?s why|here is why|what (you )?need to know|what to (know|watch)|"
+    r"trades up|trading up|trading down|surges (today|now)|"
+    r"jumps (today|now)|tumbles (today|now)|sinks (today|now)|"
+    r"\bvs[\s.]|\bvs\.\b|"
+    r"one is a much better|much better buy|much better stock|"
+    r"goes (up|down) today|(top|best) (\d+\s)?(stocks?|picks)|"
+    r"reasons to (buy|sell|own)|things you should know|"
+    r"could (soar|crash|tank|surge)|might (soar|crash|tank|surge)|"
+    r"about to (soar|crash|tank|surge|breakout))",
+    re.IGNORECASE)
 _GENERIC_RE = re.compile(r"^(stock(s)?|the (top|best))\s", re.IGNORECASE)
+
+
+def _is_clickbait(title: str) -> bool:
+    if not title: return True
+    return bool(_QUESTION_RE.match(title) or _CLICKBAIT_RE.search(title))
 
 
 def _score_headline(h: "Headline", age_sec: float | None) -> float:
@@ -107,9 +125,11 @@ def _score_headline(h: "Headline", age_sec: float | None) -> float:
     s = 100.0
     title = h.title or ""
     if _QUESTION_RE.match(title):
-        s -= 60   # question / clickbait
+        s -= 70   # question
+    if _CLICKBAIT_RE.search(title):
+        s -= 60   # clickbait phrasing
     if _PROMO_RE.search(title) or _PROMO_RE.search(h.source or ""):
-        s -= 40   # generic Investing.com filler
+        s -= 40
     if _GENERIC_RE.match(title):
         s -= 20
     # Age penalty
@@ -291,25 +311,34 @@ def reason_for_ticker(symbol: str, cluster: str, full_name: str | None = None) -
     if not headlines:
         return None
 
-    # Prefer non-question, non-promo headlines: filter then score
-    filtered = [h for h in headlines
-                 if not _QUESTION_RE.match(h.title or "")
-                 and not _PROMO_RE.search(h.title or "")
-                 and not _PROMO_RE.search(h.source or "")]
-    pool = filtered if filtered else headlines
+    # Prefer non-clickbait, non-promo headlines: filter then score
+    clean = [h for h in headlines
+              if not _is_clickbait(h.title or "")
+              and not _PROMO_RE.search(h.title or "")
+              and not _PROMO_RE.search(h.source or "")]
+    reason = synthesize_reason(headlines)
+
+    if not clean:
+        # No clean headline available. Return reason as the answer
+        # statement; caller can render it without a quoted headline.
+        if reason:
+            return {
+                "reason": reason,
+                "headline": None,        # caller should not quote
+                "source": None, "age": None,
+                "answer_statement": _reason_to_statement(reason),
+            }
+        return None
+
     scored = []
-    for h in pool:
+    for h in clean:
         age_sec = h.__dict__.get("_age_sec")
         scored.append((_score_headline(h, age_sec), h))
     scored.sort(key=lambda x: -x[0])
     best = scored[0][1]
 
-    reason = synthesize_reason(headlines)
-
     title = best.title.strip()
-    # Strip "By Investing.com" / similar promo tail
     title = re.sub(r"\s*By\s+Investing\.com\s*$", "", title, flags=re.I)
-    # Convert any residual question into statement
     if title.endswith("?") or _QUESTION_RE.match(title):
         title = _question_to_statement(title)
     if len(title) > 80:
@@ -320,7 +349,66 @@ def reason_for_ticker(symbol: str, cluster: str, full_name: str | None = None) -
         "headline": title,
         "source": best.source,
         "age": best.when,
+        "answer_statement": _reason_to_statement(reason) if reason else None,
     }
+
+
+def _reason_to_statement(reason: str) -> str:
+    """
+    Turn a reason tag like 'tariff news + analyst downgrade' into a
+    short declarative statement suitable for the 📰 line when no
+    clean headline is available.
+    """
+    if not reason:
+        return ""
+    parts = [p.strip() for p in reason.split("+")]
+    # Map each tag to a short fact phrase
+    tag_to_fact = {
+        "tariff news":             "Tariff headlines hitting the tape",
+        "tariff escalation":       "Tariff escalation news in tape",
+        "trade war":               "Trade-war headlines crossing",
+        "earnings beat":           "Beat estimates this quarter",
+        "earnings miss":           "Missed estimates this quarter",
+        "earnings reaction":       "Earnings move underway",
+        "guidance update":         "Guidance update from company",
+        "analyst downgrade":       "Analyst downgrade hit",
+        "analyst upgrade":         "Analyst upgrade hit",
+        "price target change":     "Price target revised",
+        "buyback news":            "Buyback announced",
+        "dividend update":         "Dividend update",
+        "M&A news":                "M&A activity in name",
+        "takeover bid":            "Takeover bid public",
+        "regulatory/legal":        "Regulatory / legal news",
+        "investigation":           "Under investigation",
+        "ban / restriction":       "Restriction / ban news",
+        "product recall":          "Product recall announced",
+        "Fed decision":            "Fed news in tape",
+        "rate news":               "Rate-decision news",
+        "CPI / inflation print":   "Inflation print released",
+        "jobs print":              "Jobs print released",
+        "NFP print":               "NFP print released",
+        "GDP print":               "GDP print released",
+        "China / trade tension":   "China / trade tension",
+        "Middle-East tension":     "Middle-East tension flagged",
+        "OPEC supply news":        "OPEC supply news",
+        "supply-chain disruption": "Supply-chain disruption flagged",
+        "AI narrative":            "AI narrative driving move",
+        "chip / semi news":        "Chip / semi sector news",
+        "crypto move":             "Crypto-correlated move",
+        "gold flow":               "Gold-flow narrative",
+        "oil price move":          "Oil-price move",
+        "USD move":                "USD-strength move",
+        "court ruling":            "Court ruling hit",
+        "IPO news":                "IPO news",
+        "layoffs":                 "Layoffs reported",
+        "partnership / deal":      "Partnership / deal news",
+        "FDA / clinical news":     "FDA / clinical news",
+        "contract win":            "Contract win",
+        "rally":                   "Rally narrative confirmed",
+        "selloff":                 "Selloff narrative confirmed",
+    }
+    facts = [tag_to_fact.get(p.lower(), p.capitalize()) for p in parts[:2]]
+    return " + ".join(facts) + "."
 
 
 if __name__ == "__main__":

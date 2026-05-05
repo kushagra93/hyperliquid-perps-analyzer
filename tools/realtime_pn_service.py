@@ -44,7 +44,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from analysis.system_v2 import (
-    TICKER_CLUSTER, cluster_label, example_tickers,
+    TICKER_CLUSTER, cluster_label, example_tickers, ticker_display,
 )
 from analysis.top_movers import (
     PRIMARY_CLUSTERS, SECONDARY_CLUSTERS,
@@ -340,7 +340,8 @@ def _action_word(direction: str | float) -> str:
 def pn_volume_spike(sym: str, move_pct: float, move_24h: float,
                      vol_z: float, cluster: str) -> tuple[str, str]:
     emoji = _emoji_for_move(move_pct)
-    line1 = f"{sym}  ·  24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{move_pct:+.1f}%</b>"
+    display = ticker_display(sym)
+    line1 = f"{display}  ·  24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{move_pct:+.1f}%</b>"
     news = _news_line_for(sym, cluster)
     why = volume_explainer(vol_z, move_pct)
     bits = [_reason_pair_24_30(move_24h, move_pct).capitalize() + "."]
@@ -354,7 +355,8 @@ def pn_breakout(sym: str, move_pct: float, move_24h: float,
                   breakout_dir: str, level: float,
                   cluster: str) -> tuple[str, str]:
     emoji = "🟢" if breakout_dir == "up" else "🔴"
-    line1 = (f"{sym} broke ${level:.2f}  ·  "
+    display = ticker_display(sym)
+    line1 = (f"{display} broke ${level:.2f}  ·  "
              f"24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{move_pct:+.1f}%</b>")
     news = _news_line_for(sym, cluster)
     intel = fetch_intel_signals(sym, f"xyz:{sym}")
@@ -408,7 +410,8 @@ def pn_cluster_shift_v2(direction: str, clusters: list[str],
 def pn_sentiment_v2(ev: SentimentEvent, sym: str, move_24h: float,
                       realised_pct: float) -> tuple[str, str]:
     emoji = "🔴" if ev.baseline_score < 0 else "🟢"
-    line1 = (f"{sym}  ·  24h <b>{move_24h:+.1f}%</b>  ·  "
+    display = ticker_display(sym)
+    line1 = (f"{display}  ·  24h <b>{move_24h:+.1f}%</b>  ·  "
              f"30m <b>{realised_pct:+.1f}%</b>")
     news = None
     if ev.headline:
