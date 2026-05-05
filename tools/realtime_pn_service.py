@@ -177,16 +177,19 @@ def _truncate(s: str, n: int) -> str:
 
 def _format_block(emoji: str, line1_core: str,
                    news_line: str | None,
-                   reason_line: str) -> tuple[str, str]:
+                   reason_line: str,
+                   why_line: str | None = None) -> tuple[str, str]:
     """
     Return (title, body) where:
-      title = "<emoji> <line1_core>"      (≤ 60 chars)
-      body  = "📰 <news>\n📈 <reason>"   (multiline)
+      title = "<emoji> <line1_core>"
+      body  = "📰 <news>\n💡 <why this matters>\n📈 <technical reason>"
     """
     title = _truncate(f"{emoji} {line1_core}", 60)
     parts = []
     if news_line:
         parts.append(f"📰 {news_line}")
+    if why_line:
+        parts.append(f"💡 {why_line}")
     parts.append(f"📈 {reason_line}")
     body = "\n".join(parts)
     return title, body
@@ -239,6 +242,87 @@ def _intel_summary(sym: str) -> list[str]:
     return bits[:2]
 
 
+# ── Plain-English explainers (cause → effect) ──────────────────
+EVENT_EXPLAINER: dict[str, str] = {
+    "trump_tariff":
+        "Tariffs raise import costs; chip and China-exposed names usually drop 1–3%.",
+    "trade_tariff":
+        "New tariffs hit supply chains; multinationals and importers under pressure.",
+    "trade_war":
+        "Trade-tension escalation weighs on tech and China-exposed stocks.",
+    "fed_hawkish":
+        "Higher-for-longer rates squeeze tech valuations and crypto leverage; growth sells first.",
+    "fed_dovish":
+        "Lower rates juice growth and risk assets; tech and crypto rally hardest.",
+    "rate_decision":
+        "Rate decision repricing across asset classes; high-beta moves most.",
+    "cpi_hot":
+        "Hotter inflation forces Fed to stay hawkish; tech and crypto under pressure.",
+    "cpi_cool":
+        "Cooler inflation gives Fed room to ease; risk-on rally typical.",
+    "nfp_strong":
+        "Strong jobs print delays Fed cuts; tech under pressure.",
+    "nfp_weak":
+        "Weak jobs print accelerates Fed cuts; risk-on rally typical.",
+    "middle_east_war":
+        "Geopolitical risk drives oil higher and risk assets lower; commodities bid.",
+    "ukraine_war":
+        "War-premium move; oil and gold bid, tech off.",
+    "opec_supply_cut":
+        "Less crude supply = higher oil price; energy names (XLE) usually bid.",
+    "btc_crash":
+        "Bitcoin dump drags MSTR/COIN/HOOD; crypto-proxy stocks fall faster than BTC.",
+    "btc_rally":
+        "Bitcoin breakout lifts MSTR/COIN/HOOD; crypto plays typically move ~1.5–2× BTC.",
+    "sec_approve":
+        "SEC approval brings institutional money in; sustained bid usually 1–3 days.",
+    "sec_action":
+        "SEC enforcement action; sellers continue until clarity.",
+    "nvidia_strong":
+        "NVDA strength halos to other chip names; semi sector bid.",
+    "chip_export_curb":
+        "Export restrictions hit chip revenue; semis with China exposure fall.",
+    "earnings_beat":
+        "Beat estimates; momentum often continues unless guidance is cut.",
+    "earnings_miss":
+        "Missed estimates; usually –3% to –8% gap that holds.",
+    "guidance_raise":
+        "Raised guidance; analyst upgrades and institutional buying for several days.",
+    "guidance_cut":
+        "Cut guidance; downgrades likely, further selling.",
+    "m_and_a":
+        "M&A premium — target stock typically gaps 15–30%.",
+}
+
+
+def event_explainer(event_class: str) -> str:
+    return EVENT_EXPLAINER.get(event_class,
+                                  "Event flagged from news; expect volatility "
+                                  "in the affected names.")
+
+
+def breakout_explainer(direction: str, vol_z: float | None) -> str:
+    side = "above N-day high" if direction == "up" else "below N-day low"
+    vol_part = (f"with vol {vol_z:.0f}× normal" if vol_z and vol_z >= 1.5
+                else "but vol normal")
+    follow_dir = "up" if direction == "up" else "down"
+    return (f"Price broke {side} {vol_part}. Stops trigger and trend traders pile in; "
+            f"usually 1–3% follow-through {follow_dir}.")
+
+
+def volume_explainer(vol_z: float, move_dir: float) -> str:
+    side = "buying" if move_dir > 0 else "selling"
+    return (f"Volume {vol_z:.0f}× normal = institutions actively {side}. "
+            f"Big size like this rarely fades within the same day.")
+
+
+def cluster_explainer(direction: str, n_clusters: int) -> str:
+    side = "selling" if direction == "down" else "bidding"
+    risk = "Risk-off" if direction == "down" else "Risk-on"
+    return (f"{n_clusters} groups {side} in sync = macro driver active. "
+            f"{risk} regime; single-name longs/shorts will follow the broad tape.")
+
+
 def _action_word(direction: str | float) -> str:
     """Return 'Buy zone' / 'Sell zone' / 'Wait' depending on direction."""
     if isinstance(direction, str):
@@ -257,12 +341,12 @@ def pn_volume_spike(sym: str, move_pct: float, move_24h: float,
     emoji = _emoji_for_move(move_pct)
     line1 = f"{sym}  ·  24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{move_pct:+.1f}%</b>"
     news = _news_line_for(sym, cluster)
+    why = volume_explainer(vol_z, move_pct)
     bits = [_reason_pair_24_30(move_24h, move_pct).capitalize() + "."]
-    bits.append(f"vol {vol_z:.0f}× normal")
     bits.extend([b for b in _intel_summary(sym) if "vol" not in b.lower()])
     bits.append(_action_word(move_pct))
     reason = " · ".join(bits[:4]) + "."
-    return _format_block(emoji, line1, news, _truncate(reason, 130))
+    return _format_block(emoji, line1, news, _truncate(reason, 130), why_line=why)
 
 
 def pn_breakout(sym: str, move_pct: float, move_24h: float,
@@ -272,31 +356,26 @@ def pn_breakout(sym: str, move_pct: float, move_24h: float,
     line1 = (f"{sym} broke ${level:.2f}  ·  "
              f"24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{move_pct:+.1f}%</b>")
     news = _news_line_for(sym, cluster)
-    bits = [
-        f"Range broken {breakout_dir}.",
-    ]
+    intel = fetch_intel_signals(sym, f"xyz:{sym}")
+    why = breakout_explainer(breakout_dir, intel.get("volume_zscore"))
+    bits = [f"Range broken {breakout_dir}."]
     intel_bits = _intel_summary(sym)
     if intel_bits:
         bits.append(", ".join(intel_bits))
     bits.append(_action_word(breakout_dir))
     reason = " ".join(bits)
-    return _format_block(emoji, line1, news, _truncate(reason, 130))
+    return _format_block(emoji, line1, news, _truncate(reason, 130), why_line=why)
 
 
-def pn_cluster_shift(direction: str, clusters: list[str],
-                       avg_moves: dict[str, float],
-                       rows: list[dict] | None = None) -> tuple[str, str]:
-    """
-    Cluster-shift PN now reads in trader-friendly terms:
-    'Big Tech, Chips, Crypto plays selling — risk-off mode.'
-    plus the leading ticker per group when available.
-    """
+def pn_cluster_shift_v2(direction: str, clusters: list[str],
+                          avg_moves: dict[str, float],
+                          rows: list[dict] | None = None) -> tuple[str, str]:
     emoji = "🔴" if direction == "down" else "🟢"
     side = "selling" if direction == "down" else "bidding"
     friendly = [cluster_label(c) for c in clusters[:4]]
     line1 = f"{', '.join(friendly[:3])} {side}"
+    why = cluster_explainer(direction, len(clusters))
 
-    # Leading tickers per cluster (largest move in the right direction)
     bits = []
     if rows:
         by_cluster_movers: dict[str, list[dict]] = {}
@@ -305,8 +384,6 @@ def pn_cluster_shift(direction: str, clusters: list[str],
         leaders = []
         for c in clusters[:3]:
             members = by_cluster_movers.get(c, [])
-            if not members:
-                continue
             sign_filter = (lambda m: m["move_pct"] < 0) if direction == "down" \
                           else (lambda m: m["move_pct"] > 0)
             members = [m for m in members if sign_filter(m)]
@@ -317,7 +394,6 @@ def pn_cluster_shift(direction: str, clusters: list[str],
         if leaders:
             bits.append(", ".join(leaders))
 
-    # Cluster avg row
     avg_row = ", ".join(
         f"{cluster_label(c)} {avg_moves.get(c, 0):+.1f}%" for c in clusters[:3]
     )
@@ -325,14 +401,14 @@ def pn_cluster_shift(direction: str, clusters: list[str],
     risk_word = "Risk-off" if direction == "down" else "Risk-on"
     bits.append(f"{risk_word}. {_action_word(direction)}")
     reason = ". ".join(bits) + "."
-    return _format_block(emoji, line1, None, _truncate(reason, 200))
+    return _format_block(emoji, line1, None, _truncate(reason, 200), why_line=why)
 
 
-def pn_sentiment(ev: SentimentEvent, sym: str, move_24h: float,
-                  realised_pct: float) -> tuple[str, str]:
+def pn_sentiment_v2(ev: SentimentEvent, sym: str, move_24h: float,
+                      realised_pct: float) -> tuple[str, str]:
     emoji = "🔴" if ev.baseline_score < 0 else "🟢"
-    line1 = (f"{sym}  ·  24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{realised_pct:+.1f}%</b>")
-    # News line uses the matched headline directly (already filtered to non-question)
+    line1 = (f"{sym}  ·  24h <b>{move_24h:+.1f}%</b>  ·  "
+             f"30m <b>{realised_pct:+.1f}%</b>")
     news = None
     if ev.headline:
         h = ev.headline
@@ -340,9 +416,9 @@ def pn_sentiment(ev: SentimentEvent, sym: str, move_24h: float,
             src = ev.sources[0] if ev.sources else ""
             src_str = f" — {src}" if src else ""
             news = _truncate(f"\"{h}\"{src_str}", 130)
+    why = event_explainer(ev.event_class)
     catalyst_label = ev.event_class.replace("_", " ").capitalize()
-    bits = [f"{catalyst_label}.",
-            f"Conf {int(ev.confidence*100)}%."]
+    bits = [f"{catalyst_label}.", f"Conf {int(ev.confidence*100)}%."]
     intel_bits = _intel_summary(sym)
     if intel_bits:
         bits.append(", ".join(intel_bits) + ".")
@@ -353,7 +429,11 @@ def pn_sentiment(ev: SentimentEvent, sym: str, move_24h: float,
     else:
         bits.append("Wait.")
     reason = " ".join(bits)
-    return _format_block(emoji, line1, news, _truncate(reason, 130))
+    return _format_block(emoji, line1, news, _truncate(reason, 130), why_line=why)
+
+
+pn_cluster_shift = pn_cluster_shift_v2
+pn_sentiment = pn_sentiment_v2
 
 
 def pn_recap(by_cluster: dict, top_winners: list[dict],
