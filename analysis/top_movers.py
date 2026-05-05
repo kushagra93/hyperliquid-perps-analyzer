@@ -411,12 +411,20 @@ def render_digest(rows: list[dict], top_n: int = 5,
                  f"24h <b>{m_d:+.1f}%</b>  ·  30m <b>{m_s:+.1f}%</b>")
 
         # 1-line news catalyst from Google News RSS (free, no key)
-        catalyst = None
+        catalyst_reason = None
+        catalyst_attrib = None
         if reason_for_ticker:
             try:
-                catalyst = reason_for_ticker(sym, r.get("cluster", "other"))
+                rx = reason_for_ticker(sym, r.get("cluster", "other"))
+                if rx:
+                    if rx.get("reason"):
+                        catalyst_reason = rx["reason"]
+                    if rx.get("headline"):
+                        src = f" — {rx['source']}" if rx.get("source") else ""
+                        age = f" · {rx['age']}" if rx.get("age") else ""
+                        catalyst_attrib = f"\"{rx['headline']}\"{src}{age}"
             except Exception:
-                catalyst = None
+                catalyst_reason = None
 
         # Technical reasoning: 24h vs 30m direction + intel facts
         reason = _reason_pair(m_d, m_s)

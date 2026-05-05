@@ -194,7 +194,18 @@ def _facts(inp: IntelInputs) -> list[str]:
 
 def _action(inp: IntelInputs) -> str:
     """Plain-English action phrase."""
+    import os as _os
+    hinglish = _os.environ.get("PN_HINGLISH", "").lower() in ("1", "true", "yes")
     cid = (inp.condition_id or "").upper()
+    if hinglish:
+        if cid == "C1":  return "Buy karne ka time"
+        if cid == "C2":  return "Sell zone, short le"
+        if cid == "C3":  return "Ruko, abhi nahi"
+        if cid == "C4":  return "Mat chase, pump fake"
+        if inp.move_pct > 0.5:  return "Buy karne ka time"
+        if inp.move_pct < -0.5: return "Sell zone, short le"
+        return "Ruko"
+    # default English
     if cid == "C1":  return "Buy zone"
     if cid == "C2":  return "Sell zone"
     if cid == "C3":  return "Wait"

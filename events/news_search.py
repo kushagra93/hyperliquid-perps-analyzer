@@ -96,15 +96,63 @@ def _strip_html(s: str) -> str:
     return s.replace("&nbsp;", " ").replace("&amp;", "&").replace("&#39;", "'")
 
 
-def fetch_top_headline(query: str, *, hl: str = "en-IN",
-                        gl: str = "IN") -> Headline | None:
-    """
-    Hit Google News RSS, return freshest headline as Headline dict.
-    Free, no API key. ~250ms typical latency.
-    """
-    cached = _cache_get(query)
-    if cached:
-        return Headline(**cached) if cached else None
+_QUESTION_RE = re.compile(
+    r"^(why|is|are|should|can|will|does|do|how)\b", re.IGNORECASE)
+_PROMO_RE = re.compile(r"by investing\.com|sponsored|paid partner", re.IGNORECASE)
+_GENERIC_RE = re.compile(r"^(stock(s)?|the (top|best))\s", re.IGNORECASE)
+
+
+def _score_headline(h: "Headline", age_sec: float | None) -> float:
+    """Higher = better. Used to pick the most informative recent headline."""
+    s = 100.0
+    title = h.title or ""
+    if _QUESTION_RE.match(title):
+        s -= 60   # question / clickbait
+    if _PROMO_RE.search(title) or _PROMO_RE.search(h.source or ""):
+        s -= 40   # generic Investing.com filler
+    if _GENERIC_RE.match(title):
+        s -= 20
+    # Age penalty
+    if age_sec is not None:
+        if age_sec > 7 * 86400: s -= 50
+        elif age_sec > 3 * 86400: s -= 30
+        elif age_sec > 86400:    s -= 10
+        elif age_sec < 3600:     s += 15  # very fresh bonus
+    # Specificity bonus: contains numbers
+    if re.search(r"\d", title):
+        s += 8
+    # Source quality bonus for known-credible outlets
+    src = (h.source or "").lower()
+    if any(s2 in src for s2 in ("reuters", "bloomberg", "cnbc", "wsj",
+                                   "ft.com", "barron", "marketwatch",
+                                   "the economic times", "yahoo finance")):
+        s += 12
+    return s
+
+
+def _parse_age(date_str: str) -> tuple[float, str]:
+    """Returns (seconds_old, human_label)."""
+    from email.utils import parsedate_to_datetime
+    from datetime import datetime, timezone
+    try:
+        pd = parsedate_to_datetime(date_str.strip())
+        secs = (datetime.now(timezone.utc) - pd).total_seconds()
+    except Exception:
+        return (1e9, "recent")
+    if secs < 3600:
+        return secs, f"{int(secs/60)}m ago"
+    if secs < 86400:
+        return secs, f"{int(secs/3600)}h ago"
+    return secs, f"{int(secs/86400)}d ago"
+
+
+def fetch_top_headlines(query: str, *, n: int = 5,
+                          hl: str = "en-IN", gl: str = "IN") -> list[Headline]:
+    """Hit Google News RSS, return up to n parsed headlines."""
+    cache_key = f"list::{query}::{n}"
+    cached = _cache_get(cache_key)
+    if cached is not None:
+        return [Headline(**h) for h in cached.get("items", [])]
 
     url = (f"https://news.google.com/rss/search?q={quote(query)}"
            f"&hl={hl}&gl={gl}&ceid={gl}:{hl.split('-')[0]}")
@@ -116,69 +164,163 @@ def fetch_top_headline(query: str, *, hl: str = "en-IN",
         xml = r.stdout
     except Exception as e:
         logger.warning(f"[news] curl failed for {query}: {e}")
-        return None
+        return []
 
-    # Parse just the first <item>: title, source, pubDate
-    item_m = re.search(r"<item>(.*?)</item>", xml, re.DOTALL)
-    if not item_m:
-        _cache_put(query, {})
-        return None
-    block = item_m.group(1)
+    items = re.findall(r"<item>(.*?)</item>", xml, re.DOTALL)
+    out: list[Headline] = []
+    for block in items[: n * 3]:  # oversample then filter
+        title_m = re.search(r"<title>(.*?)</title>", block, re.DOTALL)
+        src_m   = re.search(r"<source[^>]*>(.*?)</source>", block, re.DOTALL)
+        date_m  = re.search(r"<pubDate>(.*?)</pubDate>", block, re.DOTALL)
+        if not title_m: continue
+        title = _strip_html(title_m.group(1)).strip()
+        source = _strip_html(src_m.group(1)).strip() if src_m else ""
+        if " - " in title and source and title.endswith(" - " + source):
+            title = title[: -(len(source) + 3)]
+        when = "recent"; age_sec = None
+        if date_m:
+            age_sec, when = _parse_age(date_m.group(1))
+        out.append(Headline(title=title, source=source, when=when))
+        # store age for scoring later
+        out[-1].__dict__["_age_sec"] = age_sec
+        if len(out) >= n:
+            break
 
-    title_m = re.search(r"<title>(.*?)</title>", block, re.DOTALL)
-    src_m   = re.search(r"<source[^>]*>(.*?)</source>", block, re.DOTALL)
-    date_m  = re.search(r"<pubDate>(.*?)</pubDate>", block, re.DOTALL)
-
-    if not title_m:
-        _cache_put(query, {})
-        return None
-
-    title_raw = _strip_html(title_m.group(1)).strip()
-    source = _strip_html(src_m.group(1)).strip() if src_m else ""
-
-    # Google News titles often look "Title - Source"; strip trailing source
-    if " - " in title_raw and source and title_raw.endswith(" - " + source):
-        title_raw = title_raw[: -(len(source) + 3)]
-
-    # Age string (rough)
-    when = "recent"
-    if date_m:
-        try:
-            from email.utils import parsedate_to_datetime
-            from datetime import datetime, timezone
-            pd = parsedate_to_datetime(date_m.group(1).strip())
-            secs = (datetime.now(timezone.utc) - pd).total_seconds()
-            if secs < 3600:
-                when = f"{int(secs/60)}m ago"
-            elif secs < 86400:
-                when = f"{int(secs/3600)}h ago"
-            else:
-                when = f"{int(secs/86400)}d ago"
-        except Exception:
-            pass
-
-    h = Headline(title=title_raw, source=source, when=when)
-    _cache_put(query, {"title": h.title, "source": h.source, "when": h.when})
-    return h
+    _cache_put(cache_key, {"items": [
+        {"title": h.title, "source": h.source, "when": h.when} for h in out
+    ]})
+    return out
 
 
-def reason_for_ticker(symbol: str, cluster: str, full_name: str | None = None) -> str | None:
+# ── Reason synthesizer (keyword extraction → answer phrase) ─────
+
+REASON_KEYWORDS = [
+    # (regex, label)
+    (re.compile(r"\btariff", re.I),                 "tariff news"),
+    (re.compile(r"\bbeats?\b|\bbeat estimates", re.I), "earnings beat"),
+    (re.compile(r"\bmiss(es|ed)?\b", re.I),         "earnings miss"),
+    (re.compile(r"\bearnings\b|\breports?\b", re.I), "earnings reaction"),
+    (re.compile(r"\bguidance\b", re.I),             "guidance update"),
+    (re.compile(r"\bdowngrad", re.I),               "analyst downgrade"),
+    (re.compile(r"\bupgrad", re.I),                 "analyst upgrade"),
+    (re.compile(r"\bprice target\b", re.I),         "price target change"),
+    (re.compile(r"\bbuyback\b|\brepurchase", re.I), "buyback news"),
+    (re.compile(r"\bdividend\b", re.I),             "dividend update"),
+    (re.compile(r"\bmerger\b|\bacquisition\b|\bacquire", re.I), "M&A news"),
+    (re.compile(r"\btakeover\b", re.I),             "takeover bid"),
+    (re.compile(r"\blawsuit\b|\bsued?\b|\bsec\b", re.I), "regulatory/legal"),
+    (re.compile(r"\binvestigat", re.I),             "investigation"),
+    (re.compile(r"\bbann?ed\b|\bban\b", re.I),      "ban / restriction"),
+    (re.compile(r"\brecall\b", re.I),               "product recall"),
+    (re.compile(r"\bfomc\b|\bfederal reserve\b|\bfed\b", re.I), "Fed decision"),
+    (re.compile(r"\binterest rate", re.I),          "rate news"),
+    (re.compile(r"\bcpi\b|\binflation\b", re.I),    "CPI / inflation print"),
+    (re.compile(r"\bunemploy", re.I),               "jobs print"),
+    (re.compile(r"\bnfp\b|\bnon-?farm", re.I),      "NFP print"),
+    (re.compile(r"\bgdp\b", re.I),                  "GDP print"),
+    (re.compile(r"\bchina\b|\btrade war", re.I),    "China / trade tension"),
+    (re.compile(r"\biran\b|\bmiddle east\b", re.I), "Middle-East tension"),
+    (re.compile(r"\bopec\b", re.I),                 "OPEC supply news"),
+    (re.compile(r"\bsupply chain\b", re.I),         "supply-chain disruption"),
+    (re.compile(r"\bai\b|artificial intelli", re.I), "AI narrative"),
+    (re.compile(r"\bchip(s)?\b|semiconductor", re.I), "chip / semi news"),
+    (re.compile(r"\bbitcoin\b|\bbtc\b|\bcrypto", re.I), "crypto move"),
+    (re.compile(r"\bgold\b", re.I),                 "gold flow"),
+    (re.compile(r"\boil price|\bcrude\b", re.I),    "oil price move"),
+    (re.compile(r"\bdollar\b|\bdxy\b|\busd\b", re.I), "USD move"),
+    (re.compile(r"\bcourt\b|\blegal\b", re.I),      "court ruling"),
+    (re.compile(r"\bipo\b", re.I),                  "IPO news"),
+    (re.compile(r"\blayoff\b|\bcut(ting)? jobs", re.I), "layoffs"),
+    (re.compile(r"\bpartner(ship)?\b|\bdeal\b", re.I), "partnership / deal"),
+    (re.compile(r"\bfda\b|\bdrug\b|\bclinical", re.I), "FDA / clinical news"),
+    (re.compile(r"\bwins?\b|\baward", re.I),         "contract win"),
+    (re.compile(r"\bsurge|\bjump|\brall(y|ied|ies)|\bspike", re.I),
+                                                     "rally"),
+    (re.compile(r"\bplunge|\bcrash|\btumble|\bsink|\bslump", re.I), "selloff"),
+]
+
+
+def synthesize_reason(headlines: list[Headline]) -> str | None:
     """
-    Build a query for the ticker's cluster + symbol, fetch headline,
-    return a 1-line catalyst string ≤ 100 chars or None.
+    Extract concrete reason tags from the top N headlines and merge
+    into one short answer (not a question). Returns ≤ 60 chars or
+    None if nothing concrete found.
+    """
+    if not headlines:
+        return None
+    blob = " ".join(h.title for h in headlines if h.title)
+    found: list[str] = []
+    for rx, label in REASON_KEYWORDS:
+        if rx.search(blob) and label not in found:
+            found.append(label)
+    if not found:
+        return None
+    # Top 2 reasons, deduped
+    if len(found) == 1:
+        return found[0]
+    return f"{found[0]} + {found[1]}"
+
+
+def _question_to_statement(title: str) -> str:
+    """Convert clickbait questions into best-effort statements."""
+    t = title.strip()
+    # Drop trailing "?"
+    t = t.rstrip("?")
+    # "Why is X surging today" → "X surging today"
+    t = re.sub(r"^why is\s+", "", t, flags=re.I)
+    t = re.sub(r"^why are\s+", "", t, flags=re.I)
+    t = re.sub(r"^why\s+", "", t, flags=re.I)
+    t = re.sub(r"^is\s+(.{1,40}?)\s+about to\s+", r"\1 may ", t, flags=re.I)
+    t = re.sub(r"^should you\s+", "Consider ", t, flags=re.I)
+    t = re.sub(r"^can\s+", "", t, flags=re.I)
+    return t.strip().capitalize()
+
+
+def reason_for_ticker(symbol: str, cluster: str, full_name: str | None = None) -> dict | None:
+    """
+    Returns a dict with:
+      reason   — synthesized 'answer' phrase (e.g. 'tariff news + analyst downgrade')
+      headline — best supporting headline (questions converted to statements)
+      source   — source attribution
+      age      — human-readable age
     """
     name = TICKER_QUERY_NAME.get(symbol, full_name or symbol)
     template = QUERIES.get(cluster, "{full} stock today")
     query = template.format(full=name)
-    h = fetch_top_headline(query)
-    if not h or not h.title:
+    headlines = fetch_top_headlines(query, n=5)
+    if not headlines:
         return None
-    title = h.title.strip()
-    if len(title) > 90:
-        title = title[:89] + "…"
-    src = f" — {h.source}" if h.source else ""
-    age = f" · {h.when}" if h.when else ""
-    return f"\"{title}\"{src}{age}"
+
+    # Prefer non-question, non-promo headlines: filter then score
+    filtered = [h for h in headlines
+                 if not _QUESTION_RE.match(h.title or "")
+                 and not _PROMO_RE.search(h.title or "")
+                 and not _PROMO_RE.search(h.source or "")]
+    pool = filtered if filtered else headlines
+    scored = []
+    for h in pool:
+        age_sec = h.__dict__.get("_age_sec")
+        scored.append((_score_headline(h, age_sec), h))
+    scored.sort(key=lambda x: -x[0])
+    best = scored[0][1]
+
+    reason = synthesize_reason(headlines)
+
+    title = best.title.strip()
+    # Strip "By Investing.com" / similar promo tail
+    title = re.sub(r"\s*By\s+Investing\.com\s*$", "", title, flags=re.I)
+    # Convert any residual question into statement
+    if title.endswith("?") or _QUESTION_RE.match(title):
+        title = _question_to_statement(title)
+    if len(title) > 80:
+        title = title[:79] + "…"
+
+    return {
+        "reason": reason,
+        "headline": title,
+        "source": best.source,
+        "age": best.when,
+    }
 
 
 if __name__ == "__main__":
