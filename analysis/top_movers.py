@@ -87,10 +87,11 @@ def _meta_and_ctxs() -> tuple[dict, list]:
 # ── Compute mover row per ticker ────────────────────────────────
 
 PRIMARY_CLUSTERS = {
-    "semi", "mega-tech", "crypto-proxy", "high-beta",
+    "semi", "mega-tech", "high-beta",
     "healthcare", "consumer", "index", "china", "asia",
 }
 SECONDARY_CLUSTERS = {"commodity", "fx", "uranium"}
+EXCLUDED_CLUSTERS = {"crypto-proxy"}   # never fires user-visible PNs
 
 FOCUS_CLUSTERS = {
     # Default: US stocks + indices first; commodities backfill if thin

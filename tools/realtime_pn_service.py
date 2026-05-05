@@ -87,10 +87,11 @@ SCAN_QUERIES = [
     "NFP payrolls",
     "OPEC oil supply",
     "Iran Middle East stocks",
-    "Bitcoin price crash surge",
-    "SEC crypto",
-    "Nvidia earnings AI",
-    "China trade war",
+    "Nvidia earnings AI chips",
+    "China trade war stocks",
+    "S&P 500 today",
+    "Gold silver oil price",
+    "Earnings beat miss guidance",
 ]
 
 
@@ -558,8 +559,10 @@ def cycle(args, seen: dict) -> None:
     primary_types = {"sentiment", "volume_spike", "cluster_shift", "breakout"}
 
     rows = compute_movers(window_min=30, universe_mode="all", focus="all")
+    # Drop excluded clusters (crypto-proxy etc) entirely — never fires PNs
+    EXCLUDED_FROM_PN = {"crypto-proxy"}
     if rows:
-        # Filter to PRIMARY tickers (stocks + indices) for non-recap PN types
+        rows = [r for r in rows if r.get("cluster") not in EXCLUDED_FROM_PN]
         primary_rows = [r for r in rows if r["cluster"] in PRIMARY_CLUSTERS]
         secondary_rows = [r for r in rows if r["cluster"] in SECONDARY_CLUSTERS]
     else:
@@ -666,10 +669,14 @@ def cycle(args, seen: dict) -> None:
         # Sort by confidence desc, take top N per cycle
         ranked = sorted(kept.values(), key=lambda x: -x.confidence)
 
+        EXCLUDED_EVENT_CLASSES = {"btc_crash", "btc_rally", "sec_approve", "sec_action"}
         fired_count = 0
         for ev in ranked:
             if fired_count >= MAX_SENTIMENT_PER_CYCLE:
                 break
+            if ev.event_class in EXCLUDED_EVENT_CLASSES:
+                logger.info(f"[sentiment] crypto-class skip: {ev.event_class}")
+                continue
             ek = f"sentiment:{ev.event_class}"
             if not _allowed(seen, ek, "sentiment"):
                 continue
