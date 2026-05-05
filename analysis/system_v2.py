@@ -58,14 +58,43 @@ IST = timezone(timedelta(hours=5, minutes=30))
 
 
 # ── Cluster taxonomy ────────────────────────────────────────────
+# Covers all currently-active xyz: perps on HL (52 names with
+# 24h volume > $100k as of mid-2026). Anything not listed here
+# falls back to "other" — keep this map updated as HL adds tickers.
 TICKER_CLUSTER = {
-    "NVDA": "semi", "AMD": "semi", "INTC": "semi", "TSM": "semi", "MU": "semi",
+    # Semis (US + Asian memory makers)
+    "NVDA": "semi", "AMD": "semi", "INTC": "semi", "TSM": "semi",
+    "MU": "semi", "SNDK": "semi", "MRVL": "semi", "DRAM": "semi",
+    "SMSN": "semi", "SKHX": "semi", "LITE": "semi",
+    # Mega-cap US tech
     "AAPL": "mega-tech", "MSFT": "mega-tech", "GOOGL": "mega-tech",
-    "AMZN": "mega-tech", "META": "mega-tech",
+    "AMZN": "mega-tech", "META": "mega-tech", "NFLX": "mega-tech",
+    "ORCL": "mega-tech",
+    # Crypto-proxy (BTC-correlated equities + stablecoin issuer)
     "MSTR": "crypto-proxy", "COIN": "crypto-proxy", "HOOD": "crypto-proxy",
-    "TSLA": "high-beta", "PLTR": "high-beta",
-    "SP500": "index",
-    "GOLD": "commodity",
+    "CRCL": "crypto-proxy",
+    # High-beta / meme / EV / fintech
+    "TSLA": "high-beta", "PLTR": "high-beta", "RIVN": "high-beta",
+    "DKNG": "high-beta", "GME": "high-beta", "BIRD": "high-beta",
+    "CRWV": "high-beta",
+    # Indices
+    "SP500": "index", "XYZ100": "index", "EWY": "index",
+    "EWJ": "index", "JP225": "index", "KR200": "index",
+    # Commodities (metals + energy)
+    "GOLD": "commodity", "SILVER": "commodity", "PLATINUM": "commodity",
+    "PALLADIUM": "commodity", "COPPER": "commodity",
+    "BRENTOIL": "commodity", "CL": "commodity", "NATGAS": "commodity",
+    "XLE": "commodity",
+    # Uranium / nuclear basket
+    "URNM": "uranium", "USAR": "uranium", "CBRS": "uranium",
+    # FX
+    "EUR": "fx", "JPY": "fx",
+    # China / Asia
+    "BABA": "china", "HYUNDAI": "asia",
+    # Healthcare / pharma
+    "LLY": "healthcare", "HIMS": "healthcare",
+    # Consumer
+    "COST": "consumer",
 }
 
 
