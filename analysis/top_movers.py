@@ -86,7 +86,15 @@ def _meta_and_ctxs() -> tuple[dict, list]:
 
 # ── Compute mover row per ticker ────────────────────────────────
 
+PRIMARY_CLUSTERS = {
+    "semi", "mega-tech", "crypto-proxy", "high-beta",
+    "healthcare", "consumer", "index", "china", "asia",
+}
+SECONDARY_CLUSTERS = {"commodity", "fx", "uranium"}
+
 FOCUS_CLUSTERS = {
+    # Default: US stocks + indices first; commodities backfill if thin
+    "stocks_indices":      PRIMARY_CLUSTERS,
     "indices_commodities": {"index", "commodity", "fx"},
     "indices":             {"index"},
     "commodities":         {"commodity"},
@@ -316,19 +324,63 @@ def _fetch_headlines(symbol: str, days: int = 1) -> list[str]:
 
 # ── Render ──────────────────────────────────────────────────────
 
+def _select_with_secondary_fill(rows: list[dict], top_n: int,
+                                 min_move_pct: float = 0.3) -> list[dict]:
+    """
+    Primary clusters (stocks + indices) get first pick. Secondary
+    clusters (commodities, FX, uranium) fill empty slots only if
+    primary doesn't have N tickers above min_move_pct.
+    """
+    def _score(r):
+        return abs(r.get("move_24h_pct", 0)) + abs(r["move_pct"])
+
+    primary = [r for r in rows if r["cluster"] in PRIMARY_CLUSTERS]
+    secondary = [r for r in rows if r["cluster"] in SECONDARY_CLUSTERS]
+    other = [r for r in rows
+              if r["cluster"] not in PRIMARY_CLUSTERS
+              and r["cluster"] not in SECONDARY_CLUSTERS]
+
+    primary.sort(key=_score, reverse=True)
+    secondary.sort(key=_score, reverse=True)
+    other.sort(key=_score, reverse=True)
+
+    # Keep primary movers above the minimum activity bar
+    qualifying = [r for r in primary if _score(r) >= min_move_pct]
+    if len(qualifying) >= top_n:
+        return qualifying[:top_n]
+
+    # Fall back: take all qualifying primary, fill rest with best secondary
+    selection = list(qualifying)
+    needed = top_n - len(selection)
+    selection.extend(secondary[:needed])
+
+    if len(selection) < top_n:
+        selection.extend(other[: top_n - len(selection)])
+
+    # If still nothing, just take the absolute biggest movers regardless
+    if not selection:
+        all_sorted = sorted(rows, key=_score, reverse=True)
+        selection = all_sorted[:top_n]
+    return selection
+
+
 def render_digest(rows: list[dict], top_n: int = 5,
                    include_headlines: bool = False,
-                   focus_label: str | None = None) -> str:
+                   focus_label: str | None = None,
+                   tier_select: bool = True) -> str:
     """
     Per-ticker block layout:
       📊 GOLD  ·  24h +1.5% · 30m +0.6%
       Trend up, momentum holds. Heavy volume, fresh longs.
     """
-    # Sort by combined size (24h + short, weighted)
-    def _score(r):
-        return abs(r.get("move_24h_pct", 0)) + abs(r["move_pct"])
-    rows_sorted = sorted(rows, key=_score, reverse=True)
-    top = rows_sorted[:top_n]
+    # Tiered selection: primary clusters (stocks + indices) first;
+    # secondary (commodities/fx/uranium) fill only when primary is thin.
+    if tier_select:
+        top = _select_with_secondary_fill(rows, top_n)
+    else:
+        def _score(r):
+            return abs(r.get("move_24h_pct", 0)) + abs(r["move_pct"])
+        top = sorted(rows, key=_score, reverse=True)[:top_n]
 
     heatmap = cluster_heatmap(rows)
     narrative = infer_narrative(rows, heatmap)
@@ -345,6 +397,11 @@ def render_digest(rows: list[dict], top_n: int = 5,
     from notifiers.compact_intel import (
         IntelInputs, fetch_intel_signals, _facts as _intel_facts,
     )
+    try:
+        from events.news_search import reason_for_ticker
+    except Exception:
+        reason_for_ticker = None  # type: ignore
+
     for r in top:
         sym = r["symbol"]
         m_d = r.get("move_24h_pct", 0)
@@ -353,7 +410,15 @@ def render_digest(rows: list[dict], top_n: int = 5,
         line1 = (f"{emoji} <b>{sym}</b>  ·  "
                  f"24h <b>{m_d:+.1f}%</b>  ·  30m <b>{m_s:+.1f}%</b>")
 
-        # Reasoning: pair direction + intel facts (≤ 90 chars total)
+        # 1-line news catalyst from Google News RSS (free, no key)
+        catalyst = None
+        if reason_for_ticker:
+            try:
+                catalyst = reason_for_ticker(sym, r.get("cluster", "other"))
+            except Exception:
+                catalyst = None
+
+        # Technical reasoning: 24h vs 30m direction + intel facts
         reason = _reason_pair(m_d, m_s)
         intel = fetch_intel_signals(sym, f"xyz:{sym}")
         inp = IntelInputs(
@@ -364,15 +429,17 @@ def render_digest(rows: list[dict], top_n: int = 5,
             range_compression=intel.get("range_compression", False),
         )
         intel_facts = _intel_facts(inp)[:2]
-        why = reason
         if intel_facts:
             why = f"{reason.capitalize()}. {', '.join(intel_facts)}."
         else:
             why = f"{reason.capitalize()}."
         if len(why) > 110:
             why = why[:109] + "…"
+
         lines.append(line1)
-        lines.append(f"  <i>{why}</i>")
+        if catalyst:
+            lines.append(f"  📰 <i>{catalyst}</i>")
+        lines.append(f"  📈 <i>{why}</i>")
         lines.append("")
 
     # Cluster breakdown
@@ -489,10 +556,11 @@ def main():
     p.add_argument("--interval-min", type=int, default=30)
     p.add_argument("--spotlight", action="store_true",
                    help="render a single compact PN for the biggest mover (instead of the full digest)")
-    p.add_argument("--focus", default="indices_commodities",
+    p.add_argument("--focus", default="all",
                    choices=list(FOCUS_CLUSTERS.keys()),
-                   help="restrict universe to cluster group "
-                         "(default: indices_commodities)")
+                   help="restrict universe to cluster group. "
+                         "Default 'all' uses tiered selection: "
+                         "stocks+indices first, commodities fill if thin.")
     args = p.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s")
