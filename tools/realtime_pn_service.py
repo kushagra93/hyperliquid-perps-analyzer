@@ -43,7 +43,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from analysis.system_v2 import TICKER_CLUSTER
+from analysis.system_v2 import (
+    TICKER_CLUSTER, cluster_label, example_tickers,
+)
 from analysis.top_movers import (
     PRIMARY_CLUSTERS, SECONDARY_CLUSTERS,
     compute_movers, classify_condition, cluster_heatmap, infer_narrative,
@@ -282,16 +284,48 @@ def pn_breakout(sym: str, move_pct: float, move_24h: float,
 
 
 def pn_cluster_shift(direction: str, clusters: list[str],
-                       avg_moves: dict[str, float]) -> tuple[str, str]:
+                       avg_moves: dict[str, float],
+                       rows: list[dict] | None = None) -> tuple[str, str]:
+    """
+    Cluster-shift PN now reads in trader-friendly terms:
+    'Big Tech, Chips, Crypto plays selling — risk-off mode.'
+    plus the leading ticker per group when available.
+    """
     emoji = "🔴" if direction == "down" else "🟢"
-    side = "selloff" if direction == "down" else "rally"
-    line1 = f"Broad {side}  ·  {len(clusters)} clusters tilting"
-    cluster_summary = ", ".join(
-        f"{c} {avg_moves.get(c, 0):+.1f}%" for c in clusters[:3]
+    side = "selling" if direction == "down" else "bidding"
+    friendly = [cluster_label(c) for c in clusters[:4]]
+    line1 = f"{', '.join(friendly[:3])} {side}"
+
+    # Leading tickers per cluster (largest move in the right direction)
+    bits = []
+    if rows:
+        by_cluster_movers: dict[str, list[dict]] = {}
+        for r in rows:
+            by_cluster_movers.setdefault(r["cluster"], []).append(r)
+        leaders = []
+        for c in clusters[:3]:
+            members = by_cluster_movers.get(c, [])
+            if not members:
+                continue
+            sign_filter = (lambda m: m["move_pct"] < 0) if direction == "down" \
+                          else (lambda m: m["move_pct"] > 0)
+            members = [m for m in members if sign_filter(m)]
+            members.sort(key=lambda m: -abs(m["move_pct"]))
+            if members:
+                top = members[0]
+                leaders.append(f"{top['symbol']} {top['move_pct']:+.1f}%")
+        if leaders:
+            bits.append(", ".join(leaders))
+
+    # Cluster avg row
+    avg_row = ", ".join(
+        f"{cluster_label(c)} {avg_moves.get(c, 0):+.1f}%" for c in clusters[:3]
     )
+    bits.append(avg_row)
     risk_word = "Risk-off" if direction == "down" else "Risk-on"
-    reason = f"{cluster_summary}. {risk_word}. {_action_word(direction)}"
-    return _format_block(emoji, line1, None, _truncate(reason, 130))
+    bits.append(f"{risk_word}. {_action_word(direction)}")
+    reason = ". ".join(bits) + "."
+    return _format_block(emoji, line1, None, _truncate(reason, 200))
 
 
 def pn_sentiment(ev: SentimentEvent, sym: str, move_24h: float,
@@ -478,7 +512,8 @@ def cycle(args, seen: dict) -> None:
             if _allowed(seen, key, "cluster_shift"):
                 title, body = pn_cluster_shift(shift["direction"],
                                                 shift["clusters"],
-                                                shift["avg_moves"])
+                                                shift["avg_moves"],
+                                                rows=rows)
                 fire_pn("cluster_shift", title, body, shift, dry_run=args.dry_run)
                 _stamp(seen, key)
 

@@ -98,6 +98,33 @@ TICKER_CLUSTER = {
 }
 
 
+# Friendly labels for user-facing PNs — never expose raw cluster names
+CLUSTER_FRIENDLY = {
+    "semi":         "Chips",
+    "mega-tech":    "Big Tech",
+    "crypto-proxy": "Crypto plays",
+    "high-beta":    "Vol stocks",
+    "index":        "S&P/Nasdaq",
+    "commodity":    "Commodities",
+    "fx":           "FX",
+    "uranium":      "Uranium",
+    "china":        "China",
+    "asia":         "Asia",
+    "healthcare":   "Pharma",
+    "consumer":     "Consumer",
+    "other":        "Other",
+}
+
+
+def cluster_label(cluster: str) -> str:
+    return CLUSTER_FRIENDLY.get(cluster, cluster.title())
+
+
+def example_tickers(cluster: str, n: int = 3) -> list[str]:
+    """Return up to n representative tickers from a cluster."""
+    return [sym for sym, c in TICKER_CLUSTER.items() if c == cluster][:n]
+
+
 # ── Score v2: WR-calibrated buckets ─────────────────────────────
 
 def _hour_of(when_iso: str) -> int:
