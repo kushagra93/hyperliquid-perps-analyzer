@@ -87,11 +87,11 @@ def _meta_and_ctxs() -> tuple[dict, list]:
 # ── Compute mover row per ticker ────────────────────────────────
 
 PRIMARY_CLUSTERS = {
-    "semi", "mega-tech", "high-beta",
+    "semi", "mega-tech", "crypto-proxy", "high-beta",
     "healthcare", "consumer", "index", "china", "asia",
 }
 SECONDARY_CLUSTERS = {"commodity", "fx", "uranium"}
-EXCLUDED_CLUSTERS = {"crypto-proxy"}   # never fires user-visible PNs
+EXCLUDED_CLUSTERS = set()   # raw crypto coins are not in HL xyz universe anyway
 
 FOCUS_CLUSTERS = {
     # Default: US stocks + indices first; commodities backfill if thin
@@ -393,6 +393,16 @@ def render_digest(rows: list[dict], top_n: int = 5,
         f"<i>{narrative}</i>",
         "",
     ]
+    # Macro indices panel — permanent header
+    try:
+        from events.external_indices import macro_panel, render_panel_html
+        panel = macro_panel()
+        panel_html = render_panel_html(panel)
+        if panel_html:
+            lines.append(panel_html)
+            lines.append("")
+    except Exception:
+        pass
 
     # Per-ticker readable block
     from notifiers.compact_intel import (
@@ -446,6 +456,7 @@ def render_digest(rows: list[dict], top_n: int = 5,
             why = why[:109] + "…"
 
         lines.append(line1)
+        catalyst = catalyst_attrib   # alias for legacy variable name
         if catalyst:
             lines.append(f"  📰 <i>{catalyst}</i>")
         lines.append(f"  📈 <i>{why}</i>")
