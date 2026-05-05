@@ -49,42 +49,40 @@ def _enforce(card: dict) -> dict:
     return card
 
 
-# ── Stage 1: T+0 break news ─────────────────────────────────────
-
-_BREAK_BODIES_BEAR = [
-    "Supply hit. Short zone.",
-    "Sellers in. Fade rallies.",
-    "Bear setup live. Tight stops.",
-    "Distribution. Short pullbacks.",
-]
-_BREAK_BODIES_BULL = [
-    "Demand bid. Long dips.",
-    "Buyers in. Trail stops.",
-    "Bull setup live. Pyramid.",
-    "Accumulation. Buy zone.",
-]
-_BREAK_BODIES_FLAT = [
-    "Squeeze building. Watch breakout.",
-    "Coiling. No trade till resolved.",
-]
-
+# ── Stage 1: T+0 break news (intel-driven, no templates) ────────
 
 def format_break_news(*, symbol: str, move_pct: float,
-                       catalyst: str | None = None) -> dict:
-    """T+0: catalyst hits, first move printed, immediate setup."""
+                       catalyst: str | None = None,
+                       hl_asset: str | None = None,
+                       condition_id: str = "",
+                       funding: float = 0.0,
+                       oi_change_pct: float | None = None,
+                       cluster_tilt: str | None = None) -> dict:
+    """
+    T+0: title from catalyst + move; body from LIVE INTELLIGENCE
+    (vol z-score, ATR ratio, VWAP-relative, OI/funding, cluster tilt).
+    """
+    from notifiers.compact_intel import (
+        IntelInputs, fetch_intel_signals, build_intel_body
+    )
+    intel = fetch_intel_signals(symbol, hl_asset)
+    inp = IntelInputs(
+        symbol=symbol, move_pct=move_pct,
+        condition_id=condition_id, funding=funding,
+        oi_change_pct=oi_change_pct,
+        news_headline=catalyst, cluster_tilt=cluster_tilt,
+        volume_zscore=intel.get("volume_zscore"),
+        atr_ratio=intel.get("atr_ratio"),
+        near_vwap=intel.get("near_vwap"),
+        range_compression=intel.get("range_compression", False),
+    )
+    body = build_intel_body(inp)
+
     emoji = "🔴" if move_pct < -0.3 else ("🟢" if move_pct > 0.3 else "⚪")
     cat = (catalyst or "Move").strip()
-    if len(cat) > 20:
-        cat = cat[:19] + "…"
+    if len(cat) > 22:
+        cat = cat[:21] + "…"
     title = f"{emoji} {cat} · {symbol} {move_pct:+.1f}%"
-
-    if move_pct < -0.3:
-        body = _BREAK_BODIES_BEAR[abs(int(move_pct * 10)) % len(_BREAK_BODIES_BEAR)]
-    elif move_pct > 0.3:
-        body = _BREAK_BODIES_BULL[abs(int(move_pct * 10)) % len(_BREAK_BODIES_BULL)]
-    else:
-        body = _BREAK_BODIES_FLAT[0]
-
     return _enforce({"stage": "break", "title": title, "body": body})
 
 
@@ -92,49 +90,82 @@ def format_break_news(*, symbol: str, move_pct: float,
 
 def format_cascade(*, symbol: str, move_pct: float,
                     liquidation_usd_m: float | None = None,
-                    level: float | None = None) -> dict:
-    """T+15: follow-through, liquidation cascade, level test."""
+                    level: float | None = None,
+                    hl_asset: str | None = None,
+                    condition_id: str = "",
+                    funding: float = 0.0,
+                    oi_change_pct: float | None = None) -> dict:
+    """
+    T+15: cascade title (liquidation/VWAP/level) + intel-driven body.
+    """
+    from notifiers.compact_intel import (
+        IntelInputs, fetch_intel_signals, build_intel_body
+    )
+    intel = fetch_intel_signals(symbol, hl_asset)
+
     if move_pct < 0:
         emoji = "💀" if liquidation_usd_m and liquidation_usd_m >= 5 else "📉"
     else:
         emoji = "🚀" if move_pct > 1.5 else "📈"
 
+    vwap = intel.get("vwap")
     if liquidation_usd_m:
         title = f"{emoji} ${liquidation_usd_m:.0f}M liq · {symbol} {move_pct:+.1f}%"
     elif level:
         title = f"{emoji} {symbol} ${level:.0f} test · {move_pct:+.1f}%"
+    elif vwap:
+        title = f"{emoji} {symbol} ${vwap:.0f} VWAP · {move_pct:+.1f}%"
     else:
         title = f"{emoji} {symbol} cascade · {move_pct:+.1f}%"
 
-    if move_pct < 0:
-        if level:
-            body = f"Support {level:.0f} testing. Dip buy or fade?"
-        else:
-            body = "Bears in control. Wait for capitulation."
-    else:
-        if level:
-            body = f"Resistance {level:.0f} cleared. Trail tight."
-        else:
-            body = "Bulls extending. Pyramid into strength."
-
+    inp = IntelInputs(
+        symbol=symbol, move_pct=move_pct,
+        condition_id=condition_id, funding=funding,
+        oi_change_pct=oi_change_pct,
+        volume_zscore=intel.get("volume_zscore"),
+        atr_ratio=intel.get("atr_ratio"),
+        near_vwap=intel.get("near_vwap"),
+        range_compression=intel.get("range_compression", False),
+    )
+    body = build_intel_body(inp)
     return _enforce({"stage": "cascade", "title": title, "body": body})
 
 
 # ── Stage 3: T+2hr repricing ────────────────────────────────────
 
 def format_repricing(*, symbol: str, next_event: str | None = None,
-                      net_move_pct: float | None = None) -> dict:
-    """T+2hr: equilibrium found, next catalyst on watch."""
+                      net_move_pct: float | None = None,
+                      hl_asset: str | None = None,
+                      condition_id: str = "",
+                      funding: float = 0.0) -> dict:
+    """T+2hr: equilibrium read + intel-driven body + next event tag."""
+    from notifiers.compact_intel import (
+        IntelInputs, fetch_intel_signals, _facts
+    )
+    intel = fetch_intel_signals(symbol, hl_asset)
+
     if net_move_pct is not None:
         title = f"📊 {symbol} settled · {net_move_pct:+.1f}% net"
     else:
-        title = f"📊 {symbol} repriced · equilibrium in"
+        title = f"📊 {symbol} repriced · equilibrium"
 
-    nxt = (next_event or "next print").strip()
-    if len(nxt) > 28:
-        nxt = nxt[:27] + "…"
-    body = f"New range live. Next: {nxt}. Swing setup ready."
-
+    inp = IntelInputs(
+        symbol=symbol, move_pct=net_move_pct or 0.0,
+        condition_id=condition_id, funding=funding,
+        volume_zscore=intel.get("volume_zscore"),
+        atr_ratio=intel.get("atr_ratio"),
+        near_vwap=intel.get("near_vwap"),
+        range_compression=intel.get("range_compression", False),
+    )
+    facts = _facts(inp)[:2]
+    parts = list(facts)
+    if next_event:
+        nxt = next_event.strip()
+        if len(nxt) > 22: nxt = nxt[:21] + "…"
+        parts.append(f"Next: {nxt}")
+    if not parts:
+        parts.append(f"{(net_move_pct or 0):+.1f}% net")
+    body = " · ".join(parts) + ". Watch."
     return _enforce({"stage": "repricing", "title": title, "body": body})
 
 
@@ -145,17 +176,29 @@ def build_wave(*, symbol: str, move_pct: float,
                 level: float | None = None,
                 liquidation_usd_m: float | None = None,
                 next_event: str | None = None,
-                net_move_pct: float | None = None) -> list[dict]:
+                net_move_pct: float | None = None,
+                hl_asset: str | None = None,
+                condition_id: str = "",
+                funding: float = 0.0,
+                oi_change_pct: float | None = None,
+                cluster_tilt: str | None = None) -> list[dict]:
     """
-    Pre-build all 3 stages for this event. The dispatcher decides
-    when to fire each one.
+    Pre-build all 3 stages with live intelligence threaded through.
+    Each stage re-fetches its own intel from HL when called, so we
+    pick up the latest volume / VWAP / ATR per fire.
     """
     return [
-        format_break_news(symbol=symbol, move_pct=move_pct, catalyst=catalyst),
+        format_break_news(symbol=symbol, move_pct=move_pct, catalyst=catalyst,
+                           hl_asset=hl_asset, condition_id=condition_id,
+                           funding=funding, oi_change_pct=oi_change_pct,
+                           cluster_tilt=cluster_tilt),
         format_cascade(symbol=symbol, move_pct=move_pct,
-                        liquidation_usd_m=liquidation_usd_m, level=level),
+                        liquidation_usd_m=liquidation_usd_m, level=level,
+                        hl_asset=hl_asset, condition_id=condition_id,
+                        funding=funding, oi_change_pct=oi_change_pct),
         format_repricing(symbol=symbol, next_event=next_event,
-                          net_move_pct=net_move_pct),
+                          net_move_pct=net_move_pct, hl_asset=hl_asset,
+                          condition_id=condition_id, funding=funding),
     ]
 
 

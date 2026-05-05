@@ -312,6 +312,41 @@ def render_digest(rows: list[dict], top_n: int = 5,
 
 # ── Telegram send ───────────────────────────────────────────────
 
+# ── Spotlight mode: single compact PN for biggest mover ──────
+
+def render_spotlight(rows: list[dict]) -> str:
+    """
+    Single compact PN (≤130 chars) for the biggest mover. Used as
+    the "occasional push" when no real signal fires — keeps the
+    channel feeling alive without spamming.
+    """
+    if not rows:
+        return ""
+    from notifiers.compact_intel import (
+        IntelInputs, fetch_intel_signals, build_intel_body
+    )
+    big = max(rows, key=lambda r: abs(r["move_pct"]))
+    sym = big["symbol"]
+    cluster = big["cluster"]
+    cond = classify_condition(big["move_pct"], big["funding"])
+
+    intel = fetch_intel_signals(sym, f"xyz:{sym}")
+    inp = IntelInputs(
+        symbol=sym, move_pct=big["move_pct"],
+        condition_id=cond if cond != "FLAT" else "",
+        funding=big["funding"],
+        volume_zscore=intel.get("volume_zscore"),
+        atr_ratio=intel.get("atr_ratio"),
+        near_vwap=intel.get("near_vwap"),
+        range_compression=intel.get("range_compression", False),
+    )
+    body = build_intel_body(inp)
+    emoji = "🔴" if big["move_pct"] < -0.3 else ("🟢" if big["move_pct"] > 0.3 else "⚪")
+    title = f"{emoji} Spotlight · {sym} {big['move_pct']:+.1f}% ({cluster})"
+    if len(title) > 50: title = title[:49] + "…"
+    return f"<b>{title}</b>\n{body}"
+
+
 def _send(text: str) -> bool:
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat = os.environ.get("TELEGRAM_PN_CHANNEL_ID") or os.environ.get("TELEGRAM_CHAT_ID")
@@ -366,6 +401,8 @@ def main():
     p.add_argument("--telegram", action="store_true")
     p.add_argument("--daemon", action="store_true")
     p.add_argument("--interval-min", type=int, default=30)
+    p.add_argument("--spotlight", action="store_true",
+                   help="render a single compact PN for the biggest mover (instead of the full digest)")
     args = p.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s")
@@ -375,11 +412,14 @@ def main():
         if not rows:
             print("No HL data — skipping.")
             return
-        digest = render_digest(rows, top_n=args.top,
-                                include_headlines=args.headlines)
-        print(digest)
-        if send_tg:
-            ok = _send(digest)
+        if args.spotlight:
+            text = render_spotlight(rows)
+        else:
+            text = render_digest(rows, top_n=args.top,
+                                  include_headlines=args.headlines)
+        print(text)
+        if send_tg and text:
+            ok = _send(text)
             print(f"\nTelegram: {'sent' if ok else 'FAILED'}")
 
     if args.daemon:
