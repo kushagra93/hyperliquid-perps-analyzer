@@ -173,86 +173,158 @@ def _truncate(s: str, n: int) -> str:
     return s if len(s) <= n else (s[: n - 1].rstrip(" ,.;:") + "…")
 
 
-def pn_volume_spike(sym: str, move_pct: float, vol_z: float,
-                     cluster: str) -> tuple[str, str]:
-    emoji = _emoji_for_move(move_pct)
-    title = _truncate(f"{emoji} Volume spike · {sym} {move_pct:+.1f}%", 50)
-
-    intel = fetch_intel_signals(sym, f"xyz:{sym}")
-    rx = reason_for_ticker(sym, cluster) or {}
-    reason = rx.get("reason")
-    why_bits = []
-    if reason:
-        why_bits.append(reason.capitalize())
-    why_bits.append(f"vol {vol_z:.1f}× normal")
-    if intel.get("near_vwap") == "above":
-        why_bits.append("above day avg")
-    elif intel.get("near_vwap") == "below":
-        why_bits.append("below day avg")
-    body = _truncate(". ".join(why_bits) + ".", 80)
+def _format_block(emoji: str, line1_core: str,
+                   news_line: str | None,
+                   reason_line: str) -> tuple[str, str]:
+    """
+    Return (title, body) where:
+      title = "<emoji> <line1_core>"      (≤ 60 chars)
+      body  = "📰 <news>\n📈 <reason>"   (multiline)
+    """
+    title = _truncate(f"{emoji} {line1_core}", 60)
+    parts = []
+    if news_line:
+        parts.append(f"📰 {news_line}")
+    parts.append(f"📈 {reason_line}")
+    body = "\n".join(parts)
     return title, body
+
+
+def _news_line_for(sym: str, cluster: str) -> str | None:
+    """Build '"Headline" — Source · 2h ago' or None if nothing usable."""
+    rx = reason_for_ticker(sym, cluster) if reason_for_ticker else None
+    if not rx:
+        return None
+    headline = (rx.get("headline") or "").strip()
+    src = rx.get("source") or ""
+    age = rx.get("age") or ""
+    if not headline:
+        return None
+    src_str = f" — {src}" if src else ""
+    age_str = f" · {age}" if age else ""
+    line = f"\"{headline}\"{src_str}{age_str}"
+    return _truncate(line, 130)
+
+
+def _reason_pair_24_30(m_24h: float, m_30m: float) -> str:
+    """24h vs 30m direction → plain English."""
+    same_dir = (m_24h * m_30m) > 0
+    big_24 = abs(m_24h) >= 1.0
+    big_30 = abs(m_30m) >= 0.5
+    if not big_24 and not big_30: return "tape quiet"
+    if same_dir and big_24 and big_30:
+        return "Trend up, momentum holds" if m_24h > 0 else "Trend down, momentum holds"
+    if same_dir and big_24: return "Day trend extending"
+    if same_dir and big_30: return "Short burst, no day trend yet"
+    if not same_dir and big_24 and big_30:
+        return "Bounce vs 24h downtrend" if m_30m > 0 else "Pullback vs 24h uptrend"
+    return "Mixed signal"
+
+
+def _intel_summary(sym: str) -> list[str]:
+    intel = fetch_intel_signals(sym, f"xyz:{sym}")
+    bits = []
+    z = intel.get("volume_zscore")
+    if z is not None and z >= 2.5: bits.append(f"vol {z:.0f}× normal")
+    elif z is not None and z >= 1.5: bits.append("heavy volume")
+    if intel.get("near_vwap") == "above": bits.append("above day avg")
+    elif intel.get("near_vwap") == "below": bits.append("below day avg")
+    a = intel.get("atr_ratio")
+    if a is not None:
+        if a >= 2.0: bits.append("big swings")
+        elif a <= 0.5: bits.append("tight range")
+    if intel.get("range_compression"): bits.append("pre-breakout")
+    return bits[:2]
+
+
+def _action_word(direction: str | float) -> str:
+    """Return 'Buy zone' / 'Sell zone' / 'Wait' depending on direction."""
+    if isinstance(direction, str):
+        if direction == "up": return "Buy zone"
+        if direction == "down": return "Sell zone"
+        return "Wait"
+    if direction > 0.3: return "Buy zone"
+    if direction < -0.3: return "Sell zone"
+    return "Wait"
+
+
+# ── Per-type composers (3-line format) ─────────────────────────
+
+def pn_volume_spike(sym: str, move_pct: float, move_24h: float,
+                     vol_z: float, cluster: str) -> tuple[str, str]:
+    emoji = _emoji_for_move(move_pct)
+    line1 = f"{sym}  ·  24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{move_pct:+.1f}%</b>"
+    news = _news_line_for(sym, cluster)
+    bits = [_reason_pair_24_30(move_24h, move_pct).capitalize() + "."]
+    bits.append(f"vol {vol_z:.0f}× normal")
+    bits.extend([b for b in _intel_summary(sym) if "vol" not in b.lower()])
+    bits.append(_action_word(move_pct))
+    reason = " · ".join(bits[:4]) + "."
+    return _format_block(emoji, line1, news, _truncate(reason, 130))
+
+
+def pn_breakout(sym: str, move_pct: float, move_24h: float,
+                  breakout_dir: str, level: float,
+                  cluster: str) -> tuple[str, str]:
+    emoji = "🟢" if breakout_dir == "up" else "🔴"
+    line1 = (f"{sym} broke ${level:.2f}  ·  "
+             f"24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{move_pct:+.1f}%</b>")
+    news = _news_line_for(sym, cluster)
+    bits = [
+        f"Range broken {breakout_dir}.",
+    ]
+    intel_bits = _intel_summary(sym)
+    if intel_bits:
+        bits.append(", ".join(intel_bits))
+    bits.append(_action_word(breakout_dir))
+    reason = " ".join(bits)
+    return _format_block(emoji, line1, news, _truncate(reason, 130))
 
 
 def pn_cluster_shift(direction: str, clusters: list[str],
                        avg_moves: dict[str, float]) -> tuple[str, str]:
     emoji = "🔴" if direction == "down" else "🟢"
-    side = "selloff" if direction == "down" else "bid"
-    title = _truncate(f"{emoji} Broad {side} · {len(clusters)} clusters", 50)
-    bits = []
-    for c in clusters[:3]:
-        m = avg_moves.get(c, 0)
-        bits.append(f"{c} {m:+.1f}%")
-    body = _truncate(", ".join(bits) + f". Risk-{('off' if direction == 'down' else 'on')} mode.", 80)
-    return title, body
+    side = "selloff" if direction == "down" else "rally"
+    line1 = f"Broad {side}  ·  {len(clusters)} clusters tilting"
+    cluster_summary = ", ".join(
+        f"{c} {avg_moves.get(c, 0):+.1f}%" for c in clusters[:3]
+    )
+    risk_word = "Risk-off" if direction == "down" else "Risk-on"
+    reason = f"{cluster_summary}. {risk_word}. {_action_word(direction)}"
+    return _format_block(emoji, line1, None, _truncate(reason, 130))
 
 
-def pn_breakout(sym: str, move_pct: float, breakout_dir: str,
-                  level: float, cluster: str) -> tuple[str, str]:
-    emoji = "🟢" if breakout_dir == "up" else "🔴"
-    title = _truncate(f"{emoji} Breakout · {sym} ${level:.2f} {breakout_dir}", 50)
-    intel = fetch_intel_signals(sym, f"xyz:{sym}")
-    bits = []
-    if intel.get("volume_zscore") and intel["volume_zscore"] >= 1.5:
-        bits.append("heavy volume confirms")
-    if intel.get("atr_ratio") and intel["atr_ratio"] >= 1.5:
-        bits.append("expanding range")
-    if not bits:
-        bits.append("range broken")
-    if breakout_dir == "up":
-        bits.append("Buy zone")
-    else:
-        bits.append("Sell zone")
-    body = _truncate(", ".join(bits) + ".", 80)
-    return title, body
-
-
-def pn_sentiment(ev: SentimentEvent, sym: str, ref_price: float,
+def pn_sentiment(ev: SentimentEvent, sym: str, move_24h: float,
                   realised_pct: float) -> tuple[str, str]:
     emoji = "🔴" if ev.baseline_score < 0 else "🟢"
-    catalyst_short = ev.event_class.replace("_", " ").title()
-    title = _truncate(f"{emoji} {catalyst_short} · {sym} {realised_pct:+.1f}%", 50)
-    bits = []
+    line1 = (f"{sym}  ·  24h <b>{move_24h:+.1f}%</b>  ·  30m <b>{realised_pct:+.1f}%</b>")
+    # News line uses the matched headline directly (already filtered to non-question)
+    news = None
     if ev.headline:
         h = ev.headline
-        # If the headline is a question, drop it and use class label only
-        if h.rstrip().endswith("?") or h.lower().startswith("why "):
-            pass
-        else:
-            bits.append(_truncate(h, 50))
-    bits.append(f"Conf {int(ev.confidence*100)}%")
+        if not (h.rstrip().endswith("?") or h.lower().startswith("why ")):
+            src = ev.sources[0] if ev.sources else ""
+            src_str = f" — {src}" if src else ""
+            news = _truncate(f"\"{h}\"{src_str}", 130)
+    catalyst_label = ev.event_class.replace("_", " ").capitalize()
+    bits = [f"{catalyst_label}.",
+            f"Conf {int(ev.confidence*100)}%."]
+    intel_bits = _intel_summary(sym)
+    if intel_bits:
+        bits.append(", ".join(intel_bits) + ".")
     if ev.baseline_score < -0.4:
-        bits.append("Sell zone")
+        bits.append("Sell zone.")
     elif ev.baseline_score > 0.4:
-        bits.append("Buy zone")
+        bits.append("Buy zone.")
     else:
-        bits.append("Wait")
-    body = _truncate(". ".join(bits) + ".", 80)
-    return title, body
+        bits.append("Wait.")
+    reason = " ".join(bits)
+    return _format_block(emoji, line1, news, _truncate(reason, 130))
 
 
 def pn_recap(by_cluster: dict, top_winners: list[dict],
               top_losers: list[dict]) -> tuple[str, str]:
-    title = _truncate("📊 US session recap · daily wrap", 50)
+    line1 = "US session recap · daily wrap"
     bits = []
     if top_winners:
         w = top_winners[0]
@@ -262,9 +334,15 @@ def pn_recap(by_cluster: dict, top_winners: list[dict],
         bits.append(f"Worst: {l['symbol']} {l['move_24h_pct']:+.1f}%")
     if not bits:
         bits.append("Tape mixed")
-    bits.append("Setup tomorrow")
-    body = _truncate(", ".join(bits) + ".", 80)
-    return title, body
+    cluster_line = ", ".join(
+        f"{c} {v['avg_move']:+.1f}%"
+        for c, v in sorted(by_cluster.items(), key=lambda kv: kv[1]["avg_move"])[:3]
+    )
+    reason_parts = [", ".join(bits) + "."]
+    if cluster_line:
+        reason_parts.append(cluster_line + ".")
+    reason_parts.append("Setup tomorrow.")
+    return _format_block("📊", line1, None, _truncate(" ".join(reason_parts), 150))
 
 
 # ── Detectors ────────────────────────────────────────────────────
@@ -373,6 +451,9 @@ def cycle(args, seen: dict) -> None:
     else:
         primary_rows = secondary_rows = []
 
+    # Index by symbol for 24h move lookup
+    rows_by_sym = {r["symbol"]: r for r in rows}
+
     # Volume spikes — primary first, fall back to secondary if none
     if "volume_spike" in enabled and primary_rows:
         spikes = detect_volume_spikes(primary_rows)
@@ -382,7 +463,9 @@ def cycle(args, seen: dict) -> None:
             key = f"volspike:{s['symbol']}"
             if not _allowed(seen, key, "volume_spike"):
                 continue
-            title, body = pn_volume_spike(s["symbol"], s["move_pct"],
+            r = rows_by_sym.get(s["symbol"], {})
+            m_24h = r.get("move_24h_pct", 0)
+            title, body = pn_volume_spike(s["symbol"], s["move_pct"], m_24h,
                                             s["vol_z"], s["cluster"])
             fire_pn("volume_spike", title, body, s, dry_run=args.dry_run)
             _stamp(seen, key)
@@ -406,7 +489,9 @@ def cycle(args, seen: dict) -> None:
             key = f"breakout:{b['symbol']}"
             if not _allowed(seen, key, "breakout"):
                 continue
-            title, body = pn_breakout(b["symbol"], b["move_pct"],
+            r = rows_by_sym.get(b["symbol"], {})
+            m_24h = r.get("move_24h_pct", 0)
+            title, body = pn_breakout(b["symbol"], b["move_pct"], m_24h,
                                         b["breakout_dir"], b["level"],
                                         b["cluster"])
             fire_pn("breakout", title, body, b, dry_run=args.dry_run)
@@ -488,7 +573,8 @@ def cycle(args, seen: dict) -> None:
                 continue
             sym = target["symbol"]
             ref_price = _hl_last_price(f"xyz:{sym}") or target["price"]
-            title, body = pn_sentiment(ev, sym, ref_price, target["move_pct"])
+            m_24h = target.get("move_24h_pct", 0)
+            title, body = pn_sentiment(ev, sym, m_24h, target["move_pct"])
             fire_pn("sentiment", title, body, {
                 "event_class": ev.event_class,
                 "score": ev.baseline_score,
