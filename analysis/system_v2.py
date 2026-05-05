@@ -120,6 +120,27 @@ def cluster_label(cluster: str) -> str:
     return CLUSTER_FRIENDLY.get(cluster, cluster.title())
 
 
+# Confusingly-named tickers → human-readable label.
+# (HL's deployer-listed names sometimes don't match the underlying.)
+TICKER_DISPLAY_NAME = {
+    "XYZ100":   "NDX",      # Nasdaq 100
+    "SP500":    "SPX",      # S&P 500
+    "JP225":    "Nikkei",
+    "KR200":    "KOSPI",
+    "EWY":      "Korea ETF",
+    "EWJ":      "Japan ETF",
+    "DRAM":     "DRAM",
+    "BRENTOIL": "Brent",
+    "NATGAS":   "NatGas",
+    "PALLADIUM":"Palladium",
+    "PLATINUM": "Platinum",
+}
+
+
+def ticker_display(sym: str) -> str:
+    return TICKER_DISPLAY_NAME.get(sym, sym)
+
+
 def example_tickers(cluster: str, n: int = 3) -> list[str]:
     """Return up to n representative tickers from a cluster."""
     return [sym for sym, c in TICKER_CLUSTER.items() if c == cluster][:n]
