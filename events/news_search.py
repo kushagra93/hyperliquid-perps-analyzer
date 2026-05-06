@@ -166,6 +166,60 @@ def _parse_age(date_str: str) -> tuple[float, str]:
     return secs, f"{int(secs/86400)}d ago"
 
 
+def fetch_yahoo_news(symbol: str, *, n: int = 5) -> list[Headline]:
+    """
+    Pull news from Yahoo Finance per-symbol search. Returns parsed
+    Headline dataclasses sorted newest-first. Tends to be more
+    factual than Google News (less listicle clickbait).
+    """
+    cache_key = f"yfnews::{symbol}::{n}"
+    cached = _cache_get(cache_key)
+    if cached is not None:
+        return [Headline(**h) for h in cached.get("items", [])]
+
+    url = (f"https://query1.finance.yahoo.com/v1/finance/search?"
+           f"q={quote(symbol)}&newsCount={n}&quotesCount=0&lang=en-US&region=US")
+    try:
+        r = subprocess.run(
+            ["curl", "-s", "-A", "Mozilla/5.0", "--max-time", "8", url],
+            capture_output=True, text=True, timeout=10,
+        )
+        import json as _json
+        data = _json.loads(r.stdout) or {}
+    except Exception as e:
+        logger.warning(f"[news] yahoo failed for {symbol}: {e}")
+        return []
+
+    items = data.get("news") or []
+    out: list[Headline] = []
+    from datetime import datetime, timezone
+    for it in items[:n]:
+        title = (it.get("title") or "").strip()
+        if not title:
+            continue
+        pub = it.get("publisher") or ""
+        ts = it.get("providerPublishTime") or 0
+        age_sec = max(0, int(__import__("time").time() - ts)) if ts else None
+        if age_sec is not None:
+            if age_sec < 3600:
+                when = f"{age_sec // 60}m ago"
+            elif age_sec < 86400:
+                when = f"{age_sec // 3600}h ago"
+            else:
+                when = f"{age_sec // 86400}d ago"
+        else:
+            when = "recent"
+        h = Headline(title=title, source=pub, when=when)
+        h.__dict__["_age_sec"] = age_sec
+        h.__dict__["_link"] = it.get("link") or ""
+        out.append(h)
+
+    _cache_put(cache_key, {"items": [
+        {"title": h.title, "source": h.source, "when": h.when} for h in out
+    ]})
+    return out
+
+
 def fetch_top_headlines(query: str, *, n: int = 5,
                           hl: str = "en-IN", gl: str = "IN") -> list[Headline]:
     """Hit Google News RSS, return up to n parsed headlines."""
@@ -307,7 +361,10 @@ def reason_for_ticker(symbol: str, cluster: str, full_name: str | None = None) -
     name = TICKER_QUERY_NAME.get(symbol, full_name or symbol)
     template = QUERIES.get(cluster, "{full} stock today")
     query = template.format(full=name)
-    headlines = fetch_top_headlines(query, n=5)
+    # Multi-source: Google News + Yahoo per-symbol
+    google_h = fetch_top_headlines(query, n=5)
+    yahoo_h  = fetch_yahoo_news(symbol, n=5) if cluster not in ("commodity", "fx", "uranium", "index") else []
+    headlines = google_h + yahoo_h
     if not headlines:
         return None
 

@@ -46,6 +46,7 @@ sys.path.insert(0, str(ROOT))
 from analysis.system_v2 import (
     TICKER_CLUSTER, cluster_label, example_tickers, ticker_display,
 )
+from notifiers.trade_links import trade_link_html
 from analysis.top_movers import (
     PRIMARY_CLUSTERS, SECONDARY_CLUSTERS,
     compute_movers, classify_condition, cluster_heatmap, infer_narrative,
@@ -179,11 +180,12 @@ def _truncate(s: str, n: int) -> str:
 def _format_block(emoji: str, line1_core: str,
                    news_line: str | None,
                    reason_line: str,
-                   why_line: str | None = None) -> tuple[str, str]:
+                   why_line: str | None = None,
+                   sym_for_link: str | None = None) -> tuple[str, str]:
     """
     Return (title, body) where:
       title = "<emoji> <line1_core>"
-      body  = "📰 <news>\n💡 <why this matters>\n📈 <technical reason>"
+      body  = "📰 <news>\n💡 <why>\n📈 <technical>\n🔗 Chart · Trade"
     """
     title = _truncate(f"{emoji} {line1_core}", 60)
     parts = []
@@ -192,6 +194,10 @@ def _format_block(emoji: str, line1_core: str,
     if why_line:
         parts.append(f"💡 {why_line}")
     parts.append(f"📈 {reason_line}")
+    if sym_for_link:
+        link = trade_link_html(sym_for_link)
+        if link:
+            parts.append(link)
     body = "\n".join(parts)
     return title, body
 
@@ -348,7 +354,8 @@ def pn_volume_spike(sym: str, move_pct: float, move_24h: float,
     bits.extend([b for b in _intel_summary(sym) if "vol" not in b.lower()])
     bits.append(_action_word(move_pct))
     reason = " · ".join(bits[:4]) + "."
-    return _format_block(emoji, line1, news, _truncate(reason, 130), why_line=why)
+    return _format_block(emoji, line1, news, _truncate(reason, 130),
+                          why_line=why, sym_for_link=sym)
 
 
 def pn_breakout(sym: str, move_pct: float, move_24h: float,
@@ -367,7 +374,8 @@ def pn_breakout(sym: str, move_pct: float, move_24h: float,
         bits.append(", ".join(intel_bits))
     bits.append(_action_word(breakout_dir))
     reason = " ".join(bits)
-    return _format_block(emoji, line1, news, _truncate(reason, 130), why_line=why)
+    return _format_block(emoji, line1, news, _truncate(reason, 130),
+                          why_line=why, sym_for_link=sym)
 
 
 def pn_cluster_shift_v2(direction: str, clusters: list[str],
@@ -433,7 +441,8 @@ def pn_sentiment_v2(ev: SentimentEvent, sym: str, move_24h: float,
     else:
         bits.append("Wait.")
     reason = " ".join(bits)
-    return _format_block(emoji, line1, news, _truncate(reason, 130), why_line=why)
+    return _format_block(emoji, line1, news, _truncate(reason, 130),
+                          why_line=why, sym_for_link=sym)
 
 
 pn_cluster_shift = pn_cluster_shift_v2

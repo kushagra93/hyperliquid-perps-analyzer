@@ -1,0 +1,197 @@
+{
+  "as_of": "2026-05-06T07:30:35+00:00",
+  "method": "TP1=+1\u00d7ATR \u00b7 SL=-1.5\u00d7ATR \u00b7 16-bar (4h) timeout",
+  "overall": {
+    "n": 57,
+    "wins": 29,
+    "win_rate_pct": 50.9,
+    "avg_pnl_pct": -0.251,
+    "total_pnl_pct": -14.3
+  },
+  "by_kind": {
+    "breakout": {
+      "n": 18,
+      "wins": 10,
+      "win_rate_pct": 55.6,
+      "avg_pnl_pct": -0.093,
+      "total_pnl_pct": -1.68
+    },
+    "volume_spike": {
+      "n": 39,
+      "wins": 19,
+      "win_rate_pct": 48.7,
+      "avg_pnl_pct": -0.324,
+      "total_pnl_pct": -12.62
+    }
+  },
+  "by_ticker": {
+    "COIN": {
+      "n": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.74,
+      "total_pnl_pct": -1.48
+    },
+    "NFLX": {
+      "n": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.055,
+      "total_pnl_pct": 0.06
+    },
+    "META": {
+      "n": 6,
+      "wins": 2,
+      "win_rate_pct": 33.3,
+      "avg_pnl_pct": -0.147,
+      "total_pnl_pct": -0.88
+    },
+    "CRWV": {
+      "n": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.432,
+      "total_pnl_pct": -0.43
+    },
+    "DRAM": {
+      "n": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 2.074,
+      "total_pnl_pct": 2.07
+    },
+    "EWJ": {
+      "n": 3,
+      "wins": 3,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.082,
+      "total_pnl_pct": 0.24
+    },
+    "MRVL": {
+      "n": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.609,
+      "total_pnl_pct": -0.61
+    },
+    "AMZN": {
+      "n": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.514,
+      "total_pnl_pct": -1.03
+    },
+    "MSTR": {
+      "n": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 1.023,
+      "total_pnl_pct": 1.02
+    },
+    "COPPER": {
+      "n": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.177,
+      "total_pnl_pct": -0.18
+    },
+    "XYZ100": {
+      "n": 6,
+      "wins": 5,
+      "win_rate_pct": 83.3,
+      "avg_pnl_pct": 0.067,
+      "total_pnl_pct": 0.4
+    },
+    "COST": {
+      "n": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.106,
+      "total_pnl_pct": 0.11
+    },
+    "HOOD": {
+      "n": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_pnl_pct": -0.283,
+      "total_pnl_pct": -0.57
+    },
+    "INTC": {
+      "n": 3,
+      "wins": 1,
+      "win_rate_pct": 33.3,
+      "avg_pnl_pct": -1.391,
+      "total_pnl_pct": -4.17
+    },
+    "NVDA": {
+      "n": 7,
+      "wins": 1,
+      "win_rate_pct": 14.3,
+      "avg_pnl_pct": -0.488,
+      "total_pnl_pct": -3.42
+    },
+    "BABA": {
+      "n": 3,
+      "wins": 3,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.243,
+      "total_pnl_pct": 0.73
+    },
+    "RIVN": {
+      "n": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.557,
+      "total_pnl_pct": 0.56
+    },
+    "JP225": {
+      "n": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.416,
+      "total_pnl_pct": -0.83
+    },
+    "XLE": {
+      "n": 3,
+      "wins": 3,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.203,
+      "total_pnl_pct": 0.61
+    },
+    "USAR": {
+      "n": 3,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -2.947,
+      "total_pnl_pct": -8.84
+    },
+    "AAPL": {
+      "n": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.635,
+      "total_pnl_pct": -1.27
+    },
+    "LITE": {
+      "n": 2,
+      "wins": 2,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 1.087,
+      "total_pnl_pct": 2.17
+    },
+    "LLY": {
+      "n": 2,
+      "wins": 2,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.417,
+      "total_pnl_pct": 0.83
+    },
+    "TSLA": {
+      "n": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.602,
+      "total_pnl_pct": 0.6
+    }
+  }
+}

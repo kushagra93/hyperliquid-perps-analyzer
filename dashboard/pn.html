@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HL PN Feed · Live + History · Performance</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{font-family:ui-sans-serif,system-ui,-apple-system,Inter,sans-serif}
+  pre{white-space:pre-wrap;font-family:ui-sans-serif,system-ui,sans-serif}
+  .card{transition:background .15s}
+  .card:hover{background:rgb(15 23 42 / 0.6)}
+</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="border-b border-slate-800 sticky top-0 bg-slate-950/95 backdrop-blur z-10">
+ <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+  <div>
+   <h1 class="text-lg font-semibold">HL · PN Feed + Performance</h1>
+   <p id="subtitle" class="text-xs text-slate-400">loading…</p>
+  </div>
+  <div class="flex items-center gap-3 text-sm">
+   <a href="index.html" class="text-cyan-400 hover:text-cyan-300">← Signal report</a>
+   <span class="text-slate-600">·</span>
+   <a href="https://t.me/hereandnowalertbot" class="text-cyan-400" target="_blank">Bot</a>
+  </div>
+ </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+ <!-- Performance KPIs -->
+ <section id="perf-kpis" class="grid grid-cols-2 md:grid-cols-5 gap-3"></section>
+
+ <!-- Per-kind + per-ticker tables -->
+ <section class="grid md:grid-cols-2 gap-6">
+  <div>
+   <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-2">Performance by PN type</h2>
+   <div class="rounded-lg border border-slate-800 overflow-hidden">
+    <table class="w-full text-sm">
+     <thead class="bg-slate-900/60 text-slate-400 text-xs">
+      <tr><th class="text-left px-3 py-2">Type</th><th class="text-right px-3">n</th><th class="text-right px-3">win %</th><th class="text-right px-3">avg PnL</th><th class="text-right px-3">total</th></tr>
+     </thead><tbody id="kind-tbody"></tbody>
+    </table>
+   </div>
+  </div>
+  <div>
+   <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-2">Top tickers by activity</h2>
+   <div class="rounded-lg border border-slate-800 overflow-hidden">
+    <table class="w-full text-sm">
+     <thead class="bg-slate-900/60 text-slate-400 text-xs">
+      <tr><th class="text-left px-3 py-2">Ticker</th><th class="text-right px-3">n</th><th class="text-right px-3">win %</th><th class="text-right px-3">avg PnL</th></tr>
+     </thead><tbody id="ticker-tbody"></tbody>
+    </table>
+   </div>
+  </div>
+ </section>
+
+ <!-- PN feed (current + history) -->
+ <section>
+  <div class="flex flex-wrap items-center gap-3 mb-3">
+   <h2 class="text-sm uppercase tracking-wide text-slate-400 mr-auto">Live + history feed</h2>
+   <div class="flex items-center gap-2 text-sm">
+    <label class="text-slate-400">Type</label>
+    <select id="f-kind" class="bg-slate-900 border border-slate-700 rounded px-2 py-1">
+     <option value="">all</option>
+     <option value="sentiment">sentiment</option>
+     <option value="volume_spike">volume_spike</option>
+     <option value="cluster_shift">cluster_shift</option>
+     <option value="breakout">breakout</option>
+     <option value="recap">recap</option>
+    </select>
+    <label class="text-slate-400 ml-2">Outcome</label>
+    <select id="f-outcome" class="bg-slate-900 border border-slate-700 rounded px-2 py-1">
+     <option value="">all</option>
+     <option value="tp1">tp1</option><option value="sl">sl</option>
+     <option value="timeout">timeout</option>
+     <option value="open">unresolved</option>
+    </select>
+    <label class="text-slate-400 ml-2">Ticker</label>
+    <input id="f-ticker" placeholder="e.g. NVDA" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 w-24"/>
+   </div>
+  </div>
+  <div id="feed" class="space-y-2"></div>
+ </section>
+
+ <footer class="text-xs text-slate-500 pt-8 border-t border-slate-900">
+  Outcomes: TP1 = +1×ATR target, SL = −1.5×ATR stop, 16-bar (4-hour) timeout — same engine that backs the live PN service. Refresh the page or wait for the periodic publish job to update.
+ </footer>
+</main>
+
+<script>
+async function load() {
+ const [feedR, perfR] = await Promise.all([
+   fetch("./pn_feed.json", {cache: "no-store"}),
+   fetch("./performance.json", {cache: "no-store"})
+ ]);
+ const feedData = feedR.ok ? await feedR.json() : {items: []};
+ const perf = perfR.ok ? await perfR.json() : {overall: {}, by_kind: {}, by_ticker: {}};
+
+ document.getElementById("subtitle").textContent =
+   `${feedData.n_total||feedData.items.length} PNs total · ${feedData.n_resolved||0} resolved · updated ${(perf.as_of||feedData.as_of||"").replace("T"," ")}`;
+
+ // KPIs
+ const o = perf.overall || {};
+ const kpis = [
+   {l: "Total resolved", v: o.n||0},
+   {l: "Wins", v: o.wins||0},
+   {l: "Win rate", v: (o.win_rate_pct!=null?o.win_rate_pct+"%":"–"), c: (o.win_rate_pct||0)>=50?"text-emerald-400":"text-rose-400"},
+   {l: "Avg PnL", v: ((o.avg_pnl_pct||0)>=0?"+":"")+(o.avg_pnl_pct||0)+"%", c:(o.avg_pnl_pct||0)>=0?"text-emerald-400":"text-rose-400"},
+   {l: "Total PnL", v: ((o.total_pnl_pct||0)>=0?"+":"")+(o.total_pnl_pct||0)+"%", c:(o.total_pnl_pct||0)>=0?"text-emerald-400":"text-rose-400"},
+ ];
+ document.getElementById("perf-kpis").innerHTML = kpis.map(k=>
+  `<div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+    <div class="text-xs uppercase text-slate-500">${k.l}</div>
+    <div class="text-2xl font-semibold ${k.c||"text-slate-100"}">${k.v}</div>
+  </div>`).join("");
+
+ // tables
+ const renderRows = (id, dict) => {
+  const sorted = Object.entries(dict).sort((a,b)=>b[1].n-a[1].n);
+  document.getElementById(id).innerHTML = sorted.map(([k,v])=>{
+    const c = v.win_rate_pct>=50?"text-emerald-400":v.win_rate_pct>0?"text-amber-400":"text-rose-400";
+    const p = v.avg_pnl_pct>=0?"text-emerald-400":"text-rose-400";
+    const t = (v.total_pnl_pct!=null?v.total_pnl_pct:0);
+    return `<tr class="border-t border-slate-800/60">
+      <td class="px-3 py-1.5 font-medium">${k}</td>
+      <td class="px-3 text-right">${v.n}</td>
+      <td class="px-3 text-right ${c}">${v.win_rate_pct}%</td>
+      <td class="px-3 text-right ${p}">${v.avg_pnl_pct>=0?"+":""}${v.avg_pnl_pct}%</td>
+      ${id==="kind-tbody"?`<td class="px-3 text-right ${t>=0?"text-emerald-400":"text-rose-400"}">${t>=0?"+":""}${t}%</td>`:""}
+    </tr>`;}).join("") || `<tr><td colspan="5" class="px-3 py-3 text-slate-500">no data</td></tr>`;
+ };
+ renderRows("kind-tbody", perf.by_kind||{});
+ renderRows("ticker-tbody", perf.by_ticker||{});
+
+ // feed
+ window.__feed = feedData.items || [];
+ renderFeed();
+ ["f-kind","f-outcome","f-ticker"].forEach(id=>document.getElementById(id).addEventListener("input", renderFeed));
+ ["f-kind","f-outcome"].forEach(id=>document.getElementById(id).addEventListener("change", renderFeed));
+}
+
+function renderFeed() {
+ const items = window.__feed||[];
+ const fk = document.getElementById("f-kind").value;
+ const fo = document.getElementById("f-outcome").value;
+ const ft = document.getElementById("f-ticker").value.trim().toUpperCase();
+ const filtered = items.filter(x =>
+   (!fk || x.kind===fk) &&
+   (!fo || (fo==="open" ? !x.resolved || x.outcome==="open" : x.outcome===fo)) &&
+   (!ft || (x.symbol||"").includes(ft))
+ );
+ const outBadge = (o) => {
+   const map={tp1:"bg-emerald-500/20 text-emerald-300",sl:"bg-rose-500/20 text-rose-300",
+     timeout:"bg-slate-700 text-slate-300",open:"bg-amber-500/20 text-amber-300"};
+   return o ? `<span class="px-2 py-0.5 rounded-full text-xs font-semibold ${map[o]||""}">${o}</span>` :
+              `<span class="px-2 py-0.5 rounded-full text-xs bg-slate-700 text-slate-400">unresolved</span>`;
+ };
+ document.getElementById("feed").innerHTML = filtered.slice(0, 200).map(it => {
+  const ts = (it.ts_ist||it.ts_utc||"").replace("T"," ").slice(0,16);
+  const sym = it.display || it.symbol || "";
+  const pnl = it.pnl_pct;
+  const pnlSpan = pnl!=null
+   ? `<span class="${pnl>=0?"text-emerald-400":"text-rose-400"}">${pnl>=0?"+":""}${pnl}%</span>`
+   : `<span class="text-slate-500">—</span>`;
+  const title = (it.title||"").replace(/<\/?b>/g,"");
+  const body = (it.body||"").replace(/<\/?b>/g,"").replace(/<\/?i>/g,"");
+  return `<div class="card rounded-lg border border-slate-800 bg-slate-900/30 p-3">
+    <div class="flex items-start justify-between gap-3">
+     <div class="flex-1 min-w-0">
+      <div class="text-sm font-semibold">${title}</div>
+      <pre class="text-xs text-slate-300 mt-1 leading-relaxed">${body}</pre>
+     </div>
+     <div class="flex flex-col items-end gap-1 shrink-0">
+      <div class="text-xs text-slate-500">${ts}</div>
+      ${outBadge(it.outcome)}
+      <div class="text-xs">${pnlSpan}</div>
+      <div class="text-xs text-slate-500">${it.kind||""}</div>
+     </div>
+    </div>
+   </div>`;
+ }).join("") || `<div class="text-slate-500 text-sm py-6 text-center">No PNs match filters.</div>`;
+}
+
+load();
+</script>
+</body></html>
