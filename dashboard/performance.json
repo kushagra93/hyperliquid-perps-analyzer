@@ -1,36 +1,99 @@
 {
-  "as_of": "2026-05-06T07:55:49+00:00",
+  "as_of": "2026-05-06T08:19:14+00:00",
   "method": "TP1=+1\u00d7ATR \u00b7 SL=-1.5\u00d7ATR \u00b7 16-bar (4h) timeout",
   "overall": {
-    "n": 42,
-    "wins": 24,
-    "win_rate_pct": 57.1,
-    "avg_pnl_pct": -0.129,
-    "total_pnl_pct": -5.42
+    "n": 46,
+    "wins": 25,
+    "win_rate_pct": 54.3,
+    "avg_pnl_pct": -0.116,
+    "total_pnl_pct": -5.31
   },
   "by_kind": {
     "volume_spike": {
-      "n": 30,
-      "wins": 16,
-      "win_rate_pct": 53.3,
-      "avg_pnl_pct": -0.193,
-      "total_pnl_pct": -5.8
+      "n": 31,
+      "wins": 15,
+      "win_rate_pct": 48.4,
+      "avg_pnl_pct": -0.184,
+      "total_pnl_pct": -5.71
     },
     "breakout": {
-      "n": 12,
-      "wins": 8,
+      "n": 15,
+      "wins": 10,
       "win_rate_pct": 66.7,
-      "avg_pnl_pct": 0.032,
-      "total_pnl_pct": 0.39
+      "avg_pnl_pct": 0.027,
+      "total_pnl_pct": 0.4
     }
   },
   "by_ticker": {
+    "AAPL": {
+      "n": 1,
+      "wins": 1,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.032,
+      "total_pnl_pct": 0.03
+    },
+    "TSLA": {
+      "n": 2,
+      "wins": 2,
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.041,
+      "total_pnl_pct": 0.08
+    },
+    "PLTR": {
+      "n": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.059,
+      "total_pnl_pct": -0.06
+    },
+    "NVDA": {
+      "n": 4,
+      "wins": 1,
+      "win_rate_pct": 25.0,
+      "avg_pnl_pct": -0.426,
+      "total_pnl_pct": -1.7
+    },
+    "CRCL": {
+      "n": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.103,
+      "total_pnl_pct": -0.1
+    },
+    "MSTR": {
+      "n": 2,
+      "wins": 1,
+      "win_rate_pct": 50.0,
+      "avg_pnl_pct": 0.46,
+      "total_pnl_pct": 0.92
+    },
+    "BRENTOIL": {
+      "n": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.758,
+      "total_pnl_pct": -0.76
+    },
+    "CL": {
+      "n": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.73,
+      "total_pnl_pct": -0.73
+    },
+    "EWJ": {
+      "n": 4,
+      "wins": 3,
+      "win_rate_pct": 75.0,
+      "avg_pnl_pct": 0.061,
+      "total_pnl_pct": 0.24
+    },
     "GME": {
       "n": 1,
       "wins": 0,
       "win_rate_pct": 0.0,
-      "avg_pnl_pct": -0.496,
-      "total_pnl_pct": -0.5
+      "avg_pnl_pct": -0.623,
+      "total_pnl_pct": -0.62
     },
     "COIN": {
       "n": 1,
@@ -67,13 +130,6 @@
       "avg_pnl_pct": 2.074,
       "total_pnl_pct": 2.07
     },
-    "EWJ": {
-      "n": 3,
-      "wins": 3,
-      "win_rate_pct": 100.0,
-      "avg_pnl_pct": 0.082,
-      "total_pnl_pct": 0.24
-    },
     "MRVL": {
       "n": 1,
       "wins": 0,
@@ -87,13 +143,6 @@
       "win_rate_pct": 0.0,
       "avg_pnl_pct": -0.368,
       "total_pnl_pct": -0.37
-    },
-    "MSTR": {
-      "n": 1,
-      "wins": 1,
-      "win_rate_pct": 100.0,
-      "avg_pnl_pct": 1.023,
-      "total_pnl_pct": 1.02
     },
     "COPPER": {
       "n": 1,
@@ -130,13 +179,6 @@
       "avg_pnl_pct": 0.883,
       "total_pnl_pct": 0.88
     },
-    "NVDA": {
-      "n": 3,
-      "wins": 0,
-      "win_rate_pct": 0.0,
-      "avg_pnl_pct": -0.578,
-      "total_pnl_pct": -1.73
-    },
     "BABA": {
       "n": 3,
       "wins": 3,
@@ -159,32 +201,18 @@
       "total_pnl_pct": -0.83
     },
     "XLE": {
-      "n": 3,
-      "wins": 3,
-      "win_rate_pct": 100.0,
-      "avg_pnl_pct": 0.203,
-      "total_pnl_pct": 0.61
-    },
-    "USAR": {
-      "n": 3,
-      "wins": 0,
-      "win_rate_pct": 0.0,
-      "avg_pnl_pct": -2.947,
-      "total_pnl_pct": -8.84
-    },
-    "AAPL": {
-      "n": 2,
-      "wins": 0,
-      "win_rate_pct": 0.0,
-      "avg_pnl_pct": -0.635,
-      "total_pnl_pct": -1.27
-    },
-    "LITE": {
       "n": 2,
       "wins": 2,
       "win_rate_pct": 100.0,
-      "avg_pnl_pct": 1.087,
-      "total_pnl_pct": 2.17
+      "avg_pnl_pct": 0.203,
+      "total_pnl_pct": 0.41
+    },
+    "USAR": {
+      "n": 2,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -2.947,
+      "total_pnl_pct": -5.89
     }
   }
 }

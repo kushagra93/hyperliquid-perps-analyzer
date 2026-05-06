@@ -47,37 +47,106 @@ PERF_OUT    = ROOT / "dashboard" / "performance.json"
 
 
 def _enrich_news_links(rec: dict) -> dict:
-    """Attach Yahoo/Google news links to a PN record so the dashboard
-    can render the 📰 source as a clickable link."""
-    sym = rec.get("payload", {}).get("symbol") or rec.get("symbol")
-    if not sym:
-        return rec
-    try:
-        from events.news_search import (
-            fetch_yahoo_news, fetch_top_headlines,
-            TICKER_QUERY_NAME, QUERIES,
-            _is_clickbait, _PROMO_RE,
-        )
-        cluster = rec.get("cluster") or "other"
-        name = TICKER_QUERY_NAME.get(sym, sym)
-        query = QUERIES.get(cluster, "{full} stock today").format(full=name)
-        google_h = fetch_top_headlines(query, n=3)
-        yahoo_h = fetch_yahoo_news(sym, n=3) if cluster not in ("commodity","fx","uranium","index") else []
-        all_h = google_h + yahoo_h
+    """
+    Attach top news headlines (with clickable link, source, age) to
+    EVERY PN, regardless of kind. Query strategy varies per kind:
+      breakout / volume_spike — per-ticker (Google + Yahoo)
+      sentiment               — per-ticker + event_class topic
+      cluster_shift           — macro-direction (rally / selloff)
+      recap                   — US session close headlines
+    """
+    from events.news_search import (
+        fetch_yahoo_news, fetch_top_headlines,
+        TICKER_QUERY_NAME, QUERIES,
+        _is_clickbait, _PROMO_RE,
+    )
+
+    def _clean(headlines):
+        all_h = headlines or []
         clean = [h for h in all_h
                   if not _is_clickbait(h.title or "")
                   and not _PROMO_RE.search(h.title or "")
                   and not _PROMO_RE.search(h.source or "")]
-        pool = clean if clean else all_h
-        items = []
-        for h in pool[:5]:
-            items.append({
+        return clean if clean else all_h
+
+    def _to_items(headlines, n=4):
+        out = []
+        for h in headlines[:n]:
+            out.append({
                 "title": h.title, "source": h.source, "age": h.when,
                 "link": h.__dict__.get("_link", ""),
             })
-        rec["news_items"] = items
-    except Exception as e:
+        return out
+
+    kind = rec.get("kind", "")
+    sym = rec.get("payload", {}).get("symbol") or rec.get("symbol")
+    cluster = rec.get("cluster") or "other"
+    items: list[dict] = []
+
+    try:
+        if kind in ("breakout", "volume_spike", "sentiment") and sym:
+            name = TICKER_QUERY_NAME.get(sym, sym)
+            qtmpl = QUERIES.get(cluster, "{full} stock today")
+            ticker_q = qtmpl.format(full=name)
+            google_h = fetch_top_headlines(ticker_q, n=3)
+            yahoo_h = fetch_yahoo_news(sym, n=3) if cluster not in ("commodity","fx","uranium","index") else []
+            ticker_pool = _clean(google_h + yahoo_h)
+            items.extend(_to_items(ticker_pool, n=3))
+
+            # For sentiment, also try the event-topic query
+            if kind == "sentiment":
+                evc = rec.get("payload", {}).get("event_class") or ""
+                topic_q = {
+                    "trump_tariff":      "Trump tariff stocks today",
+                    "trade_tariff":      "tariff news today",
+                    "trade_war":         "trade war news today",
+                    "fed_hawkish":       "Fed hawkish rate decision",
+                    "fed_dovish":        "Fed dovish rate cut",
+                    "rate_decision":     "Fed rate decision today",
+                    "cpi_hot":           "CPI inflation hot",
+                    "cpi_cool":          "CPI inflation cool",
+                    "nfp_strong":        "NFP payrolls strong",
+                    "nfp_weak":          "NFP payrolls weak",
+                    "middle_east_war":   "Iran Israel oil",
+                    "ukraine_war":       "Russia Ukraine markets",
+                    "opec_supply_cut":   "OPEC oil production cut",
+                    "btc_crash":         "Bitcoin crash today",
+                    "btc_rally":         "Bitcoin rally today",
+                    "sec_approve":       "SEC ETF approval",
+                    "sec_action":        "SEC enforcement action",
+                    "chip_export_curb":  "chip export controls China",
+                    "earnings_beat":     "earnings beat estimates",
+                    "earnings_miss":     "earnings miss estimates",
+                    "guidance_raise":    "guidance raised stocks",
+                    "guidance_cut":      "guidance cut stocks",
+                    "m_and_a":           "merger acquisition deal today",
+                }.get(evc, "")
+                if topic_q:
+                    topic_h = _clean(fetch_top_headlines(topic_q, n=3))
+                    items.extend(_to_items(topic_h, n=2))
+
+        elif kind == "cluster_shift":
+            direction = rec.get("payload", {}).get("direction", "")
+            macro_q = ("US stock market selloff today"
+                       if direction == "down"
+                       else "US stock market rally today")
+            macro_h = _clean(fetch_top_headlines(macro_q, n=4))
+            items = _to_items(macro_h, n=3)
+
+        elif kind == "recap":
+            recap_h = _clean(fetch_top_headlines("US stock market close today", n=4))
+            items = _to_items(recap_h, n=3)
+
+        # De-duplicate by title prefix
+        seen = set(); deduped = []
+        for it in items:
+            key = (it.get("title") or "")[:60]
+            if key in seen: continue
+            seen.add(key); deduped.append(it)
+        rec["news_items"] = deduped[:4]
+    except Exception:
         rec["news_items"] = []
+
     return rec
 
 
@@ -287,10 +356,23 @@ def main():
               for r in rows[args.max_resolve : args.max_feed]]
     feed = resolved + older
 
-    # Map symbols to display labels for the UI + add trade/chart links
+    # Map symbols to display labels + trade/chart links + news enrichment
     from notifiers.trade_links import tv_chart_link, hl_trade_link
-    for r in feed:
+    import re as _re
+    for i, r in enumerate(feed):
         sym = r.get("symbol") or (r.get("payload") or {}).get("symbol")
+        # Backfill: extract symbol from title for sentiment/breakout/volume PNs
+        # whose payload didn't include it (older format).
+        if not sym and r.get("title"):
+            from analysis.system_v2 import TICKER_DISPLAY_NAME
+            display_to_sym = {v: k for k, v in TICKER_DISPLAY_NAME.items()}
+            title_clean = _re.sub(r"<[^>]+>", "", r["title"])
+            for m in _re.finditer(r"\b([A-Z][A-Z0-9]{1,8})\b", title_clean):
+                cand = m.group(1)
+                if cand in TICKER_CLUSTER:
+                    sym = cand; break
+                if cand in display_to_sym:
+                    sym = display_to_sym[cand]; break
         if sym:
             r["symbol"] = sym
             r["display"] = ticker_display(sym)
@@ -298,7 +380,8 @@ def main():
             r["group"] = cluster_label(r["cluster"])
             r["chart_url"] = tv_chart_link(sym)
             r["trade_url"] = hl_trade_link(sym)
-            r = _enrich_news_links(r)
+        # Enrich news for ALL records (cluster_shift / recap have no sym)
+        feed[i] = _enrich_news_links(r)
 
     PN_FEED_OUT.parent.mkdir(parents=True, exist_ok=True)
     PN_FEED_OUT.write_text(json.dumps({

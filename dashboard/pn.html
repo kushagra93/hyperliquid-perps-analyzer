@@ -127,6 +127,42 @@
   ::-webkit-scrollbar-track{background:var(--bg)}
   ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
   ::-webkit-scrollbar-thumb:hover{background:var(--dimmer)}
+
+  /* Help panel + "?" toggles */
+  .help-toggle{display:inline-flex;align-items:center;justify-content:center;
+    width:14px;height:14px;border-radius:50%;background:var(--bg3);
+    color:var(--dim);font-size:10px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line2);user-select:none;transition:all .15s;
+    margin-left:6px}
+  .help-toggle:hover{color:var(--cyan);border-color:var(--cyan)}
+  .help-toggle.active{background:var(--cyan);color:#000;border-color:var(--cyan)}
+  .help-pane{
+    background:rgba(34,211,238,.04);
+    border:1px solid rgba(34,211,238,.2);
+    border-left:3px solid var(--cyan);
+    border-radius:3px;
+    padding:9px 12px;font-size:11px;line-height:1.6;color:var(--txt);
+    margin-bottom:10px;
+  }
+  .help-pane strong{color:var(--cyan);font-weight:600}
+  .help-pane code{background:var(--bg);padding:1px 5px;border-radius:2px;color:var(--green);font-size:10.5px}
+  .help-pane ul{list-style:none;padding:0;margin:4px 0 0 0}
+  .help-pane li{margin:2px 0}
+  .hidden{display:none !important}
+
+  /* About overlay */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:50;
+    display:flex;align-items:center;justify-content:center;padding:24px}
+  .modal{background:var(--bg);border:1px solid var(--green-d);
+    border-radius:6px;max-width:880px;width:100%;max-height:90vh;
+    overflow-y:auto;padding:24px;box-shadow:0 0 40px rgba(0,255,136,.15)}
+  .modal h2{color:var(--green);font-size:16px;font-weight:700;letter-spacing:.04em;margin:0 0 8px;text-transform:uppercase}
+  .modal h3{color:var(--cyan);font-size:13px;font-weight:600;margin:18px 0 6px;letter-spacing:.04em;text-transform:uppercase}
+  .modal p,.modal li{font-size:12px;color:var(--txt);line-height:1.6}
+  .modal code{background:var(--bg2);padding:1px 6px;border-radius:2px;color:var(--green);font-size:11px}
+  .modal table{width:100%;font-size:11.5px;margin-top:6px}
+  .modal th{text-align:left;color:var(--dim);padding:4px 8px;border-bottom:1px solid var(--line)}
+  .modal td{padding:4px 8px;border-bottom:1px solid var(--line);color:var(--txt)}
 </style>
 </head>
 <body>
@@ -142,11 +178,14 @@
         </div>
       </div>
     </div>
-    <nav class="flex gap-1">
+    <nav class="flex gap-1 items-center">
       <a href="/pn" class="nav-tab active">FEED</a>
       <a href="/perf" class="nav-tab inactive">PERF</a>
       <a href="/" class="nav-tab inactive">60D</a>
-      <a href="https://t.me/hereandnowalertbot" class="nav-tab inactive" target="_blank">TG</a>
+      <a href="https://t.me/+E_odlWznUrM2Y2Vl" target="_blank"
+         class="nav-tab" style="background:#229ED9;color:white;border:none">
+        🔔 JOIN CHANNEL
+      </a>
     </nav>
   </div>
   <div class="scan"></div>
@@ -224,9 +263,19 @@
   </aside>
 </main>
 
-<footer class="text-[10px] py-3 px-4 max-w-[1600px] mx-auto" style="color:var(--dimmer)">
-  TP1 = +1×ATR · SL = −1.5×ATR · 16-bar timeout. Resolution engine same as live PN service.
-  Telegram channel: <a href="https://t.me/hereandnowalertbot" style="color:var(--cyan)">@hereandnowalertbot</a>
+<footer class="py-4 px-4 max-w-[1600px] mx-auto" style="border-top:1px solid var(--line);margin-top:24px">
+  <div class="rounded-lg p-4 mb-3 text-center" style="background:linear-gradient(135deg,rgba(34,158,217,.15),rgba(0,255,136,.08));border:1px solid #229ED9">
+   <div class="text-sm font-semibold mb-1" style="color:#FFF">📡 Get every PN on your phone — instantly</div>
+   <div class="text-[11px] mb-3" style="color:var(--dim)">Live signals, narrative shifts, breakouts, volume spikes — pushed the moment they fire.</div>
+   <a href="https://t.me/+E_odlWznUrM2Y2Vl" target="_blank"
+      class="inline-block px-5 py-2 rounded font-semibold text-sm"
+      style="background:#229ED9;color:white;text-decoration:none">
+     🔔 JOIN TELEGRAM CHANNEL
+   </a>
+  </div>
+  <div class="text-[10px] text-center" style="color:var(--dimmer)">
+    TP1 = +1×ATR · SL = −1.5×ATR · 16-bar timeout. Resolution engine same as live PN service.
+  </div>
 </footer>
 
 <script>
@@ -271,15 +320,36 @@ function newsHtml(news_items){
  return top;
 }
 
+function humanize(s){
+ if (!s) return s;
+ // Drop "Conf 8%." trader-jargon
+ s = s.replace(/Conf\s*\d+\s*%\s*\.?\s*/gi, "");
+ // Friendly translations
+ s = s.replace(/\btight range\b/gi, "consolidating");
+ s = s.replace(/\bbig swings\b/gi, "high volatility");
+ s = s.replace(/\babove day avg\b/gi, "above day's avg price");
+ s = s.replace(/\bbelow day avg\b/gi, "below day's avg price");
+ s = s.replace(/\bvol (\d+)× normal\b/gi, "volume $1× normal");
+ s = s.replace(/\bheavy volume\b/gi, "elevated volume");
+ s = s.replace(/\bfresh longs\b/gi, "new buyers entering");
+ s = s.replace(/\bfresh shorts\b/gi, "new sellers entering");
+ s = s.replace(/\blongs paying\b/gi, "longs paying funding (real demand)");
+ s = s.replace(/\blongs leaving\b/gi, "buyers exiting");
+ s = s.replace(/\bshorts paying\b/gi, "shorts paying funding");
+ s = s.replace(/\bRisk-off\b/g, "Risk-off mode");
+ s = s.replace(/\bRisk-on\b/g, "Risk-on mode");
+ // Trim trailing dots/commas
+ return s.replace(/\s+/g, " ").replace(/^[\s.,;:]+|[\s,;:]+$/g, "").trim();
+}
+
 function bodyParts(it){
- // Break body into why (💡) and reason (📈) lines
  const body = (it.body||"").replace(/<\/?b>/g,"").replace(/<\/?i>/g,"");
  const lines = body.split("\n").map(l=>l.trim()).filter(Boolean);
  const why = lines.find(l=>l.startsWith("💡"));
  const reason = lines.find(l=>l.startsWith("📈"));
  return {
-   why: why ? why.replace(/^💡\s*/,"") : "",
-   reason: reason ? reason.replace(/^📈\s*/,"") : ""
+   why: why ? humanize(why.replace(/^💡\s*/,"")) : "",
+   reason: reason ? humanize(reason.replace(/^📈\s*/,"")) : ""
  };
 }
 
@@ -309,9 +379,11 @@ function rowHtml(it){
  const sym = it.display || it.symbol || "·";
  const dir = (it.title||"").startsWith("🟢") ? "up" : (it.title||"").startsWith("🔴") ? "down" : "";
  const symCls = dir==="up"?"sym-up":dir==="down"?"sym-down":"";
+ // Strip leading emoji + any HTML — handles 🟢🔴⚪📊💀🚀📉📈⚖️ + variation selectors
  const titlePlain = (it.title||"")
    .replace(/<\/?b>/g,"")
-   .replace(/^[🟢🔴⚪📊]\s*/,"")
+   .replace(/<\/?i>/g,"")
+   .replace(/^[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}️]\s*/u, "")
    .trim();
  const {why, reason} = bodyParts(it);
  const isNew = !lastIds.has(it.pn_id);

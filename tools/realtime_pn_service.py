@@ -707,6 +707,9 @@ def cycle(args, seen: dict) -> None:
             m_24h = target.get("move_24h_pct", 0)
             title, body = pn_sentiment(ev, sym, m_24h, target["move_pct"])
             fire_pn("sentiment", title, body, {
+                "symbol": sym,
+                "move_pct": realised_pct,
+                "move_24h_pct": m_24h,
                 "event_class": ev.event_class,
                 "score": ev.baseline_score,
                 "confidence": ev.confidence,
