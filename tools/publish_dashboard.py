@@ -46,6 +46,41 @@ PN_FEED_OUT = ROOT / "dashboard" / "pn_feed.json"
 PERF_OUT    = ROOT / "dashboard" / "performance.json"
 
 
+def _enrich_news_links(rec: dict) -> dict:
+    """Attach Yahoo/Google news links to a PN record so the dashboard
+    can render the 📰 source as a clickable link."""
+    sym = rec.get("payload", {}).get("symbol") or rec.get("symbol")
+    if not sym:
+        return rec
+    try:
+        from events.news_search import (
+            fetch_yahoo_news, fetch_top_headlines,
+            TICKER_QUERY_NAME, QUERIES,
+            _is_clickbait, _PROMO_RE,
+        )
+        cluster = rec.get("cluster") or "other"
+        name = TICKER_QUERY_NAME.get(sym, sym)
+        query = QUERIES.get(cluster, "{full} stock today").format(full=name)
+        google_h = fetch_top_headlines(query, n=3)
+        yahoo_h = fetch_yahoo_news(sym, n=3) if cluster not in ("commodity","fx","uranium","index") else []
+        all_h = google_h + yahoo_h
+        clean = [h for h in all_h
+                  if not _is_clickbait(h.title or "")
+                  and not _PROMO_RE.search(h.title or "")
+                  and not _PROMO_RE.search(h.source or "")]
+        pool = clean if clean else all_h
+        items = []
+        for h in pool[:5]:
+            items.append({
+                "title": h.title, "source": h.source, "age": h.when,
+                "link": h.__dict__.get("_link", ""),
+            })
+        rec["news_items"] = items
+    except Exception as e:
+        rec["news_items"] = []
+    return rec
+
+
 def _hl_candles_after(coin: str, since_ms: int, n_bars: int = 16) -> list[dict]:
     end_ms = since_ms + (n_bars + 4) * 15 * 60 * 1000
     payload = {"type": "candleSnapshot", "req": {
@@ -252,7 +287,8 @@ def main():
               for r in rows[args.max_resolve : args.max_feed]]
     feed = resolved + older
 
-    # Map symbols to display labels for the UI
+    # Map symbols to display labels for the UI + add trade/chart links
+    from notifiers.trade_links import tv_chart_link, hl_trade_link
     for r in feed:
         sym = r.get("symbol") or (r.get("payload") or {}).get("symbol")
         if sym:
@@ -260,6 +296,9 @@ def main():
             r["display"] = ticker_display(sym)
             r["cluster"] = TICKER_CLUSTER.get(sym, "other")
             r["group"] = cluster_label(r["cluster"])
+            r["chart_url"] = tv_chart_link(sym)
+            r["trade_url"] = hl_trade_link(sym)
+            r = _enrich_news_links(r)
 
     PN_FEED_OUT.parent.mkdir(parents=True, exist_ok=True)
     PN_FEED_OUT.write_text(json.dumps({

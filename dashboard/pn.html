@@ -3,184 +3,528 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>HL PN Feed · Live + History · Performance</title>
+<title>HL · Intelligence Terminal</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:ui-sans-serif,system-ui,-apple-system,Inter,sans-serif}
-  pre{white-space:pre-wrap;font-family:ui-sans-serif,system-ui,sans-serif}
-  .card{transition:background .15s}
-  .card:hover{background:rgb(15 23 42 / 0.6)}
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e14; --bg2:#0e141c; --bg3:#141b25;
+    --line:#1a2332; --line2:#243042;
+    --txt:#cfd6df; --dim:#6a7889; --dimmer:#475061;
+    --green:#00ff88; --green-d:#00cc66;
+    --red:#ff3a5e; --red-d:#cc2a47;
+    --amber:#ffb627; --amber-d:#cc8f1f;
+    --cyan:#22d3ee; --magenta:#e879f9;
+  }
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg);color:var(--txt);
+    font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+    font-size:13px;line-height:1.4;letter-spacing:.01em;
+    margin:0;
+  }
+  .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+  .scan::after{
+    content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--green),transparent);
+    animation:scan 3s linear infinite;
+  }
+  @keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  @keyframes pulse{
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.6;transform:scale(1.3)}
+  }
+  @keyframes flash{
+    0%{background:rgba(255,58,94,.18)}
+    100%{background:transparent}
+  }
+  .pulse{animation:pulse 1.6s ease-in-out infinite}
+  .flash-in{animation:flash 1.4s ease-out 1}
+
+  .nav-tab{padding:5px 12px;border-radius:4px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;transition:all .15s}
+  .nav-tab.active{background:var(--green);color:#000}
+  .nav-tab.inactive{color:var(--dim);border:1px solid var(--line)}
+  .nav-tab.inactive:hover{color:var(--txt);border-color:var(--green-d)}
+
+  .pill{display:inline-block;padding:1px 6px;border-radius:2px;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  .pill-green{background:rgba(0,255,136,.15);color:var(--green);border:1px solid rgba(0,255,136,.3)}
+  .pill-red{background:rgba(255,58,94,.15);color:var(--red);border:1px solid rgba(255,58,94,.3)}
+  .pill-amber{background:rgba(255,182,39,.15);color:var(--amber);border:1px solid rgba(255,182,39,.3)}
+  .pill-dim{background:var(--bg3);color:var(--dim);border:1px solid var(--line)}
+  .pill-magenta{background:rgba(232,121,249,.12);color:var(--magenta);border:1px solid rgba(232,121,249,.25)}
+
+  /* Feed entry — list-style, terminal density */
+  .row{
+    display:grid;grid-template-columns:80px 1fr auto;gap:14px;align-items:start;
+    padding:10px 12px;border-bottom:1px solid var(--line);
+    transition:background .12s
+  }
+  .row:hover{background:var(--bg2)}
+  .row.tier-1{border-left:3px solid var(--red);padding-left:9px}
+  .row.tier-2{border-left:3px solid var(--amber);padding-left:9px}
+  .row.tier-3{border-left:3px solid var(--line2);padding-left:9px}
+
+  .ts{color:var(--dim);font-size:11px;white-space:nowrap}
+  .sym{font-weight:700;color:var(--txt);font-size:13px}
+  .sym-up{color:var(--green)}
+  .sym-down{color:var(--red)}
+
+  .title-line{font-size:13px;color:var(--txt);margin-bottom:3px}
+  .title-line strong{font-weight:600}
+  .news-line{color:var(--cyan);font-size:12px;margin-top:4px}
+  .news-line a{color:var(--cyan);text-decoration:none;border-bottom:1px dotted rgba(34,211,238,.4)}
+  .news-line a:hover{border-bottom-color:var(--cyan);color:#5eead4}
+  .meta{color:var(--dimmer);font-size:11px;margin-top:2px}
+  .why{color:var(--dim);font-size:11.5px;margin-top:4px;font-style:italic}
+  .reason{color:var(--txt);font-size:12px;margin-top:3px;opacity:.85}
+
+  .pnl{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+  .pnl-up{color:var(--green)}
+  .pnl-down{color:var(--red)}
+
+  .btn-act{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;transition:all .12s;text-decoration:none}
+  .btn-chart{background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.3)}
+  .btn-chart:hover{background:var(--cyan);color:#000}
+  .btn-trade{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)}
+  .btn-trade:hover{background:var(--green);color:#000}
+
+  /* Narrative cluster cards — top strip */
+  .narr{
+    background:var(--bg2);border:1px solid var(--line);
+    border-radius:5px;padding:9px 12px;font-size:11.5px;
+    transition:all .15s;cursor:pointer
+  }
+  .narr:hover{border-color:var(--green-d);background:var(--bg3)}
+  .narr.hot{border-color:var(--red);background:rgba(255,58,94,.06)}
+  .narr-label{color:var(--dim);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+  .narr-name{color:var(--txt);font-weight:600;margin-top:1px}
+  .narr-meta{color:var(--dimmer);font-size:10px;margin-top:1px}
+
+  /* Velocity strip */
+  .vel-bar{
+    height:24px;background:var(--bg2);border:1px solid var(--line);
+    border-radius:3px;display:flex;align-items:flex-end;padding:1px;gap:1px;overflow:hidden;
+  }
+  .vel-tick{flex:1;background:var(--line2);min-height:1px;transition:height .3s}
+  .vel-tick.hot{background:var(--red)}
+  .vel-tick.warm{background:var(--amber)}
+  .vel-tick.cool{background:var(--green-d)}
+
+  /* Filter strip */
+  .filt{background:var(--bg2);border:1px solid var(--line);color:var(--txt);
+    padding:4px 8px;border-radius:3px;font-size:11.5px;font-family:inherit}
+  .filt:focus{outline:none;border-color:var(--green-d)}
+
+  /* Stats strip */
+  .stat-cell{padding:4px 12px;border-right:1px solid var(--line);min-width:0}
+  .stat-cell:last-child{border-right:none}
+  .stat-l{color:var(--dim);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+  .stat-v{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;margin-right:4px}
+
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--dimmer)}
 </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
-<header class="border-b border-slate-800 sticky top-0 bg-slate-950/95 backdrop-blur z-10">
- <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-  <div>
-   <h1 class="text-lg font-semibold">HL · PN Feed + Performance</h1>
-   <p id="subtitle" class="text-xs text-slate-400">loading…</p>
+<body>
+
+<header class="border-b" style="background:var(--bg2);border-color:var(--line);position:relative">
+  <div class="flex items-center justify-between px-4 py-2 max-w-[1600px] mx-auto flex-wrap gap-3">
+    <div class="flex items-center gap-3">
+      <span class="pulse text-base">🔴</span>
+      <div>
+        <h1 class="font-bold tracking-wider text-sm" style="color:var(--green);text-shadow:0 0 8px rgba(0,255,136,.3)">HL.INTEL // PN_TERMINAL</h1>
+        <div class="text-[10px] uppercase tracking-wider" style="color:var(--dim)">
+          <span id="subtitle">SCANNING…</span>
+        </div>
+      </div>
+    </div>
+    <nav class="flex gap-1">
+      <a href="/pn" class="nav-tab active">FEED</a>
+      <a href="/perf" class="nav-tab inactive">PERF</a>
+      <a href="/" class="nav-tab inactive">60D</a>
+      <a href="https://t.me/hereandnowalertbot" class="nav-tab inactive" target="_blank">TG</a>
+    </nav>
   </div>
-  <div class="flex items-center gap-3 text-sm">
-   <a href="index.html" class="text-cyan-400 hover:text-cyan-300">← Signal report</a>
-   <span class="text-slate-600">·</span>
-   <a href="https://t.me/hereandnowalertbot" class="text-cyan-400" target="_blank">Bot</a>
-  </div>
- </div>
+  <div class="scan"></div>
 </header>
 
-<main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
- <!-- Performance KPIs -->
- <section id="perf-kpis" class="grid grid-cols-2 md:grid-cols-5 gap-3"></section>
+<!-- Stats strip -->
+<div class="border-b" style="border-color:var(--line);background:var(--bg)">
+  <div id="stat-strip" class="max-w-[1600px] mx-auto flex items-center divide-x flex-wrap" style="border-color:var(--line)"></div>
+</div>
 
- <!-- Per-kind + per-ticker tables -->
- <section class="grid md:grid-cols-2 gap-6">
-  <div>
-   <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-2">Performance by PN type</h2>
-   <div class="rounded-lg border border-slate-800 overflow-hidden">
-    <table class="w-full text-sm">
-     <thead class="bg-slate-900/60 text-slate-400 text-xs">
-      <tr><th class="text-left px-3 py-2">Type</th><th class="text-right px-3">n</th><th class="text-right px-3">win %</th><th class="text-right px-3">avg PnL</th><th class="text-right px-3">total</th></tr>
-     </thead><tbody id="kind-tbody"></tbody>
-    </table>
-   </div>
+<!-- Velocity bar -->
+<div class="border-b" style="border-color:var(--line);background:var(--bg2)">
+  <div class="max-w-[1600px] mx-auto px-4 py-2 flex items-center gap-3">
+    <div class="text-[10px] uppercase tracking-wider" style="color:var(--dim);min-width:60px">VELOCITY</div>
+    <div id="vel-bar" class="vel-bar flex-1"></div>
+    <div id="vel-meta" class="text-[10px]" style="color:var(--dim);white-space:nowrap"></div>
   </div>
-  <div>
-   <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-2">Top tickers by activity</h2>
-   <div class="rounded-lg border border-slate-800 overflow-hidden">
-    <table class="w-full text-sm">
-     <thead class="bg-slate-900/60 text-slate-400 text-xs">
-      <tr><th class="text-left px-3 py-2">Ticker</th><th class="text-right px-3">n</th><th class="text-right px-3">win %</th><th class="text-right px-3">avg PnL</th></tr>
-     </thead><tbody id="ticker-tbody"></tbody>
-    </table>
-   </div>
-  </div>
- </section>
+</div>
 
- <!-- PN feed (current + history) -->
- <section>
-  <div class="flex flex-wrap items-center gap-3 mb-3">
-   <h2 class="text-sm uppercase tracking-wide text-slate-400 mr-auto">Live + history feed</h2>
-   <div class="flex items-center gap-2 text-sm">
-    <label class="text-slate-400">Type</label>
-    <select id="f-kind" class="bg-slate-900 border border-slate-700 rounded px-2 py-1">
-     <option value="">all</option>
-     <option value="sentiment">sentiment</option>
-     <option value="volume_spike">volume_spike</option>
-     <option value="cluster_shift">cluster_shift</option>
-     <option value="breakout">breakout</option>
-     <option value="recap">recap</option>
-    </select>
-    <label class="text-slate-400 ml-2">Outcome</label>
-    <select id="f-outcome" class="bg-slate-900 border border-slate-700 rounded px-2 py-1">
-     <option value="">all</option>
-     <option value="tp1">tp1</option><option value="sl">sl</option>
-     <option value="timeout">timeout</option>
-     <option value="open">unresolved</option>
-    </select>
-    <label class="text-slate-400 ml-2">Ticker</label>
-    <input id="f-ticker" placeholder="e.g. NVDA" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 w-24"/>
-   </div>
-  </div>
-  <div id="feed" class="space-y-2"></div>
- </section>
+<main class="max-w-[1600px] mx-auto px-4 py-3 grid lg:grid-cols-[1fr_320px] gap-3">
 
- <footer class="text-xs text-slate-500 pt-8 border-t border-slate-900">
-  Outcomes: TP1 = +1×ATR target, SL = −1.5×ATR stop, 16-bar (4-hour) timeout — same engine that backs the live PN service. Refresh the page or wait for the periodic publish job to update.
- </footer>
+  <!-- LEFT: feed -->
+  <section>
+    <!-- Filter strip -->
+    <div class="flex items-center gap-2 mb-2 flex-wrap">
+      <span class="text-[10px] uppercase tracking-wider" style="color:var(--dim)">FILTER</span>
+      <select id="f-kind" class="filt">
+        <option value="">all types</option>
+        <option value="sentiment">sentiment</option>
+        <option value="volume_spike">volume_spike</option>
+        <option value="cluster_shift">cluster_shift</option>
+        <option value="breakout">breakout</option>
+        <option value="recap">recap</option>
+      </select>
+      <select id="f-outcome" class="filt">
+        <option value="">all outcomes</option>
+        <option value="open">⏳ live</option>
+        <option value="tp1">🟢 tp1</option>
+        <option value="sl">🔴 sl</option>
+        <option value="timeout">⚪ timeout</option>
+      </select>
+      <select id="f-tier" class="filt">
+        <option value="">all tiers</option>
+        <option value="1">🚨 tier 1</option>
+        <option value="2">⚡ tier 2</option>
+        <option value="3">· tier 3</option>
+      </select>
+      <input id="f-ticker" placeholder="$ ticker" class="filt" style="width:90px"/>
+      <span class="ml-auto text-[10px]" style="color:var(--dim)">
+        <span id="feed-count">0</span> in feed · auto-refresh 30s
+      </span>
+    </div>
+
+    <!-- The feed itself -->
+    <div id="feed" style="background:var(--bg2);border:1px solid var(--line);border-radius:4px"></div>
+  </section>
+
+  <!-- RIGHT: narrative clusters + recent closes -->
+  <aside class="space-y-3">
+    <div>
+      <div class="text-[10px] uppercase tracking-wider mb-2 flex items-center gap-2" style="color:var(--dim)">
+        <span>🔥 ACTIVE NARRATIVES</span>
+        <span class="ml-auto" id="narr-count" style="color:var(--dimmer)"></span>
+      </div>
+      <div id="narratives" class="space-y-1.5"></div>
+    </div>
+    <div>
+      <div class="text-[10px] uppercase tracking-wider mb-2" style="color:var(--dim)">📊 LAST 8 CLOSED</div>
+      <div id="recent-closed" class="space-y-1"></div>
+    </div>
+    <div>
+      <div class="text-[10px] uppercase tracking-wider mb-2" style="color:var(--dim)">🎯 WIN RATE BY TYPE</div>
+      <div id="kind-mini" class="space-y-1"></div>
+    </div>
+  </aside>
 </main>
 
+<footer class="text-[10px] py-3 px-4 max-w-[1600px] mx-auto" style="color:var(--dimmer)">
+  TP1 = +1×ATR · SL = −1.5×ATR · 16-bar timeout. Resolution engine same as live PN service.
+  Telegram channel: <a href="https://t.me/hereandnowalertbot" style="color:var(--cyan)">@hereandnowalertbot</a>
+</footer>
+
 <script>
-async function load() {
- const [feedR, perfR] = await Promise.all([
-   fetch("./pn_feed.json", {cache: "no-store"}),
-   fetch("./performance.json", {cache: "no-store"})
- ]);
- const feedData = feedR.ok ? await feedR.json() : {items: []};
- const perf = perfR.ok ? await perfR.json() : {overall: {}, by_kind: {}, by_ticker: {}};
+let lastIds = new Set();   // for flash-on-new highlight
 
- document.getElementById("subtitle").textContent =
-   `${feedData.n_total||feedData.items.length} PNs total · ${feedData.n_resolved||0} resolved · updated ${(perf.as_of||feedData.as_of||"").replace("T"," ")}`;
-
- // KPIs
- const o = perf.overall || {};
- const kpis = [
-   {l: "Total resolved", v: o.n||0},
-   {l: "Wins", v: o.wins||0},
-   {l: "Win rate", v: (o.win_rate_pct!=null?o.win_rate_pct+"%":"–"), c: (o.win_rate_pct||0)>=50?"text-emerald-400":"text-rose-400"},
-   {l: "Avg PnL", v: ((o.avg_pnl_pct||0)>=0?"+":"")+(o.avg_pnl_pct||0)+"%", c:(o.avg_pnl_pct||0)>=0?"text-emerald-400":"text-rose-400"},
-   {l: "Total PnL", v: ((o.total_pnl_pct||0)>=0?"+":"")+(o.total_pnl_pct||0)+"%", c:(o.total_pnl_pct||0)>=0?"text-emerald-400":"text-rose-400"},
- ];
- document.getElementById("perf-kpis").innerHTML = kpis.map(k=>
-  `<div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
-    <div class="text-xs uppercase text-slate-500">${k.l}</div>
-    <div class="text-2xl font-semibold ${k.c||"text-slate-100"}">${k.v}</div>
-  </div>`).join("");
-
- // tables
- const renderRows = (id, dict) => {
-  const sorted = Object.entries(dict).sort((a,b)=>b[1].n-a[1].n);
-  document.getElementById(id).innerHTML = sorted.map(([k,v])=>{
-    const c = v.win_rate_pct>=50?"text-emerald-400":v.win_rate_pct>0?"text-amber-400":"text-rose-400";
-    const p = v.avg_pnl_pct>=0?"text-emerald-400":"text-rose-400";
-    const t = (v.total_pnl_pct!=null?v.total_pnl_pct:0);
-    return `<tr class="border-t border-slate-800/60">
-      <td class="px-3 py-1.5 font-medium">${k}</td>
-      <td class="px-3 text-right">${v.n}</td>
-      <td class="px-3 text-right ${c}">${v.win_rate_pct}%</td>
-      <td class="px-3 text-right ${p}">${v.avg_pnl_pct>=0?"+":""}${v.avg_pnl_pct}%</td>
-      ${id==="kind-tbody"?`<td class="px-3 text-right ${t>=0?"text-emerald-400":"text-rose-400"}">${t>=0?"+":""}${t}%</td>`:""}
-    </tr>`;}).join("") || `<tr><td colspan="5" class="px-3 py-3 text-slate-500">no data</td></tr>`;
- };
- renderRows("kind-tbody", perf.by_kind||{});
- renderRows("ticker-tbody", perf.by_ticker||{});
-
- // feed
- window.__feed = feedData.items || [];
- renderFeed();
- ["f-kind","f-outcome","f-ticker"].forEach(id=>document.getElementById(id).addEventListener("input", renderFeed));
- ["f-kind","f-outcome"].forEach(id=>document.getElementById(id).addEventListener("change", renderFeed));
+function severity(it){
+ // tier 1: large-magnitude moves OR cluster_shift / sentiment
+ const m = Math.abs((it.pnl_pct||0));
+ const move = Math.abs((it.payload?.move_24h_pct||0)) + Math.abs((it.payload?.move_pct||0));
+ if (it.kind === "cluster_shift") return 1;
+ if (it.kind === "sentiment") return 1;
+ if (move >= 3 || m >= 2) return 1;
+ if (it.kind === "breakout" || (it.payload?.vol_z||0) >= 4) return 2;
+ return 3;
 }
 
-function renderFeed() {
- const items = window.__feed||[];
+function fmtTs(ts){
+ if (!ts) return "";
+ // Normalize "2026-05-06T10:23:45+05:30" → "10:23"
+ const m = ts.match(/T(\d{2}:\d{2})/);
+ return m ? m[1] : ts.slice(11,16);
+}
+
+function fmtDay(ts){
+ return (ts||"").slice(0,10);
+}
+
+function pct(n,signed=true){
+ if (n==null||isNaN(n)) return "—";
+ return (signed && n>=0?"+":"")+(+n).toFixed(2)+"%";
+}
+
+function newsHtml(news_items){
+ if (!news_items || !news_items.length) return "";
+ const top = news_items.slice(0,2).map(n=>{
+   const link = n.link
+     ? `<a href="${n.link}" target="_blank" rel="noopener">${n.title}</a>`
+     : `<span>${n.title}</span>`;
+   const meta = [n.source, n.age].filter(Boolean).join(" · ");
+   return `<div class="news-line">📰 ${link}<div class="meta">${meta}</div></div>`;
+ }).join("");
+ return top;
+}
+
+function bodyParts(it){
+ // Break body into why (💡) and reason (📈) lines
+ const body = (it.body||"").replace(/<\/?b>/g,"").replace(/<\/?i>/g,"");
+ const lines = body.split("\n").map(l=>l.trim()).filter(Boolean);
+ const why = lines.find(l=>l.startsWith("💡"));
+ const reason = lines.find(l=>l.startsWith("📈"));
+ return {
+   why: why ? why.replace(/^💡\s*/,"") : "",
+   reason: reason ? reason.replace(/^📈\s*/,"") : ""
+ };
+}
+
+function actionBtns(it){
+ const b = [];
+ if (it.chart_url) b.push(`<a href="${it.chart_url}" target="_blank" rel="noopener" class="btn-act btn-chart">📈 Chart</a>`);
+ if (it.trade_url) b.push(`<a href="${it.trade_url}" target="_blank" rel="noopener" class="btn-act btn-trade">⚡ Trade</a>`);
+ return b.join(" ");
+}
+
+function outcomePill(o, resolved){
+ if (!resolved) return `<span class="pill pill-amber"><span class="pulse" style="display:inline-block">●</span> LIVE</span>`;
+ const map = {tp1:"pill-green",sl:"pill-red",timeout:"pill-dim"};
+ return `<span class="pill ${map[o]||"pill-dim"}">${o||"unresolved"}</span>`;
+}
+
+function tierPill(t){
+ if (t===1) return `<span class="pill pill-red">🚨 T1</span>`;
+ if (t===2) return `<span class="pill pill-amber">⚡ T2</span>`;
+ return `<span class="pill pill-dim">T3</span>`;
+}
+
+function rowHtml(it){
+ const tier = severity(it);
+ const ts = fmtTs(it.ts_ist || it.ts_utc);
+ const day = fmtDay(it.ts_ist || it.ts_utc);
+ const sym = it.display || it.symbol || "·";
+ const dir = (it.title||"").startsWith("🟢") ? "up" : (it.title||"").startsWith("🔴") ? "down" : "";
+ const symCls = dir==="up"?"sym-up":dir==="down"?"sym-down":"";
+ const titlePlain = (it.title||"")
+   .replace(/<\/?b>/g,"")
+   .replace(/^[🟢🔴⚪📊]\s*/,"")
+   .trim();
+ const {why, reason} = bodyParts(it);
+ const isNew = !lastIds.has(it.pn_id);
+ const flashCls = isNew && lastIds.size > 0 ? "flash-in" : "";
+ const pnl = it.pnl_pct;
+ const pnlCls = (pnl||0)>=0?"pnl-up":"pnl-down";
+ const pnlStr = pnl!=null?(pnl>=0?"+":"")+(+pnl).toFixed(2)+"%":"—";
+
+ return `<div class="row tier-${tier} ${flashCls}">
+   <div>
+     <div class="ts">${day} ${ts}</div>
+     <div class="mt-1 flex items-center gap-1.5">
+       ${tierPill(tier)}
+     </div>
+   </div>
+   <div>
+     <div class="title-line">
+       <span class="sym ${symCls}">${sym}</span>
+       <span style="color:var(--dim)">·</span>
+       <span style="color:var(--dim);font-size:11px">${it.kind||""}</span>
+       ${it.group?`<span style="color:var(--dimmer);font-size:11px"> · ${it.group}</span>`:""}
+     </div>
+     <div class="title-line"><strong>${titlePlain}</strong></div>
+     ${why ? `<div class="why">${why}</div>` : ""}
+     ${reason ? `<div class="reason">${reason}</div>` : ""}
+     ${newsHtml(it.news_items)}
+     ${actionBtns(it) ? `<div class="mt-2">${actionBtns(it)}</div>` : ""}
+   </div>
+   <div class="text-right">
+     <div class="${pnlCls} pnl">${pnlStr}</div>
+     <div class="mt-1.5">${outcomePill(it.outcome, it.resolved)}</div>
+   </div>
+ </div>`;
+}
+
+function buildNarratives(items){
+ // Group by event_class (sentiment) and cluster (cluster_shift)
+ const bins = {};
+ const cutoff = Date.now() - 6*3600*1000;
+ for (const it of items) {
+   const ts = Date.parse((it.ts_utc||it.ts_ist||"").replace(" ","T"));
+   if (isNaN(ts) || ts < cutoff) continue;
+   let key = null, label = null;
+   if (it.kind === "sentiment") {
+     const evc = it.payload?.event_class;
+     if (evc) { key=`ev:${evc}`; label = evc.replace(/_/g," "); }
+   } else if (it.kind === "cluster_shift") {
+     key = "cluster_shift";
+     label = (it.title||"").replace(/<\/?b>/g,"").replace(/^[🟢🔴⚪📊]\s*/,"").trim();
+   } else if (it.kind === "volume_spike" && it.group) {
+     key = `vol:${it.group}`;
+     label = `${it.group} volume cluster`;
+   }
+   if (!key) continue;
+   if (!bins[key]) bins[key] = {label, n:0, last:0, samples:[]};
+   bins[key].n++;
+   bins[key].last = Math.max(bins[key].last, ts);
+   bins[key].samples.push(it.symbol||"");
+ }
+ return Object.entries(bins)
+   .filter(([_,v])=>v.n>=1)
+   .sort((a,b)=>b[1].last-a[1].last)
+   .slice(0,8);
+}
+
+function renderNarratives(items){
+ const narrs = buildNarratives(items);
+ document.getElementById("narr-count").textContent = `${narrs.length}`;
+ if (!narrs.length) {
+   document.getElementById("narratives").innerHTML =
+     `<div class="text-[11px]" style="color:var(--dimmer)">No narratives in last 6h.</div>`;
+   return;
+ }
+ document.getElementById("narratives").innerHTML = narrs.map(([k,v])=>{
+   const hot = v.n >= 3 ? "hot" : "";
+   const samples = [...new Set(v.samples)].slice(0,5).join(" ");
+   const ageMin = Math.round((Date.now()-v.last)/60000);
+   return `<div class="narr ${hot}">
+     <div class="narr-label">${hot?"🔥 ":""}${v.n} fires · ${ageMin}m ago</div>
+     <div class="narr-name">${v.label}</div>
+     ${samples?`<div class="narr-meta">${samples}</div>`:""}
+   </div>`;
+ }).join("");
+}
+
+function renderVelocity(items){
+ const buckets = 30;
+ const windowMs = 6*3600*1000; // 6h
+ const slot = windowMs/buckets;
+ const now = Date.now();
+ const counts = new Array(buckets).fill(0);
+ for (const it of items) {
+   const ts = Date.parse((it.ts_utc||it.ts_ist||"").replace(" ","T"));
+   if (isNaN(ts)) continue;
+   const idx = Math.floor((ts - (now-windowMs))/slot);
+   if (idx>=0 && idx<buckets) counts[idx]++;
+ }
+ const max = Math.max(...counts, 1);
+ document.getElementById("vel-bar").innerHTML = counts.map(c=>{
+   const h = (c/max*100).toFixed(0);
+   const cls = c>=max*0.8?"hot":c>=max*0.4?"warm":c>0?"cool":"";
+   return `<div class="vel-tick ${cls}" style="height:${h}%"></div>`;
+ }).join("");
+ document.getElementById("vel-meta").textContent = `${counts.reduce((a,b)=>a+b,0)} fires last 6h`;
+}
+
+function renderStats(perf){
+ const o = perf.overall || {};
+ const cells = [
+   {l:"Resolved", v:o.n||0, c:"var(--txt)"},
+   {l:"Wins", v:o.wins||0, c:"var(--green)"},
+   {l:"Win Rate", v:(o.win_rate_pct!=null?o.win_rate_pct+"%":"—"),
+     c:(o.win_rate_pct||0)>=50?"var(--green)":"var(--red)"},
+   {l:"Avg PnL", v:pct(o.avg_pnl_pct||0), c:(o.avg_pnl_pct||0)>=0?"var(--green)":"var(--red)"},
+   {l:"Total PnL", v:pct(o.total_pnl_pct||0), c:(o.total_pnl_pct||0)>=0?"var(--green)":"var(--red)"},
+ ];
+ document.getElementById("stat-strip").innerHTML = cells.map(c=>
+   `<div class="stat-cell"><div class="stat-l">${c.l}</div>
+     <div class="stat-v" style="color:${c.c}">${c.v}</div></div>`).join("");
+}
+
+function renderRecentClosed(items){
+ const closed = items.filter(x=>x.resolved && x.outcome).slice(0,8);
+ document.getElementById("recent-closed").innerHTML = closed.length
+   ? closed.map(x=>{
+       const pnl = x.pnl_pct;
+       const pos = (pnl||0)>=0;
+       const out = x.outcome;
+       const map = {tp1:"pill-green",sl:"pill-red",timeout:"pill-dim"};
+       return `<div class="flex items-center gap-2 text-[11px] py-1 border-b" style="border-color:var(--line)">
+         <span style="color:var(--dim);min-width:36px">${fmtTs(x.ts_ist||x.ts_utc)}</span>
+         <span class="font-bold" style="min-width:48px">${x.display||x.symbol||""}</span>
+         <span class="pill ${map[out]||"pill-dim"}">${out}</span>
+         <span class="ml-auto font-bold ${pos?"":"pnl-down"}" style="color:${pos?"var(--green)":"var(--red)"}">${pos?"+":""}${pnl}%</span>
+       </div>`;
+     }).join("")
+   : `<div class="text-[11px]" style="color:var(--dimmer)">No closes yet.</div>`;
+}
+
+function renderKindMini(by_kind){
+ const rows = Object.entries(by_kind||{}).sort((a,b)=>b[1].n-a[1].n);
+ document.getElementById("kind-mini").innerHTML = rows.length
+   ? rows.map(([k,v])=>{
+       const wrCls = v.win_rate_pct>=50?"var(--green)":v.win_rate_pct>0?"var(--amber)":"var(--red)";
+       const pCls  = v.avg_pnl_pct>=0?"var(--green)":"var(--red)";
+       return `<div class="text-[11px]">
+         <div class="flex items-center gap-2">
+           <span style="min-width:90px;color:var(--txt)">${k}</span>
+           <div style="flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden">
+             <div style="height:100%;background:${wrCls};width:${v.win_rate_pct}%"></div>
+           </div>
+           <span style="color:${wrCls};min-width:40px;text-align:right">${v.win_rate_pct}%</span>
+         </div>
+         <div class="flex justify-between" style="color:var(--dim);font-size:10px;margin-top:1px">
+           <span>${v.n} trades</span>
+           <span style="color:${pCls}">${pct(v.avg_pnl_pct)}</span>
+         </div>
+       </div>`;
+     }).join("")
+   : `<div class="text-[11px]" style="color:var(--dimmer)">No data.</div>`;
+}
+
+function renderFeed(items) {
  const fk = document.getElementById("f-kind").value;
  const fo = document.getElementById("f-outcome").value;
- const ft = document.getElementById("f-ticker").value.trim().toUpperCase();
- const filtered = items.filter(x =>
+ const ft = document.getElementById("f-ticker").value.trim().toUpperCase().replace(/^\$/,"");
+ const ftier = document.getElementById("f-tier").value;
+
+ const filtered = items.filter(x=>
    (!fk || x.kind===fk) &&
-   (!fo || (fo==="open" ? !x.resolved || x.outcome==="open" : x.outcome===fo)) &&
-   (!ft || (x.symbol||"").includes(ft))
+   (!fo || (fo==="open" ? !x.resolved : x.outcome===fo)) &&
+   (!ft || (x.symbol||"").includes(ft) || (x.display||"").includes(ft)) &&
+   (!ftier || severity(x)===parseInt(ftier))
  );
- const outBadge = (o) => {
-   const map={tp1:"bg-emerald-500/20 text-emerald-300",sl:"bg-rose-500/20 text-rose-300",
-     timeout:"bg-slate-700 text-slate-300",open:"bg-amber-500/20 text-amber-300"};
-   return o ? `<span class="px-2 py-0.5 rounded-full text-xs font-semibold ${map[o]||""}">${o}</span>` :
-              `<span class="px-2 py-0.5 rounded-full text-xs bg-slate-700 text-slate-400">unresolved</span>`;
- };
- document.getElementById("feed").innerHTML = filtered.slice(0, 200).map(it => {
-  const ts = (it.ts_ist||it.ts_utc||"").replace("T"," ").slice(0,16);
-  const sym = it.display || it.symbol || "";
-  const pnl = it.pnl_pct;
-  const pnlSpan = pnl!=null
-   ? `<span class="${pnl>=0?"text-emerald-400":"text-rose-400"}">${pnl>=0?"+":""}${pnl}%</span>`
-   : `<span class="text-slate-500">—</span>`;
-  const title = (it.title||"").replace(/<\/?b>/g,"");
-  const body = (it.body||"").replace(/<\/?b>/g,"").replace(/<\/?i>/g,"");
-  return `<div class="card rounded-lg border border-slate-800 bg-slate-900/30 p-3">
-    <div class="flex items-start justify-between gap-3">
-     <div class="flex-1 min-w-0">
-      <div class="text-sm font-semibold">${title}</div>
-      <pre class="text-xs text-slate-300 mt-1 leading-relaxed">${body}</pre>
-     </div>
-     <div class="flex flex-col items-end gap-1 shrink-0">
-      <div class="text-xs text-slate-500">${ts}</div>
-      ${outBadge(it.outcome)}
-      <div class="text-xs">${pnlSpan}</div>
-      <div class="text-xs text-slate-500">${it.kind||""}</div>
-     </div>
-    </div>
-   </div>`;
- }).join("") || `<div class="text-slate-500 text-sm py-6 text-center">No PNs match filters.</div>`;
+
+ document.getElementById("feed-count").textContent = filtered.length;
+ const html = filtered.slice(0, 200).map(rowHtml).join("");
+ document.getElementById("feed").innerHTML = html ||
+   `<div class="text-center py-12 text-[11px]" style="color:var(--dimmer)">— no signals match filters —</div>`;
+
+ // Update lastIds AFTER first render so next refresh can flash new
+ lastIds = new Set(items.map(x=>x.pn_id).filter(Boolean));
 }
 
-load();
+async function load() {
+ const [feedR, perfR] = await Promise.all([
+   fetch("./pn_feed.json", {cache:"no-store"}),
+   fetch("./performance.json", {cache:"no-store"})
+ ]);
+ const feedData = feedR.ok ? await feedR.json() : {items:[]};
+ const perf = perfR.ok ? await perfR.json() : {overall:{}, by_kind:{}};
+
+ const items = feedData.items || [];
+ document.getElementById("subtitle").innerHTML =
+   `<span class="live-dot"></span>${items.length} PNs · ${feedData.n_resolved||0} resolved · ` +
+   `last sync ${(perf.as_of||"").replace("T"," ").slice(0,16)}`;
+
+ renderStats(perf);
+ renderVelocity(items);
+ renderNarratives(items);
+ renderRecentClosed(items);
+ renderKindMini(perf.by_kind||{});
+ window.__items = items;
+ renderFeed(items);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+ ["f-kind","f-outcome","f-tier","f-ticker"].forEach(id=>{
+   document.getElementById(id).addEventListener("input", () => renderFeed(window.__items||[]));
+   document.getElementById(id).addEventListener("change", () => renderFeed(window.__items||[]));
+ });
+ load();
+ setInterval(load, 30000);
+});
 </script>
 </body></html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HL · Performance Report</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{font-family:ui-sans-serif,system-ui,-apple-system,Inter,sans-serif}
+  .bar{height:6px;border-radius:3px;background:linear-gradient(90deg,#10b981 var(--w),#1e293b 0);transition:width .3s}
+  .bar-r{height:6px;border-radius:3px;background:linear-gradient(90deg,#ef4444 var(--w),#1e293b 0)}
+  .nav-tab{padding:6px 14px;border-radius:8px;font-size:14px;font-weight:600;transition:background .15s}
+  .nav-tab.active{background:#0e7490;color:white}
+  .nav-tab.inactive{color:#94a3b8}
+  .nav-tab.inactive:hover{background:#1e293b;color:white}
+</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="border-b border-slate-800 sticky top-0 bg-slate-950/95 backdrop-blur z-10">
+ <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+  <div>
+   <h1 class="text-lg font-semibold">📊 HL · Performance Report</h1>
+   <p id="subtitle" class="text-xs text-slate-400">loading…</p>
+  </div>
+  <nav class="flex gap-1">
+   <a href="/pn" class="nav-tab inactive">📡 Feed</a>
+   <a href="/perf" class="nav-tab active">📊 Performance</a>
+   <a href="/" class="nav-tab inactive">📅 60-day</a>
+   <a href="https://t.me/hereandnowalertbot" class="nav-tab inactive" target="_blank">Telegram</a>
+  </nav>
+ </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+ <!-- Headline KPIs -->
+ <section id="kpis" class="grid grid-cols-2 md:grid-cols-5 gap-3"></section>
+
+ <!-- Resolution breakdown ring -->
+ <section class="grid md:grid-cols-3 gap-6">
+  <div class="rounded-xl border border-slate-800 bg-slate-900/30 p-4">
+   <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-3">Outcome breakdown</h2>
+   <div id="outcome-bars" class="space-y-3"></div>
+  </div>
+  <div class="rounded-xl border border-slate-800 bg-slate-900/30 p-4 md:col-span-2">
+   <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-3">Win rate by PN type</h2>
+   <div id="kind-table"></div>
+  </div>
+ </section>
+
+ <!-- Per-ticker -->
+ <section class="rounded-xl border border-slate-800 bg-slate-900/30 p-4">
+  <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-3">Per-ticker performance</h2>
+  <div class="overflow-x-auto">
+   <table class="w-full text-sm">
+    <thead class="text-slate-500 text-xs">
+     <tr><th class="text-left px-3 py-2">Ticker</th><th class="text-left px-3">Group</th><th class="text-right px-3">n</th><th class="text-right px-3">wins</th><th class="text-right px-3">win %</th><th class="text-left px-3 w-1/4">visual</th><th class="text-right px-3">avg PnL</th><th class="text-right px-3">total PnL</th></tr>
+    </thead>
+    <tbody id="ticker-table"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <!-- Daily PnL trend -->
+ <section class="rounded-xl border border-slate-800 bg-slate-900/30 p-4">
+  <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-3">Daily realised PnL</h2>
+  <div id="daily-bars" class="space-y-1.5"></div>
+ </section>
+
+ <!-- Recent closed trades -->
+ <section class="rounded-xl border border-slate-800 bg-slate-900/30 p-4">
+  <h2 class="text-sm uppercase tracking-wide text-slate-400 mb-3">Recent closed trades</h2>
+  <div id="recent-closed" class="space-y-2"></div>
+ </section>
+
+ <footer class="text-xs text-slate-500 pt-8 border-t border-slate-900">
+  Methodology: TP1 = +1×ATR · SL = −1.5×ATR · 16-bar (4-hour) timeout. Same engine as live PNs.
+  Auto-refresh every 60 s.
+ </footer>
+</main>
+
+<script>
+function pct(n){ return (n>=0?"+":"")+(n||0)+"%"; }
+
+async function load() {
+ const [feedR, perfR] = await Promise.all([
+   fetch("./pn_feed.json", {cache:"no-store"}),
+   fetch("./performance.json", {cache:"no-store"})
+ ]);
+ const feed = feedR.ok ? await feedR.json() : {items: []};
+ const perf = perfR.ok ? await perfR.json() : {overall:{}, by_kind:{}, by_ticker:{}};
+
+ document.getElementById("subtitle").textContent =
+   `Updated ${(perf.as_of||"").replace("T"," ")} · ${perf.method||""}`;
+
+ // KPIs
+ const o = perf.overall || {};
+ const kpis = [
+   {l:"Resolved", v:o.n||0, c:"text-slate-100"},
+   {l:"Wins", v:o.wins||0, c:"text-emerald-400"},
+   {l:"Win rate", v:(o.win_rate_pct!=null?o.win_rate_pct+"%":"–"),
+     c:(o.win_rate_pct||0)>=50?"text-emerald-400":"text-rose-400"},
+   {l:"Avg PnL/trade", v:pct(o.avg_pnl_pct||0),
+     c:(o.avg_pnl_pct||0)>=0?"text-emerald-400":"text-rose-400"},
+   {l:"Total PnL", v:pct(o.total_pnl_pct||0),
+     c:(o.total_pnl_pct||0)>=0?"text-emerald-400":"text-rose-400"},
+ ];
+ document.getElementById("kpis").innerHTML = kpis.map(k=>
+  `<div class="rounded-xl border border-slate-800 bg-slate-900/30 p-4">
+    <div class="text-xs uppercase text-slate-500">${k.l}</div>
+    <div class="text-2xl font-semibold ${k.c}">${k.v}</div>
+  </div>`).join("");
+
+ // Outcome bars
+ const closed = (feed.items||[]).filter(x=>x.resolved && x.outcome);
+ const outcomes = {tp1:0, sl:0, timeout:0};
+ closed.forEach(x=>{ if (x.outcome in outcomes) outcomes[x.outcome]++; });
+ const total = closed.length || 1;
+ const colorMap = {tp1:"bg-emerald-500", sl:"bg-rose-500", timeout:"bg-slate-500"};
+ const labelMap = {tp1:"🟢 TP1 hit", sl:"🔴 SL hit", timeout:"⚪ Timeout"};
+ document.getElementById("outcome-bars").innerHTML = ["tp1","sl","timeout"].map(o=>{
+   const n = outcomes[o]; const w = (n/total*100).toFixed(1);
+   return `<div>
+     <div class="flex justify-between text-xs mb-1">
+       <span>${labelMap[o]}</span>
+       <span class="text-slate-400">${n} · ${w}%</span>
+     </div>
+     <div class="h-2 rounded-full bg-slate-800 overflow-hidden">
+       <div class="h-full ${colorMap[o]}" style="width:${w}%"></div>
+     </div>
+   </div>`;
+ }).join("");
+
+ // By kind table with bars
+ const kindRows = Object.entries(perf.by_kind||{}).sort((a,b)=>b[1].n-a[1].n);
+ document.getElementById("kind-table").innerHTML = kindRows.length
+   ? `<table class="w-full text-sm"><thead class="text-slate-500 text-xs"><tr>
+       <th class="text-left px-2 py-1">Type</th>
+       <th class="text-right px-2">n</th>
+       <th class="text-right px-2">wins</th>
+       <th class="text-right px-2">win %</th>
+       <th class="text-left px-2 w-1/3">visual</th>
+       <th class="text-right px-2">avg PnL</th>
+       <th class="text-right px-2">total</th>
+      </tr></thead><tbody>${
+     kindRows.map(([k,v])=>{
+       const wrColor = v.win_rate_pct>=50?"text-emerald-400":v.win_rate_pct>0?"text-amber-400":"text-rose-400";
+       const pColor = v.avg_pnl_pct>=0?"text-emerald-400":"text-rose-400";
+       const tColor = v.total_pnl_pct>=0?"text-emerald-400":"text-rose-400";
+       const barColor = v.win_rate_pct>=50?"bg-emerald-500":"bg-rose-500";
+       return `<tr class="border-t border-slate-800/60">
+         <td class="px-2 py-1.5 font-medium">${k}</td>
+         <td class="px-2 text-right">${v.n}</td>
+         <td class="px-2 text-right">${v.wins}</td>
+         <td class="px-2 text-right ${wrColor}">${v.win_rate_pct}%</td>
+         <td class="px-2"><div class="h-2 rounded-full bg-slate-800 overflow-hidden">
+           <div class="h-full ${barColor}" style="width:${v.win_rate_pct}%"></div>
+         </div></td>
+         <td class="px-2 text-right ${pColor}">${pct(v.avg_pnl_pct)}</td>
+         <td class="px-2 text-right ${tColor}">${pct(v.total_pnl_pct)}</td>
+       </tr>`;
+     }).join("")
+   }</tbody></table>`
+   : `<div class="text-slate-500 text-sm">No data.</div>`;
+
+ // By ticker table
+ const tickerRows = Object.entries(perf.by_ticker||{}).sort((a,b)=>b[1].n-a[1].n);
+ const groupOf = {};
+ (feed.items||[]).forEach(it => { if (it.symbol) groupOf[it.symbol] = it.group||""; });
+ document.getElementById("ticker-table").innerHTML = tickerRows.map(([k,v])=>{
+   const wrC = v.win_rate_pct>=50?"text-emerald-400":v.win_rate_pct>0?"text-amber-400":"text-rose-400";
+   const pC = v.avg_pnl_pct>=0?"text-emerald-400":"text-rose-400";
+   const tC = v.total_pnl_pct>=0?"text-emerald-400":"text-rose-400";
+   const bar = v.win_rate_pct>=50?"bg-emerald-500":"bg-rose-500";
+   return `<tr class="border-t border-slate-800/60">
+     <td class="px-3 py-1.5 font-medium">${k}</td>
+     <td class="px-3 text-slate-400 text-xs">${groupOf[k]||""}</td>
+     <td class="px-3 text-right">${v.n}</td>
+     <td class="px-3 text-right">${v.wins}</td>
+     <td class="px-3 text-right ${wrC}">${v.win_rate_pct}%</td>
+     <td class="px-3"><div class="h-2 rounded-full bg-slate-800 overflow-hidden"><div class="h-full ${bar}" style="width:${v.win_rate_pct}%"></div></div></td>
+     <td class="px-3 text-right ${pC}">${pct(v.avg_pnl_pct)}</td>
+     <td class="px-3 text-right ${tC}">${pct(v.total_pnl_pct)}</td>
+   </tr>`;
+ }).join("") || `<tr><td colspan="8" class="text-slate-500 text-sm py-3 text-center">No data.</td></tr>`;
+
+ // Daily PnL bars from resolved feed
+ const dayMap = {};
+ closed.forEach(x => {
+   const d = (x.ts_ist||x.ts_utc||"").slice(0,10);
+   if (!d) return;
+   if (!dayMap[d]) dayMap[d] = {n:0, wins:0, pnl:0};
+   dayMap[d].n++;
+   if ((x.pnl_pct||0)>0) dayMap[d].wins++;
+   dayMap[d].pnl += (x.pnl_pct||0);
+ });
+ const days = Object.keys(dayMap).sort().reverse().slice(0, 14);
+ if (days.length) {
+   const max = Math.max(...days.map(d=>Math.abs(dayMap[d].pnl)), 0.5);
+   document.getElementById("daily-bars").innerHTML = days.map(d=>{
+     const v = dayMap[d];
+     const w = (Math.abs(v.pnl)/max*100).toFixed(1);
+     const cls = v.pnl>=0?"bg-emerald-500":"bg-rose-500";
+     const wrCls = (v.wins/v.n*100)>=50?"text-emerald-400":"text-rose-400";
+     return `<div>
+       <div class="flex justify-between text-xs mb-1">
+         <span class="text-slate-300">${d}</span>
+         <span><span class="${wrCls}">${(v.wins/v.n*100).toFixed(0)}% wr</span> · ${v.n} trades · <span class="${v.pnl>=0?"text-emerald-400":"text-rose-400"}">${pct(v.pnl.toFixed(2))}</span></span>
+       </div>
+       <div class="h-2 rounded-full bg-slate-800 overflow-hidden">
+         <div class="h-full ${cls}" style="width:${w}%"></div>
+       </div>
+     </div>`;
+   }).join("");
+ } else {
+   document.getElementById("daily-bars").innerHTML =
+     `<div class="text-slate-500 text-sm">No daily data yet.</div>`;
+ }
+
+ // Recent closed trades
+ const recent = closed.slice(0, 10);
+ document.getElementById("recent-closed").innerHTML = recent.map(x=>{
+   const ts = (x.ts_ist||x.ts_utc||"").replace("T"," ").slice(0,16);
+   const sym = x.display||x.symbol||"";
+   const pnl = x.pnl_pct;
+   const pos = (pnl||0)>=0;
+   const out = x.outcome||"";
+   const map = {tp1:"bg-emerald-500/20 text-emerald-300",sl:"bg-rose-500/20 text-rose-300",timeout:"bg-slate-700 text-slate-300"};
+   const cls = map[out]||"bg-slate-700 text-slate-400";
+   return `<div class="flex items-center gap-3 text-sm border-l-2 ${pos?"border-emerald-500":"border-rose-500"} pl-3">
+     <span class="text-slate-500 text-xs w-24">${ts}</span>
+     <span class="font-semibold w-20">${sym}</span>
+     <span class="text-xs text-slate-400 w-24">${x.kind||""}</span>
+     <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${cls}">${out}</span>
+     <span class="font-semibold ${pos?"text-emerald-400":"text-rose-400"} ml-auto">${pos?"+":""}${pnl}%</span>
+   </div>`;
+ }).join("") || `<div class="text-slate-500 text-sm">No closed trades yet.</div>`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+ load();
+ setInterval(load, 60000);
+});
+</script>
+</body></html>

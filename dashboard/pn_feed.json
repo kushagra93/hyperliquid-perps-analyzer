@@ -1,8 +1,173 @@
 {
-  "as_of": "2026-05-06T07:30:35+00:00",
-  "n_total": 113,
-  "n_resolved": 57,
+  "as_of": "2026-05-06T07:55:49+00:00",
+  "n_total": 117,
+  "n_resolved": 42,
   "items": [
+    {
+      "pn_id": "7b6443a5",
+      "kind": "volume_spike",
+      "title": "\ud83d\udd34 Brent  \u00b7  24h <b>-6.1%</b>  \u00b7  30m <b>-1.2%</b>",
+      "body": "\ud83d\udcf0 \"Current price of oil as of May 5, 2026\" \u2014 Fortune \u00b7 19h ago\n\ud83d\udca1 Volume 7\u00d7 normal = institutions actively selling. Big size like this rarely fades within the same day.\n\ud83d\udcc8 Trend down, momentum holds. \u00b7 below day avg \u00b7 Sell zone.",
+      "ts_utc": "2026-05-06T07:53:51.349715+00:00",
+      "ts_ist": "2026-05-06T13:23:51+05:30",
+      "payload": {
+        "symbol": "BRENTOIL",
+        "vol_z": 7.3,
+        "move_pct": -1.18,
+        "cluster": "commodity"
+      },
+      "sent": true,
+      "resolved": false,
+      "reason": "no_forward",
+      "symbol": "BRENTOIL",
+      "display": "Brent",
+      "cluster": "commodity",
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/TVC-UKOIL/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ABRENTOIL",
+      "news_items": [
+        {
+          "title": "Current price of oil as of May 5, 2026",
+          "source": "Fortune",
+          "age": "19h ago",
+          "link": ""
+        },
+        {
+          "title": "Oil Surges to $114 Following Iranian Strikes on UAE Port",
+          "source": "Crude Oil Prices Today | OilPrice.com",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
+    },
+    {
+      "pn_id": "4538f493",
+      "kind": "volume_spike",
+      "title": "\ud83d\udd34 CL  \u00b7  24h <b>-5.4%</b>  \u00b7  30m <b>-1.4%</b>",
+      "body": "\ud83d\udcf0 \"Crude Oil Price Forecast for 2026, 2027, 2028\u20132030 and Beyond: WTI and Brent Ou\u2026\" \u2014 LiteFinance \u00b7 11h ago\n\ud83d\udca1 Volume 3\u00d7 normal = institutions actively selling. Big size like this rarely fades within the same day.\n\ud83d\udcc8 Trend down, momentum holds. \u00b7 below day avg \u00b7 Sell zone.",
+      "ts_utc": "2026-05-06T07:53:49.141950+00:00",
+      "ts_ist": "2026-05-06T13:23:49+05:30",
+      "payload": {
+        "symbol": "CL",
+        "vol_z": 3.3,
+        "move_pct": -1.45,
+        "cluster": "commodity"
+      },
+      "sent": true,
+      "resolved": false,
+      "reason": "no_forward",
+      "symbol": "CL",
+      "display": "CL",
+      "cluster": "commodity",
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/TVC-USOIL/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACL",
+      "news_items": [
+        {
+          "title": "Crude Oil Price Forecast for 2026, 2027, 2028\u20132030 and Beyond: WTI and Brent Outlook",
+          "source": "LiteFinance",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Crude oil prices today: Brent, WTI fall up to 6% on hopes of US-Iran talks; supply risks persist",
+          "source": "The Times of India",
+          "age": "22d ago",
+          "link": ""
+        }
+      ]
+    },
+    {
+      "pn_id": "a7120bee",
+      "kind": "volume_spike",
+      "title": "\u26aa Japan ETF  \u00b7  24h <b>+2.6%</b>  \u00b7  30m <b>+0.0%</b>",
+      "body": "\ud83d\udcf0 \"Japan ETFs Can Thrill Again in 2026\" \u2014 ETF Trends \u00b7 112d ago\n\ud83d\udca1 Volume 3\u00d7 normal = institutions actively buying. Big size like this rarely fades within the same day.\n\ud83d\udcc8 Day trend extending. \u00b7 above day avg \u00b7 Wait.",
+      "ts_utc": "2026-05-06T07:45:53.936163+00:00",
+      "ts_ist": "2026-05-06T13:15:53+05:30",
+      "payload": {
+        "symbol": "EWJ",
+        "vol_z": 3.1,
+        "move_pct": 0.03,
+        "cluster": "index"
+      },
+      "sent": true,
+      "resolved": false,
+      "reason": "no_forward",
+      "symbol": "EWJ",
+      "display": "Japan ETF",
+      "cluster": "index",
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/AMEX-EWJ/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AEWJ",
+      "news_items": [
+        {
+          "title": "The Best Index Funds",
+          "source": "Morningstar",
+          "age": "27d ago",
+          "link": ""
+        },
+        {
+          "title": "Japan ETFs Can Thrill Again in 2026",
+          "source": "ETF Trends",
+          "age": "112d ago",
+          "link": ""
+        },
+        {
+          "title": "ETFGI reports that assets invested in the ETFs industry in Asia Pacific (ex-Japan) hit a new record of 1.41 trillion US Dollars with Strong July Inflows",
+          "source": "ETFGI",
+          "age": "261d ago",
+          "link": ""
+        }
+      ]
+    },
+    {
+      "pn_id": "36121ce5",
+      "kind": "volume_spike",
+      "title": "\ud83d\udfe2 GME  \u00b7  24h <b>+0.9%</b>  \u00b7  30m <b>+0.5%</b>",
+      "body": "\ud83d\udcf0 \"GME Stock Quote Price and Forecast\" \u2014 CNN \u00b7 2d ago\n\ud83d\udca1 Volume 7\u00d7 normal = institutions actively buying. Big size like this rarely fades within the same day.\n\ud83d\udcc8 Tape quiet. \u00b7 big swings \u00b7 Buy zone.",
+      "ts_utc": "2026-05-06T07:43:09.541145+00:00",
+      "ts_ist": "2026-05-06T13:13:09+05:30",
+      "payload": {
+        "symbol": "GME",
+        "vol_z": 7.3,
+        "move_pct": 0.46,
+        "cluster": "high-beta"
+      },
+      "sent": true,
+      "resolved": true,
+      "symbol": "GME",
+      "direction": "up",
+      "entry": 24.411,
+      "atr": 0.2441,
+      "outcome": "timeout",
+      "pnl_pct": -0.496,
+      "bars_to_resolution": 16,
+      "display": "GME",
+      "cluster": "high-beta",
+      "group": "Vol stocks",
+      "chart_url": "https://www.tradingview.com/symbols/NYSE-GME/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AGME",
+      "news_items": [
+        {
+          "title": "GameStop Bid Puts eBay Valuation Governance And Marketplace Future In Focus",
+          "source": "Simply Wall St.",
+          "age": "6h ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/gamestop-bid-puts-ebay-valuation-011051750.html"
+        },
+        {
+          "title": "GameStop\u2019s Bold eBay Bid Tests Funding Limits And E Commerce Ambitions",
+          "source": "Simply Wall St.",
+          "age": "8h ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/gamestop-bold-ebay-bid-tests-232520462.html"
+        },
+        {
+          "title": "\u2018EBay Is Not Happy With Me,\u2019 GameStop CEO Says",
+          "source": "The Wall Street Journal",
+          "age": "10h ago",
+          "link": "https://finance.yahoo.com/m/94d98700-c4d4-3d6d-84a8-60a52371b8a3/%E2%80%98ebay-is-not-happy-with-me%2C%E2%80%99.html"
+        }
+      ]
+    },
     {
       "pn_id": "2203ca87",
       "kind": "cluster_shift",
@@ -52,13 +217,47 @@
       "symbol": "COIN",
       "direction": "up",
       "entry": 198.12,
-      "atr": 0.2767,
+      "atr": 0.2792,
       "outcome": "sl",
-      "pnl_pct": -0.209,
+      "pnl_pct": -0.211,
       "bars_to_resolution": 6,
       "display": "COIN",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-COIN/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACOIN",
+      "news_items": [
+        {
+          "title": "Coinbase cuts headcount by 14% citing AI acceleration",
+          "source": "CNBC",
+          "age": "20h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase stock rating held at Hold by US Tiger Securities",
+          "source": "Investing.com",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Stock Analysis: 3 Signals After Restructuring News",
+          "source": "The Cryptonomist",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Slashes Workforce For AI Pivot; Bullish Rallies On $4.2 Billion Buyout",
+          "source": "Investor's Business Daily",
+          "age": "11h ago",
+          "link": "https://finance.yahoo.com/m/dd060ef6-47d5-35db-b468-bc1ac7f92fa4/coinbase-slashes-workforce.html"
+        },
+        {
+          "title": "Coinbase Cuts 14% Of Staff as Bitcoin Breaks $80,000",
+          "source": "Moby",
+          "age": "11h ago",
+          "link": "https://finance.yahoo.com/m/cd39fc6d-7837-3f70-8acf-9c99c499809e/coinbase-cuts-14%25-of-staff-as.html"
+        }
+      ]
     },
     {
       "pn_id": "920d2314",
@@ -115,7 +314,35 @@
       "bars_to_resolution": 2,
       "display": "NFLX",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NFLX/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANFLX",
+      "news_items": [
+        {
+          "title": "Large insider sale by Reed Hastings drives Netflix stock down 3.01%",
+          "source": "Traders Union",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Analyst Report: Netflix, Inc.",
+          "source": "Morningstar Research",
+          "age": "7h ago",
+          "link": "https://finance.yahoo.com/m/ea748a31-b57f-3d25-82a4-de863835b9e0/analyst-report%3A-netflix%2C-inc..html"
+        },
+        {
+          "title": "The Dealmaking 3: LIV Golf Funding, UFC in Australia, ESPN & Disney Take Back Sports",
+          "source": "CorpGov.com",
+          "age": "8h ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/dealmaking-3-liv-golf-funding-231817103.html"
+        },
+        {
+          "title": "Streaming Stock Looks Positioned for Next Leg Higher",
+          "source": "Schaeffer's Investment Research",
+          "age": "12h ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/streaming-stock-looks-positioned-next-190010722.html"
+        }
+      ]
     },
     {
       "pn_id": "a982aac4",
@@ -141,7 +368,35 @@
       "bars_to_resolution": 3,
       "display": "META",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-META/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMETA",
+      "news_items": [
+        {
+          "title": "Meta Platforms stock today crashes 10%, wiping out $170 billion market cap - why AI spending fears is over",
+          "source": "The Economic Times",
+          "age": "5d ago",
+          "link": ""
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": "https://finance.yahoo.com/m/8b64978d-9dcb-3f38-8a44-e2246fc7367b/magnificent-seven%2C-markets%2C.html"
+        },
+        {
+          "title": "Meta\u2019s Texas AI Build And Space Solar Deal Reshape Investment View",
+          "source": "Simply Wall St.",
+          "age": "6h ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/meta-texas-ai-build-space-010930878.html"
+        },
+        {
+          "title": "AI Is Forcing CEOs to Make a Stark Choice: Lay Off Workers or Make Them Do More",
+          "source": "The Wall Street Journal",
+          "age": "6h ago",
+          "link": "https://finance.yahoo.com/m/b3487fbf-3ad2-3713-a385-7bdc19a2fe74/ai-is-forcing-ceos-to-make-a.html"
+        }
+      ]
     },
     {
       "pn_id": "7ea9b02d",
@@ -167,7 +422,41 @@
       "bars_to_resolution": 3,
       "display": "CRWV",
       "cluster": "high-beta",
-      "group": "Vol stocks"
+      "group": "Vol stocks",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-CRWV/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACRWV",
+      "news_items": [
+        {
+          "title": "CoreWeave, Inc. Class A Common Stock (CRWV) Live Share Price, Invest From India",
+          "source": "INDmoney",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Here are Tuesday's biggest analyst calls: Apple, Tesla, CoreWeave, Amazon, Palantir, Home Depot & more",
+          "source": "CNBC",
+          "age": "19h ago",
+          "link": ""
+        },
+        {
+          "title": "CoreWeave Earnings Loom: What Estimates Say",
+          "source": "Zacks",
+          "age": "9h ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/coreweave-earnings-loom-estimates-223100284.html"
+        },
+        {
+          "title": "Cathie Wood sells $11.8 million in Nvidia-backed stock before earnings",
+          "source": "TheStreet",
+          "age": "10h ago",
+          "link": "https://finance.yahoo.com/m/12db32c3-60be-329d-9ae8-7698a5844875/cathie-wood-sells-%2411.8.html"
+        },
+        {
+          "title": "Cathie Wood Remains Convinced on CoreWeave After 78% YTD Rally in CRWV Stock",
+          "source": "Barchart",
+          "age": "13h ago",
+          "link": "https://finance.yahoo.com/m/3e55020c-6e84-3c81-b4e8-862adb85c860/cathie-wood-remains-convinced.html"
+        }
+      ]
     },
     {
       "pn_id": "3e3b3a92",
@@ -193,7 +482,41 @@
       "bars_to_resolution": 2,
       "display": "DRAM",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/DRAM/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ADRAM",
+      "news_items": [
+        {
+          "title": "MU stock hits intraday record high today: Will Micron's market cap cross $700 billion for the first time?",
+          "source": "The Economic Times",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "All storage chip stocks in the Hong Kong stock market surged, with Montage Technology and GigaDevice Semiconductor rising over 13%.",
+          "source": "\u5bcc\u9014\u725b\u725b",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "Micron Stock Surges on Growing Memory Chip Supply Shortage and Pricing Power - News and Statistics",
+          "source": "IndexBox",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "Investors Plow $1 Billion Into This Memory ETF In Just 10 Days",
+          "source": "Investor's Business Daily",
+          "age": "12d ago",
+          "link": "https://finance.yahoo.com/m/42bfb00f-1111-3b53-b4e6-fc01a4165364/investors-plow-%241-billion.html"
+        },
+        {
+          "title": "A Hot New Memory ETF Just Drew $1 Billion in 10 Days",
+          "source": "The Wall Street Journal",
+          "age": "13d ago",
+          "link": "https://finance.yahoo.com/m/d55a0b6b-3530-32a7-b07a-6b593f2d364c/a-hot-new-memory-etf-just.html"
+        }
+      ]
     },
     {
       "pn_id": "9b4b1a6e",
@@ -219,7 +542,29 @@
       "bars_to_resolution": 1,
       "display": "Japan ETF",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/AMEX-EWJ/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AEWJ",
+      "news_items": [
+        {
+          "title": "The Best Index Funds",
+          "source": "Morningstar",
+          "age": "27d ago",
+          "link": ""
+        },
+        {
+          "title": "Japan ETFs Can Thrill Again in 2026",
+          "source": "ETF Trends",
+          "age": "112d ago",
+          "link": ""
+        },
+        {
+          "title": "ETFGI reports that assets invested in the ETFs industry in Asia Pacific (ex-Japan) hit a new record of 1.41 trillion US Dollars with Strong July Inflows",
+          "source": "ETFGI",
+          "age": "261d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "ec45a43a",
@@ -246,7 +591,35 @@
       "bars_to_resolution": 1,
       "display": "META",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-META/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMETA",
+      "news_items": [
+        {
+          "title": "Meta Platforms stock today crashes 10%, wiping out $170 billion market cap - why AI spending fears is over",
+          "source": "The Economic Times",
+          "age": "5d ago",
+          "link": ""
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "Meta\u2019s Texas AI Build And Space Solar Deal Reshape Investment View",
+          "source": "Simply Wall St.",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "AI Is Forcing CEOs to Make a Stark Choice: Lay Off Workers or Make Them Do More",
+          "source": "The Wall Street Journal",
+          "age": "6h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "9b02aa3f",
@@ -307,7 +680,23 @@
       "bars_to_resolution": 5,
       "display": "MRVL",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-MRVL/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMRVL",
+      "news_items": [
+        {
+          "title": "Marvell Technology Inc Stock (MRVL) Moved Up by 4.21% on May 5: Facts Behind the Movement",
+          "source": "TradingKey",
+          "age": "15h ago",
+          "link": ""
+        },
+        {
+          "title": "Micron stock is surging, hitting a new intraday record high. Why?",
+          "source": "Yahoo Finance Video",
+          "age": "12h ago",
+          "link": "https://finance.yahoo.com/video/micron-stock-is-surging-hitting-a-new-intraday-record-high-why-195211594.html"
+        }
+      ]
     },
     {
       "pn_id": "a40e4076",
@@ -333,7 +722,35 @@
       "bars_to_resolution": 1,
       "display": "AMZN",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-AMZN/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AAMZN",
+      "news_items": [
+        {
+          "title": "AMZN Stock Quote Price and Forecast",
+          "source": "CNN",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Price checks surge as Amazon expands price history to one year",
+          "source": "Retail Insight Network",
+          "age": "1h ago",
+          "link": "https://finance.yahoo.com/m/8af7596e-2b91-393f-ba8d-a437b8e8db5c/price-checks-surge-as-amazon.html"
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": "https://finance.yahoo.com/m/8b64978d-9dcb-3f38-8a44-e2246fc7367b/magnificent-seven%2C-markets%2C.html"
+        },
+        {
+          "title": "Scott Galloway Says We Keep Falling For The Idea Of A Tech Billionaire Who Will Tax Himself. 'It's Never Happened. It's Never Going To'",
+          "source": "Benzinga",
+          "age": "5h ago",
+          "link": "https://finance.yahoo.com/sectors/technology/articles/scott-galloway-says-keep-falling-020108766.html"
+        }
+      ]
     },
     {
       "pn_id": "cfcce590",
@@ -390,7 +807,41 @@
       "bars_to_resolution": 8,
       "display": "MSTR",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-MSTR/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMSTR",
+      "news_items": [
+        {
+          "title": "MSTR Stock Surges in Spotlight: What Investors Need to Know Right Now",
+          "source": "sebd.in",
+          "age": "3h ago",
+          "link": ""
+        },
+        {
+          "title": "Dear MicroStrategy Stock Fans, Mark Your Calendars for May 5",
+          "source": "Barchart.com",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "MicroStrategy to Fund Dividends with Bitcoin Sales, Stock Drops",
+          "source": "Whalesbook",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "MSTR Stock Price Falls Over 4% as Michael Saylor Considers Selling Strategy\u2019s Bitcoin",
+          "source": "CoinGape",
+          "age": "1h ago",
+          "link": "https://finance.yahoo.com/m/1291af2d-b281-3d44-9b71-6b3252c1a5ce/mstr-stock-price-falls-over.html"
+        },
+        {
+          "title": "Strategy considers selling Bitcoin after outsized Q1 loss",
+          "source": "Investing.com",
+          "age": "4h ago",
+          "link": "https://finance.yahoo.com/markets/crypto/articles/strategy-misses-estimates-bitcoin-losses-204549884.html"
+        }
+      ]
     },
     {
       "pn_id": "fe6f9879",
@@ -439,7 +890,29 @@
       "bars_to_resolution": 4,
       "display": "COPPER",
       "cluster": "commodity",
-      "group": "Commodities"
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/COMEX-HG1!/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACOPPER",
+      "news_items": [
+        {
+          "title": "Copper price steps above the barrier\u2013 Forecast today \u2013 6-5-2026",
+          "source": "Economies.com",
+          "age": "2h ago",
+          "link": ""
+        },
+        {
+          "title": "Tempestas Copper Price Today in India | TCU29 to INR Live Price & Chart",
+          "source": "Binance",
+          "age": "5d ago",
+          "link": ""
+        },
+        {
+          "title": "Copper Prices and Distribution; Why Are Global Copper Trends Falling and What It Means?",
+          "source": "Sanskriti IAS",
+          "age": "5d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "29f39563",
@@ -517,7 +990,29 @@
       "bars_to_resolution": 5,
       "display": "NDX",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NDX/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXYZ100",
+      "news_items": [
+        {
+          "title": "NASDAQ 100 Leveraged Notional Net Return Index Live Today (XNDXNNRL)",
+          "source": "Investing.com India",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "Forex Today: KOSPI, NASDAQ 100 Rise to New All-Time Highs",
+          "source": "DailyForex",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Nasdaq Index: Tech Stocks Reverse as Oil Spike Hits US Indices Today",
+          "source": "FXEmpire",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "e90f2167",
@@ -544,7 +1039,29 @@
       "bars_to_resolution": 1,
       "display": "NDX",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NDX/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXYZ100",
+      "news_items": [
+        {
+          "title": "NASDAQ 100 Leveraged Notional Net Return Index Live Today (XNDXNNRL)",
+          "source": "Investing.com India",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "Forex Today: KOSPI, NASDAQ 100 Rise to New All-Time Highs",
+          "source": "DailyForex",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Nasdaq Index: Tech Stocks Reverse as Oil Spike Hits US Indices Today",
+          "source": "FXEmpire",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "fc746c7c",
@@ -570,7 +1087,41 @@
       "bars_to_resolution": 2,
       "display": "COST",
       "cluster": "consumer",
-      "group": "Consumer"
+      "group": "Consumer",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-COST/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACOST",
+      "news_items": [
+        {
+          "title": "Could Buying Costco Stock Today Set You Up for Life?",
+          "source": "Yahoo Finance",
+          "age": "37d ago",
+          "link": ""
+        },
+        {
+          "title": "Costco stock price today: Why COST shares are falling despite strong quarterly sales",
+          "source": "The Economic Times",
+          "age": "151d ago",
+          "link": ""
+        },
+        {
+          "title": "Best Consumer Staples Stocks to Buy in 2026",
+          "source": "Motley Fool",
+          "age": "9h ago",
+          "link": "https://finance.yahoo.com/m/2ad20c61-45a3-3e5a-b93a-de818239f9a5/best-consumer-staples-stocks.html"
+        },
+        {
+          "title": "Walmart and 8 More Old Economy Stocks for an AI Melt Up",
+          "source": "Barrons.com",
+          "age": "10h ago",
+          "link": "https://finance.yahoo.com/m/6027d6e8-a5e3-365a-9afd-f684525a6a58/walmart-and-8-more-old.html"
+        },
+        {
+          "title": "Which Big-Box Store Chain Has Dominated 2026: Walmart, Target, or Costco?",
+          "source": "24/7 Wall St.",
+          "age": "12h ago",
+          "link": "https://finance.yahoo.com/m/b0d24d76-1e4c-37b1-8e7a-4d72cfb3717a/which-big-box-store-chain-has.html"
+        }
+      ]
     },
     {
       "pn_id": "44d6356b",
@@ -692,7 +1243,41 @@
       "bars_to_resolution": 1,
       "display": "HOOD",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-HOOD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AHOOD",
+      "news_items": [
+        {
+          "title": "Overseas demand for U.S. equities is growing, says Robinhood's Johan Kerbrart",
+          "source": "CoinDesk",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood Stock Sinks as Earnings Hit by Plunge in Crypto Revenue",
+          "source": "Investopedia",
+          "age": "6d ago",
+          "link": ""
+        },
+        {
+          "title": "Mercury Systems Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": "https://finance.yahoo.com/m/288dd02c-c0e9-382d-9ff6-d3214d58afe7/mercury-systems-q3-earnings.html"
+        },
+        {
+          "title": "Robinhood CEO issues bold outlook on prediction markets business",
+          "source": "TheStreet",
+          "age": "10h ago",
+          "link": "https://finance.yahoo.com/m/2b198bc4-2433-3d72-bd15-d193cfe43e64/robinhood-ceo-issues-bold.html"
+        },
+        {
+          "title": "Watch: Robinhood CEO Defends Math Behind 'Trump Accounts\u2019 Partnership",
+          "source": "The Wall Street Journal",
+          "age": "11h ago",
+          "link": "https://finance.yahoo.com/m/6f0712a6-74e3-30ea-9c90-3c71220d680d/watch%3A-robinhood-ceo-defends.html"
+        }
+      ]
     },
     {
       "pn_id": "e1031f63",
@@ -718,7 +1303,29 @@
       "bars_to_resolution": 2,
       "display": "Japan ETF",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/AMEX-EWJ/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AEWJ",
+      "news_items": [
+        {
+          "title": "The Best Index Funds",
+          "source": "Morningstar",
+          "age": "27d ago",
+          "link": ""
+        },
+        {
+          "title": "Japan ETFs Can Thrill Again in 2026",
+          "source": "ETF Trends",
+          "age": "112d ago",
+          "link": ""
+        },
+        {
+          "title": "ETFGI reports that assets invested in the ETFs industry in Asia Pacific (ex-Japan) hit a new record of 1.41 trillion US Dollars with Strong July Inflows",
+          "source": "ETFGI",
+          "age": "261d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "00c4c5e3",
@@ -745,7 +1352,35 @@
       "bars_to_resolution": 2,
       "display": "META",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-META/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMETA",
+      "news_items": [
+        {
+          "title": "Meta Platforms stock today crashes 10%, wiping out $170 billion market cap - why AI spending fears is over",
+          "source": "The Economic Times",
+          "age": "5d ago",
+          "link": ""
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "Meta\u2019s Texas AI Build And Space Solar Deal Reshape Investment View",
+          "source": "Simply Wall St.",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "AI Is Forcing CEOs to Make a Stark Choice: Lay Off Workers or Make Them Do More",
+          "source": "The Wall Street Journal",
+          "age": "6h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "00d6e711",
@@ -772,7 +1407,41 @@
       "bars_to_resolution": 1,
       "display": "INTC",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-INTC/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AINTC",
+      "news_items": [
+        {
+          "title": "Intel stock jumps 12% to all-time high: why are INTC shares surging big today as Intel stock climbs from $",
+          "source": "The Economic Times",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": "https://finance.yahoo.com/m/2d95c67d-a460-34ef-92d8-02640b9c4f83/social-security-rule-deals.html"
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": "https://finance.yahoo.com/m/4d0daf93-656f-39c2-91ac-6dce32608328/arm-reports-earnings-as-it.html"
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": "https://finance.yahoo.com/m/59bcd44e-4f9d-384c-8c53-8bb213b70dff/prediction%3A-sandisk-stock-is.html"
+        }
+      ]
     },
     {
       "pn_id": "cb03eb4f",
@@ -798,7 +1467,29 @@
       "bars_to_resolution": 2,
       "display": "Japan ETF",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/AMEX-EWJ/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AEWJ",
+      "news_items": [
+        {
+          "title": "The Best Index Funds",
+          "source": "Morningstar",
+          "age": "27d ago",
+          "link": ""
+        },
+        {
+          "title": "Japan ETFs Can Thrill Again in 2026",
+          "source": "ETF Trends",
+          "age": "112d ago",
+          "link": ""
+        },
+        {
+          "title": "ETFGI reports that assets invested in the ETFs industry in Asia Pacific (ex-Japan) hit a new record of 1.41 trillion US Dollars with Strong July Inflows",
+          "source": "ETFGI",
+          "age": "261d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "74ef2b3e",
@@ -825,7 +1516,41 @@
       "bars_to_resolution": 1,
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": "https://finance.yahoo.com/sectors/technology/articles/totalenergies-develops-pangea-5-next-074500723.html"
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": "https://finance.yahoo.com/m/2d95c67d-a460-34ef-92d8-02640b9c4f83/social-security-rule-deals.html"
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": "https://finance.yahoo.com/m/59bcd44e-4f9d-384c-8c53-8bb213b70dff/prediction%3A-sandisk-stock-is.html"
+        }
+      ]
     },
     {
       "pn_id": "0aa221b7",
@@ -852,7 +1577,29 @@
       "bars_to_resolution": 7,
       "display": "NDX",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NDX/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXYZ100",
+      "news_items": [
+        {
+          "title": "NASDAQ 100 Leveraged Notional Net Return Index Live Today (XNDXNNRL)",
+          "source": "Investing.com India",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "Forex Today: KOSPI, NASDAQ 100 Rise to New All-Time Highs",
+          "source": "DailyForex",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Nasdaq Index: Tech Stocks Reverse as Oil Spike Hits US Indices Today",
+          "source": "FXEmpire",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "af9ca2dc",
@@ -879,7 +1626,41 @@
       "bars_to_resolution": 3,
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "81b6d2a7",
@@ -906,7 +1687,41 @@
       "bars_to_resolution": 3,
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "31d7ab5b",
@@ -932,7 +1747,23 @@
       "bars_to_resolution": 1,
       "display": "BABA",
       "cluster": "china",
-      "group": "China"
+      "group": "China",
+      "chart_url": "https://www.tradingview.com/symbols/NYSE-BABA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ABABA",
+      "news_items": [
+        {
+          "title": "9 Consumer Discretionary Stocks Whale Activity In Today's Session",
+          "source": "Benzinga",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "Space-Themed ETFs are Flooding Wall Street Before Elon Musk\u2019s SpaceX IPO",
+          "source": "BeInCrypto",
+          "age": "17h ago",
+          "link": "https://finance.yahoo.com/m/8e4bb6dc-06df-3d2c-8a3f-dfca26cac601/space-themed-etfs-are.html"
+        }
+      ]
     },
     {
       "pn_id": "00ff0c01",
@@ -958,7 +1789,41 @@
       "bars_to_resolution": 1,
       "display": "RIVN",
       "cluster": "high-beta",
-      "group": "Vol stocks"
+      "group": "Vol stocks",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-RIVN/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ARIVN",
+      "news_items": [
+        {
+          "title": "Earnings call transcript: Rivian\u2019s Q1 2026 Surprises with Earnings Beat, Stock Gains",
+          "source": "Investing.com",
+          "age": "5d ago",
+          "link": ""
+        },
+        {
+          "title": "Rivian Stock Drops After Solid Results. What Matters to Investors Is This.",
+          "source": "Barron's",
+          "age": "4d ago",
+          "link": ""
+        },
+        {
+          "title": "Market Chatter: Rivian Automotive Working on Variants of R2 SUV",
+          "source": "MT Newswires",
+          "age": "13m ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/market-chatter-rivian-automotive-working-074150543.html"
+        },
+        {
+          "title": "Exclusive-Rivian mulls making its own lidar sensors, possibly in partnership with Chinese firms",
+          "source": "Reuters",
+          "age": "7h ago",
+          "link": "https://finance.yahoo.com/sectors/technology/articles/exclusive-rivian-mulls-making-own-001144199.html"
+        },
+        {
+          "title": "Volkswagen becomes Rivian\u2019s top shareholder, displacing Amazon",
+          "source": "TechCrunch",
+          "age": "11h ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/volkswagen-becomes-rivian-top-shareholder-195857982.html"
+        }
+      ]
     },
     {
       "pn_id": "fb8edd66",
@@ -985,7 +1850,29 @@
       "bars_to_resolution": 2,
       "display": "NDX",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NDX/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXYZ100",
+      "news_items": [
+        {
+          "title": "NASDAQ 100 Leveraged Notional Net Return Index Live Today (XNDXNNRL)",
+          "source": "Investing.com India",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "Forex Today: KOSPI, NASDAQ 100 Rise to New All-Time Highs",
+          "source": "DailyForex",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Nasdaq Index: Tech Stocks Reverse as Oil Spike Hits US Indices Today",
+          "source": "FXEmpire",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "afcc6552",
@@ -1012,7 +1899,29 @@
       "bars_to_resolution": 2,
       "display": "NDX",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NDX/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXYZ100",
+      "news_items": [
+        {
+          "title": "NASDAQ 100 Leveraged Notional Net Return Index Live Today (XNDXNNRL)",
+          "source": "Investing.com India",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "Forex Today: KOSPI, NASDAQ 100 Rise to New All-Time Highs",
+          "source": "DailyForex",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Nasdaq Index: Tech Stocks Reverse as Oil Spike Hits US Indices Today",
+          "source": "FXEmpire",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "0d46bacd",
@@ -1038,7 +1947,29 @@
       "bars_to_resolution": 7,
       "display": "Nikkei",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/OANDA-JP225USD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AJP225",
+      "news_items": [
+        {
+          "title": "Japan's Nikkei 225 rises to record high in mixed Asia trading as Trump extends Iran ceasefire",
+          "source": "CNBC",
+          "age": "15d ago",
+          "link": ""
+        },
+        {
+          "title": "Nikkei Leads Asia Market Surge Tracking Overnight Strength On Wall Street",
+          "source": "NDTV Profit",
+          "age": "20d ago",
+          "link": ""
+        },
+        {
+          "title": "Asia markets mostly fall as fragile Middle East ceasefire tempers sentiment",
+          "source": "CNBC",
+          "age": "20d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "2c4bbcbe",
@@ -1093,7 +2024,29 @@
       "bars_to_resolution": 7,
       "display": "Nikkei",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/OANDA-JP225USD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AJP225",
+      "news_items": [
+        {
+          "title": "Japan's Nikkei 225 rises to record high in mixed Asia trading as Trump extends Iran ceasefire",
+          "source": "CNBC",
+          "age": "15d ago",
+          "link": ""
+        },
+        {
+          "title": "Nikkei Leads Asia Market Surge Tracking Overnight Strength On Wall Street",
+          "source": "NDTV Profit",
+          "age": "20d ago",
+          "link": ""
+        },
+        {
+          "title": "Asia markets mostly fall as fragile Middle East ceasefire tempers sentiment",
+          "source": "CNBC",
+          "age": "20d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "d5d4d001",
@@ -1119,7 +2072,23 @@
       "bars_to_resolution": 1,
       "display": "BABA",
       "cluster": "china",
-      "group": "China"
+      "group": "China",
+      "chart_url": "https://www.tradingview.com/symbols/NYSE-BABA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ABABA",
+      "news_items": [
+        {
+          "title": "9 Consumer Discretionary Stocks Whale Activity In Today's Session",
+          "source": "Benzinga",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "Space-Themed ETFs are Flooding Wall Street Before Elon Musk\u2019s SpaceX IPO",
+          "source": "BeInCrypto",
+          "age": "17h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "67446432",
@@ -1145,7 +2114,23 @@
       "bars_to_resolution": 1,
       "display": "BABA",
       "cluster": "china",
-      "group": "China"
+      "group": "China",
+      "chart_url": "https://www.tradingview.com/symbols/NYSE-BABA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ABABA",
+      "news_items": [
+        {
+          "title": "9 Consumer Discretionary Stocks Whale Activity In Today's Session",
+          "source": "Benzinga",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "Space-Themed ETFs are Flooding Wall Street Before Elon Musk\u2019s SpaceX IPO",
+          "source": "BeInCrypto",
+          "age": "17h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "6d5d7fa6",
@@ -1203,7 +2188,29 @@
       "bars_to_resolution": 6,
       "display": "XLE",
       "cluster": "commodity",
-      "group": "Commodities"
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/AMEX-XLE/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXLE",
+      "news_items": [
+        {
+          "title": "7 Best Energy ETFs to Buy Now",
+          "source": "U.S. News Money",
+          "age": "44d ago",
+          "link": ""
+        },
+        {
+          "title": "ETF Prime: Energy Stocks Surge on Iran Conflict",
+          "source": "ETF Trends",
+          "age": "13d ago",
+          "link": ""
+        },
+        {
+          "title": "Best Hydrogen Stocks to Buy in 2026 and How to Invest in Them",
+          "source": "The Motley Fool",
+          "age": "29d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "773b49b1",
@@ -1229,7 +2236,29 @@
       "bars_to_resolution": 6,
       "display": "XLE",
       "cluster": "commodity",
-      "group": "Commodities"
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/AMEX-XLE/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXLE",
+      "news_items": [
+        {
+          "title": "7 Best Energy ETFs to Buy Now",
+          "source": "U.S. News Money",
+          "age": "44d ago",
+          "link": ""
+        },
+        {
+          "title": "ETF Prime: Energy Stocks Surge on Iran Conflict",
+          "source": "ETF Trends",
+          "age": "13d ago",
+          "link": ""
+        },
+        {
+          "title": "Best Hydrogen Stocks to Buy in 2026 and How to Invest in Them",
+          "source": "The Motley Fool",
+          "age": "29d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "340f3672",
@@ -1255,7 +2284,23 @@
       "bars_to_resolution": 5,
       "display": "USAR",
       "cluster": "uranium",
-      "group": "Uranium"
+      "group": "Uranium",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-USAR/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AUSAR",
+      "news_items": [
+        {
+          "title": "Energy Fuels' Rare Earth Strategy: A Potential Growth Driver?",
+          "source": "TradingView",
+          "age": "49d ago",
+          "link": ""
+        },
+        {
+          "title": "Exclusivity Agreement to Acquire U.S. Rare Earth and Uranium Permits",
+          "source": "Investing News Network",
+          "age": "51d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "55ecf055",
@@ -1281,7 +2326,23 @@
       "bars_to_resolution": 5,
       "display": "USAR",
       "cluster": "uranium",
-      "group": "Uranium"
+      "group": "Uranium",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-USAR/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AUSAR",
+      "news_items": [
+        {
+          "title": "Energy Fuels' Rare Earth Strategy: A Potential Growth Driver?",
+          "source": "TradingView",
+          "age": "49d ago",
+          "link": ""
+        },
+        {
+          "title": "Exclusivity Agreement to Acquire U.S. Rare Earth and Uranium Permits",
+          "source": "Investing News Network",
+          "age": "51d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "c886f9f8",
@@ -1335,7 +2396,29 @@
       "bars_to_resolution": 6,
       "display": "XLE",
       "cluster": "commodity",
-      "group": "Commodities"
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/AMEX-XLE/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXLE",
+      "news_items": [
+        {
+          "title": "7 Best Energy ETFs to Buy Now",
+          "source": "U.S. News Money",
+          "age": "44d ago",
+          "link": ""
+        },
+        {
+          "title": "ETF Prime: Energy Stocks Surge on Iran Conflict",
+          "source": "ETF Trends",
+          "age": "13d ago",
+          "link": ""
+        },
+        {
+          "title": "Best Hydrogen Stocks to Buy in 2026 and How to Invest in Them",
+          "source": "The Motley Fool",
+          "age": "29d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "19f951ea",
@@ -1361,7 +2444,23 @@
       "bars_to_resolution": 5,
       "display": "USAR",
       "cluster": "uranium",
-      "group": "Uranium"
+      "group": "Uranium",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-USAR/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AUSAR",
+      "news_items": [
+        {
+          "title": "Energy Fuels' Rare Earth Strategy: A Potential Growth Driver?",
+          "source": "TradingView",
+          "age": "49d ago",
+          "link": ""
+        },
+        {
+          "title": "Exclusivity Agreement to Acquire U.S. Rare Earth and Uranium Permits",
+          "source": "Investing News Network",
+          "age": "51d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "bdcebb65",
@@ -1387,7 +2486,35 @@
       "bars_to_resolution": 8,
       "display": "AAPL",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-AAPL/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AAAPL",
+      "news_items": [
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Samsung Hits $1 Trillion Valuation, Joining TSMC in Elite Club",
+          "source": "Bloomberg",
+          "age": "24m ago",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/samsung-hits-1-trillion-valuation-023525360.html"
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": "https://finance.yahoo.com/m/4d0daf93-656f-39c2-91ac-6dce32608328/arm-reports-earnings-as-it.html"
+        },
+        {
+          "title": "Intel Joined Elon Musk's Terafab. Will This Catalyst Cement the Stock's Turnaround?",
+          "source": "Motley Fool",
+          "age": "9h ago",
+          "link": "https://finance.yahoo.com/m/b5809495-b381-3a8e-b783-844c22ed1028/intel-joined-elon-musk%27s.html"
+        }
+      ]
     },
     {
       "pn_id": "226cf339",
@@ -1413,7 +2540,35 @@
       "bars_to_resolution": 8,
       "display": "AAPL",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-AAPL/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AAAPL",
+      "news_items": [
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Samsung Hits $1 Trillion Valuation, Joining TSMC in Elite Club",
+          "source": "Bloomberg",
+          "age": "24m ago",
+          "link": ""
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Intel Joined Elon Musk's Terafab. Will This Catalyst Cement the Stock's Turnaround?",
+          "source": "Motley Fool",
+          "age": "9h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "5515ee8e",
@@ -1439,7 +2594,41 @@
       "bars_to_resolution": 8,
       "display": "LITE",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-LITE/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ALITE",
+      "news_items": [
+        {
+          "title": "Lumentum Earnings Top Estimates, Revenue Light Amid AI Data Center Boom",
+          "source": "Investor's Business Daily",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Lumentum Earnings Beat Estimates. Why the Stock Is Dropping.",
+          "source": "Barron's",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Futures Rise; AMD Soars, Trump Hits Hormuz Pause",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": ""
+        },
+        {
+          "title": "Dow Jones Futures Rise; Trump Hits Hormuz Pause; AMD, Lumentum, Arista Lead AI Earnings Movers",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": "https://finance.yahoo.com/m/69a7ddbb-994e-3c97-a841-d6d030026ca3/dow-jones-futures-rise%3B-trump.html"
+        },
+        {
+          "title": "Lumentum Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": "https://finance.yahoo.com/m/9cfbfe58-2496-3fe1-b8b9-5c62fd0f5384/lumentum-q3-earnings-call.html"
+        }
+      ]
     },
     {
       "pn_id": "2e40150f",
@@ -1465,7 +2654,41 @@
       "bars_to_resolution": 8,
       "display": "LITE",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-LITE/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ALITE",
+      "news_items": [
+        {
+          "title": "Lumentum Earnings Top Estimates, Revenue Light Amid AI Data Center Boom",
+          "source": "Investor's Business Daily",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Lumentum Earnings Beat Estimates. Why the Stock Is Dropping.",
+          "source": "Barron's",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Futures Rise; AMD Soars, Trump Hits Hormuz Pause",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": ""
+        },
+        {
+          "title": "Dow Jones Futures Rise; Trump Hits Hormuz Pause; AMD, Lumentum, Arista Lead AI Earnings Movers",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": ""
+        },
+        {
+          "title": "Lumentum Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "f7ea407e",
@@ -1527,7 +2750,7 @@
       },
       "sent": true,
       "resolved": false,
-      "reason": "no_symbol"
+      "reason": "older_than_resolve_window"
     },
     {
       "pn_id": "5294f989",
@@ -1547,7 +2770,7 @@
       },
       "sent": true,
       "resolved": false,
-      "reason": "no_symbol"
+      "reason": "older_than_resolve_window"
     },
     {
       "pn_id": "a05b70ed",
@@ -1577,7 +2800,7 @@
       },
       "sent": true,
       "resolved": false,
-      "reason": "no_symbol"
+      "reason": "older_than_resolve_window"
     },
     {
       "pn_id": "e850b316",
@@ -1607,7 +2830,7 @@
       },
       "sent": true,
       "resolved": false,
-      "reason": "no_symbol"
+      "reason": "older_than_resolve_window"
     },
     {
       "pn_id": "34813757",
@@ -1624,17 +2847,46 @@
         "cluster": "semi"
       },
       "sent": false,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "NVDA",
-      "direction": "down",
-      "entry": 198.56,
-      "atr": 0.9169,
-      "outcome": "sl",
-      "pnl_pct": -0.693,
-      "bars_to_resolution": 7,
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "4856bec2",
@@ -1651,17 +2903,46 @@
         "cluster": "semi"
       },
       "sent": false,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "NVDA",
-      "direction": "down",
-      "entry": 198.56,
-      "atr": 0.9169,
-      "outcome": "sl",
-      "pnl_pct": -0.693,
-      "bars_to_resolution": 7,
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "c463915f",
@@ -1677,17 +2958,46 @@
         "cluster": "healthcare"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "LLY",
-      "direction": "up",
-      "entry": 966.38,
-      "atr": 4.0262,
-      "outcome": "tp1",
-      "pnl_pct": 0.417,
-      "bars_to_resolution": 2,
       "display": "LLY",
       "cluster": "healthcare",
-      "group": "Pharma"
+      "group": "Pharma",
+      "chart_url": "https://www.tradingview.com/symbols/NYSE-LLY/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ALLY",
+      "news_items": [
+        {
+          "title": "Eli Lilly Stock Can Sink, Here Is How",
+          "source": "Trefis",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "There's A Fresh New Twist In The Obesity Pills Showdown",
+          "source": "Investor's Business Daily",
+          "age": "4d ago",
+          "link": ""
+        },
+        {
+          "title": "Novo Nordisk slightly raises outlook as first-quarter profit beats forecast",
+          "source": "Reuters",
+          "age": "2h ago",
+          "link": "https://finance.yahoo.com/news/novo-nordisks-q1-profit-beats-053824172.html"
+        },
+        {
+          "title": "Schrodinger Q1 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "5h ago",
+          "link": "https://finance.yahoo.com/m/ddc91a4f-71fd-349f-816b-95d08459ef6d/schrodinger-q1-earnings-call.html"
+        },
+        {
+          "title": "Alkermes plc Q1 2026 Earnings Call Summary",
+          "source": "Moby",
+          "age": "11h ago",
+          "link": "https://finance.yahoo.com/m/2f2ec956-f13f-3744-8f84-966b8793720a/alkermes-plc-q1-2026-earnings.html"
+        }
+      ]
     },
     {
       "pn_id": "513cc2c7",
@@ -1703,17 +3013,46 @@
         "cluster": "healthcare"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "LLY",
-      "direction": "up",
-      "entry": 966.38,
-      "atr": 4.0262,
-      "outcome": "tp1",
-      "pnl_pct": 0.417,
-      "bars_to_resolution": 2,
       "display": "LLY",
       "cluster": "healthcare",
-      "group": "Pharma"
+      "group": "Pharma",
+      "chart_url": "https://www.tradingview.com/symbols/NYSE-LLY/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ALLY",
+      "news_items": [
+        {
+          "title": "Eli Lilly Stock Can Sink, Here Is How",
+          "source": "Trefis",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "There's A Fresh New Twist In The Obesity Pills Showdown",
+          "source": "Investor's Business Daily",
+          "age": "4d ago",
+          "link": ""
+        },
+        {
+          "title": "Novo Nordisk slightly raises outlook as first-quarter profit beats forecast",
+          "source": "Reuters",
+          "age": "2h ago",
+          "link": ""
+        },
+        {
+          "title": "Schrodinger Q1 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "Alkermes plc Q1 2026 Earnings Call Summary",
+          "source": "Moby",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "d5a3c59e",
@@ -1729,17 +3068,46 @@
         "cluster": "semi"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "INTC",
-      "direction": "down",
-      "entry": 99.288,
-      "atr": 1.6732,
-      "outcome": "sl",
-      "pnl_pct": -2.528,
-      "bars_to_resolution": 9,
       "display": "INTC",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-INTC/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AINTC",
+      "news_items": [
+        {
+          "title": "Intel stock jumps 12% to all-time high: why are INTC shares surging big today as Intel stock climbs from $",
+          "source": "The Economic Times",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "35b3d74e",
@@ -1755,17 +3123,46 @@
         "cluster": "semi"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "INTC",
-      "direction": "down",
-      "entry": 99.288,
-      "atr": 1.6732,
-      "outcome": "sl",
-      "pnl_pct": -2.528,
-      "bars_to_resolution": 9,
       "display": "INTC",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-INTC/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AINTC",
+      "news_items": [
+        {
+          "title": "Intel stock jumps 12% to all-time high: why are INTC shares surging big today as Intel stock climbs from $",
+          "source": "The Economic Times",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "7f3f17c8",
@@ -1782,17 +3179,46 @@
         "cluster": "high-beta"
       },
       "sent": false,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "TSLA",
-      "direction": "up",
-      "entry": 394.24,
-      "atr": 2.3715,
-      "outcome": "tp1",
-      "pnl_pct": 0.602,
-      "bars_to_resolution": 10,
       "display": "TSLA",
       "cluster": "high-beta",
-      "group": "Vol stocks"
+      "group": "Vol stocks",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-TSLA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ATSLA",
+      "news_items": [
+        {
+          "title": "Tesla (TSLA) Live Share price, Invest From India",
+          "source": "INDmoney",
+          "age": "12h ago",
+          "link": ""
+        },
+        {
+          "title": "2 Notable Numbers for Tesla Stock Today. Which One Matters More.",
+          "source": "Barron's",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Tesla FSD hits major speedbump with EU regulators",
+          "source": "TheStreet",
+          "age": "5h ago",
+          "link": "https://finance.yahoo.com/m/95e7ae6d-875b-3be5-8c16-060581619d43/tesla-fsd-hits-major.html"
+        },
+        {
+          "title": "Exclusive-Rivian mulls making its own lidar sensors, possibly in partnership with Chinese firms",
+          "source": "Reuters",
+          "age": "7h ago",
+          "link": "https://finance.yahoo.com/sectors/technology/articles/exclusive-rivian-mulls-making-own-001144199.html"
+        },
+        {
+          "title": "Elon Musk Says Humanity Cannot Be Multiplanetary Without Reusable Rockets, Draws Parallel To US Colonization",
+          "source": "Benzinga",
+          "age": "10h ago",
+          "link": "https://finance.yahoo.com/sectors/technology/articles/elon-musk-says-humanity-cannot-213103175.html"
+        }
+      ]
     },
     {
       "pn_id": "53c4e4f0",
@@ -1808,17 +3234,40 @@
         "cluster": "mega-tech"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "AMZN",
-      "direction": "down",
-      "entry": 274.01,
-      "atr": 1.2031,
-      "outcome": "sl",
-      "pnl_pct": -0.659,
-      "bars_to_resolution": 9,
       "display": "AMZN",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-AMZN/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AAMZN",
+      "news_items": [
+        {
+          "title": "AMZN Stock Quote Price and Forecast",
+          "source": "CNN",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Price checks surge as Amazon expands price history to one year",
+          "source": "Retail Insight Network",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "Scott Galloway Says We Keep Falling For The Idea Of A Tech Billionaire Who Will Tax Himself. 'It's Never Happened. It's Never Going To'",
+          "source": "Benzinga",
+          "age": "5h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "e77c21b9",
@@ -1834,17 +3283,46 @@
         "cluster": "semi"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "NVDA",
-      "direction": "down",
-      "entry": 198.67,
-      "atr": 0.8623,
-      "outcome": "sl",
-      "pnl_pct": -0.651,
-      "bars_to_resolution": 8,
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "4e7e8235",
@@ -1860,17 +3338,46 @@
         "cluster": "crypto-proxy"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "HOOD",
-      "direction": "up",
-      "entry": 78.68,
-      "atr": 0.6154,
-      "outcome": "sl",
-      "pnl_pct": -1.173,
-      "bars_to_resolution": 9,
       "display": "HOOD",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-HOOD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AHOOD",
+      "news_items": [
+        {
+          "title": "Overseas demand for U.S. equities is growing, says Robinhood's Johan Kerbrart",
+          "source": "CoinDesk",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood Stock Sinks as Earnings Hit by Plunge in Crypto Revenue",
+          "source": "Investopedia",
+          "age": "6d ago",
+          "link": ""
+        },
+        {
+          "title": "Mercury Systems Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood CEO issues bold outlook on prediction markets business",
+          "source": "TheStreet",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Watch: Robinhood CEO Defends Math Behind 'Trump Accounts\u2019 Partnership",
+          "source": "The Wall Street Journal",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "54da826e",
@@ -1900,7 +3407,7 @@
       },
       "sent": true,
       "resolved": false,
-      "reason": "no_symbol"
+      "reason": "older_than_resolve_window"
     },
     {
       "pn_id": "8398e000",
@@ -1917,17 +3424,40 @@
         "cluster": "mega-tech"
       },
       "sent": false,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "META",
-      "direction": "up",
-      "entry": 614.04,
-      "atr": 1.4977,
-      "outcome": "sl",
-      "pnl_pct": -0.366,
-      "bars_to_resolution": 12,
       "display": "META",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-META/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMETA",
+      "news_items": [
+        {
+          "title": "Meta Platforms stock today crashes 10%, wiping out $170 billion market cap - why AI spending fears is over",
+          "source": "The Economic Times",
+          "age": "5d ago",
+          "link": ""
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "Meta\u2019s Texas AI Build And Space Solar Deal Reshape Investment View",
+          "source": "Simply Wall St.",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "AI Is Forcing CEOs to Make a Stark Choice: Lay Off Workers or Make Them Do More",
+          "source": "The Wall Street Journal",
+          "age": "6h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "c7e7f4f1",
@@ -1943,17 +3473,40 @@
         "cluster": "mega-tech"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "META",
-      "direction": "up",
-      "entry": 614.04,
-      "atr": 1.4977,
-      "outcome": "sl",
-      "pnl_pct": -0.366,
-      "bars_to_resolution": 12,
       "display": "META",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-META/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMETA",
+      "news_items": [
+        {
+          "title": "Meta Platforms stock today crashes 10%, wiping out $170 billion market cap - why AI spending fears is over",
+          "source": "The Economic Times",
+          "age": "5d ago",
+          "link": ""
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "Meta\u2019s Texas AI Build And Space Solar Deal Reshape Investment View",
+          "source": "Simply Wall St.",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "AI Is Forcing CEOs to Make a Stark Choice: Lay Off Workers or Make Them Do More",
+          "source": "The Wall Street Journal",
+          "age": "6h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "64e585d5",
@@ -1970,17 +3523,46 @@
         "cluster": "semi"
       },
       "sent": false,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "NVDA",
-      "direction": "up",
-      "entry": 199.02,
-      "atr": 0.6992,
-      "outcome": "tp1",
-      "pnl_pct": 0.351,
-      "bars_to_resolution": 10,
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "6d167df0",
@@ -1996,17 +3578,40 @@
         "cluster": "mega-tech"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "META",
-      "direction": "up",
-      "entry": 614.04,
-      "atr": 1.4977,
-      "outcome": "sl",
-      "pnl_pct": -0.366,
-      "bars_to_resolution": 12,
       "display": "META",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-META/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMETA",
+      "news_items": [
+        {
+          "title": "Meta Platforms stock today crashes 10%, wiping out $170 billion market cap - why AI spending fears is over",
+          "source": "The Economic Times",
+          "age": "5d ago",
+          "link": ""
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "Meta\u2019s Texas AI Build And Space Solar Deal Reshape Investment View",
+          "source": "Simply Wall St.",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "AI Is Forcing CEOs to Make a Stark Choice: Lay Off Workers or Make Them Do More",
+          "source": "The Wall Street Journal",
+          "age": "6h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "e3790162",
@@ -2022,17 +3627,34 @@
         "cluster": "index"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "XYZ100",
-      "direction": "up",
-      "entry": 27807.0,
-      "atr": 34.6923,
-      "outcome": "tp1",
-      "pnl_pct": 0.125,
-      "bars_to_resolution": 6,
       "display": "NDX",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NDX/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXYZ100",
+      "news_items": [
+        {
+          "title": "NASDAQ 100 Leveraged Notional Net Return Index Live Today (XNDXNNRL)",
+          "source": "Investing.com India",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "Forex Today: KOSPI, NASDAQ 100 Rise to New All-Time Highs",
+          "source": "DailyForex",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Nasdaq Index: Tech Stocks Reverse as Oil Spike Hits US Indices Today",
+          "source": "FXEmpire",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "9394567f",
@@ -2052,7 +3674,7 @@
       },
       "sent": true,
       "resolved": false,
-      "reason": "no_symbol"
+      "reason": "older_than_resolve_window"
     },
     {
       "pn_id": "d3680d9b",
@@ -2072,7 +3694,7 @@
       },
       "sent": true,
       "resolved": false,
-      "reason": "no_symbol"
+      "reason": "older_than_resolve_window"
     },
     {
       "pn_id": "25d8438d",
@@ -2104,7 +3726,7 @@
       },
       "sent": false,
       "resolved": false,
-      "reason": "no_symbol"
+      "reason": "older_than_resolve_window"
     },
     {
       "pn_id": "476eb72e",
@@ -2121,17 +3743,46 @@
         "cluster": "crypto-proxy"
       },
       "sent": true,
-      "resolved": true,
+      "resolved": false,
+      "reason": "older_than_resolve_window",
       "symbol": "COIN",
-      "direction": "down",
-      "entry": 206.67,
-      "atr": 1.7508,
-      "outcome": "sl",
-      "pnl_pct": -1.271,
-      "bars_to_resolution": 5,
       "display": "COIN",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-COIN/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACOIN",
+      "news_items": [
+        {
+          "title": "Coinbase cuts headcount by 14% citing AI acceleration",
+          "source": "CNBC",
+          "age": "20h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase stock rating held at Hold by US Tiger Securities",
+          "source": "Investing.com",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Stock Analysis: 3 Signals After Restructuring News",
+          "source": "The Cryptonomist",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Slashes Workforce For AI Pivot; Bullish Rallies On $4.2 Billion Buyout",
+          "source": "Investor's Business Daily",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Cuts 14% Of Staff as Bitcoin Breaks $80,000",
+          "source": "Moby",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "c0d16bfc",
@@ -2153,7 +3804,41 @@
       "symbol": "INTC",
       "display": "INTC",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-INTC/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AINTC",
+      "news_items": [
+        {
+          "title": "Intel stock jumps 12% to all-time high: why are INTC shares surging big today as Intel stock climbs from $",
+          "source": "The Economic Times",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "be54ccad",
@@ -2174,7 +3859,23 @@
       "symbol": "MRVL",
       "display": "MRVL",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-MRVL/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMRVL",
+      "news_items": [
+        {
+          "title": "Marvell Technology Inc Stock (MRVL) Moved Up by 4.21% on May 5: Facts Behind the Movement",
+          "source": "TradingKey",
+          "age": "15h ago",
+          "link": ""
+        },
+        {
+          "title": "Micron stock is surging, hitting a new intraday record high. Why?",
+          "source": "Yahoo Finance Video",
+          "age": "12h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "4bb7371f",
@@ -2196,7 +3897,41 @@
       "symbol": "HOOD",
       "display": "HOOD",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-HOOD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AHOOD",
+      "news_items": [
+        {
+          "title": "Overseas demand for U.S. equities is growing, says Robinhood's Johan Kerbrart",
+          "source": "CoinDesk",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood Stock Sinks as Earnings Hit by Plunge in Crypto Revenue",
+          "source": "Investopedia",
+          "age": "6d ago",
+          "link": ""
+        },
+        {
+          "title": "Mercury Systems Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood CEO issues bold outlook on prediction markets business",
+          "source": "TheStreet",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Watch: Robinhood CEO Defends Math Behind 'Trump Accounts\u2019 Partnership",
+          "source": "The Wall Street Journal",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "0e52c82a",
@@ -2218,7 +3953,29 @@
       "symbol": "XYZ100",
       "display": "NDX",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NDX/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AXYZ100",
+      "news_items": [
+        {
+          "title": "NASDAQ 100 Leveraged Notional Net Return Index Live Today (XNDXNNRL)",
+          "source": "Investing.com India",
+          "age": "3d ago",
+          "link": ""
+        },
+        {
+          "title": "Forex Today: KOSPI, NASDAQ 100 Rise to New All-Time Highs",
+          "source": "DailyForex",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Nasdaq Index: Tech Stocks Reverse as Oil Spike Hits US Indices Today",
+          "source": "FXEmpire",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "5d0a3796-INTC",
@@ -2248,7 +4005,41 @@
       "reason": "older_than_resolve_window",
       "display": "INTC",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-INTC/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AINTC",
+      "news_items": [
+        {
+          "title": "Intel stock jumps 12% to all-time high: why are INTC shares surging big today as Intel stock climbs from $",
+          "source": "The Economic Times",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "5d0a3796-AMD",
@@ -2278,7 +4069,41 @@
       "reason": "older_than_resolve_window",
       "display": "AMD",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-AMD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AAMD",
+      "news_items": [
+        {
+          "title": "AMD Stock price jumps big after Advanced Micro Devices earnings call forecast second-quarter revenue above",
+          "source": "The Economic Times",
+          "age": "7h ago",
+          "link": ""
+        },
+        {
+          "title": "Futures Rise; AMD Soars, Trump Hits Hormuz Pause",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": ""
+        },
+        {
+          "title": "AMD\u2019s stock rises on surging demand for CPUs and GPUs for AI workloads",
+          "source": "SiliconANGLE",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "Peter Sarlin\u2019s QuTwo reaches $380M valuation in angel round",
+          "source": "TechCrunch",
+          "age": "1h ago",
+          "link": "https://finance.yahoo.com/sectors/technology/articles/peter-sarlin-qutwo-reaches-380m-064712472.html"
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": "https://finance.yahoo.com/m/4d0daf93-656f-39c2-91ac-6dce32608328/arm-reports-earnings-as-it.html"
+        }
+      ]
     },
     {
       "pn_id": "5d0a3796-NVDA",
@@ -2308,7 +4133,41 @@
       "reason": "older_than_resolve_window",
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "b1385765-HOOD",
@@ -2335,7 +4194,41 @@
       "reason": "older_than_resolve_window",
       "display": "HOOD",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-HOOD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AHOOD",
+      "news_items": [
+        {
+          "title": "Overseas demand for U.S. equities is growing, says Robinhood's Johan Kerbrart",
+          "source": "CoinDesk",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood Stock Sinks as Earnings Hit by Plunge in Crypto Revenue",
+          "source": "Investopedia",
+          "age": "6d ago",
+          "link": ""
+        },
+        {
+          "title": "Mercury Systems Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood CEO issues bold outlook on prediction markets business",
+          "source": "TheStreet",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Watch: Robinhood CEO Defends Math Behind 'Trump Accounts\u2019 Partnership",
+          "source": "The Wall Street Journal",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "93b371c3",
@@ -2489,7 +4382,41 @@
       "reason": "older_than_resolve_window",
       "display": "COIN",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-COIN/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACOIN",
+      "news_items": [
+        {
+          "title": "Coinbase cuts headcount by 14% citing AI acceleration",
+          "source": "CNBC",
+          "age": "20h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase stock rating held at Hold by US Tiger Securities",
+          "source": "Investing.com",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Stock Analysis: 3 Signals After Restructuring News",
+          "source": "The Cryptonomist",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Slashes Workforce For AI Pivot; Bullish Rallies On $4.2 Billion Buyout",
+          "source": "Investor's Business Daily",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Cuts 14% Of Staff as Bitcoin Breaks $80,000",
+          "source": "Moby",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "b1385765-MSTR",
@@ -2516,7 +4443,41 @@
       "reason": "older_than_resolve_window",
       "display": "MSTR",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-MSTR/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMSTR",
+      "news_items": [
+        {
+          "title": "MSTR Stock Surges in Spotlight: What Investors Need to Know Right Now",
+          "source": "sebd.in",
+          "age": "3h ago",
+          "link": ""
+        },
+        {
+          "title": "Dear MicroStrategy Stock Fans, Mark Your Calendars for May 5",
+          "source": "Barchart.com",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "MicroStrategy to Fund Dividends with Bitcoin Sales, Stock Drops",
+          "source": "Whalesbook",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "MSTR Stock Price Falls Over 4% as Michael Saylor Considers Selling Strategy\u2019s Bitcoin",
+          "source": "CoinGape",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Strategy considers selling Bitcoin after outsized Q1 loss",
+          "source": "Investing.com",
+          "age": "4h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "cfdad3c3-HOOD",
@@ -2544,7 +4505,41 @@
       "reason": "older_than_resolve_window",
       "display": "HOOD",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-HOOD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AHOOD",
+      "news_items": [
+        {
+          "title": "Overseas demand for U.S. equities is growing, says Robinhood's Johan Kerbrart",
+          "source": "CoinDesk",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood Stock Sinks as Earnings Hit by Plunge in Crypto Revenue",
+          "source": "Investopedia",
+          "age": "6d ago",
+          "link": ""
+        },
+        {
+          "title": "Mercury Systems Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood CEO issues bold outlook on prediction markets business",
+          "source": "TheStreet",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Watch: Robinhood CEO Defends Math Behind 'Trump Accounts\u2019 Partnership",
+          "source": "The Wall Street Journal",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "92862ba4",
@@ -2565,7 +4560,41 @@
       "symbol": "LITE",
       "display": "LITE",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-LITE/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ALITE",
+      "news_items": [
+        {
+          "title": "Lumentum Earnings Top Estimates, Revenue Light Amid AI Data Center Boom",
+          "source": "Investor's Business Daily",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Lumentum Earnings Beat Estimates. Why the Stock Is Dropping.",
+          "source": "Barron's",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Futures Rise; AMD Soars, Trump Hits Hormuz Pause",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": ""
+        },
+        {
+          "title": "Dow Jones Futures Rise; Trump Hits Hormuz Pause; AMD, Lumentum, Arista Lead AI Earnings Movers",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": ""
+        },
+        {
+          "title": "Lumentum Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "2ddc39d0",
@@ -2586,7 +4615,29 @@
       "symbol": "EWJ",
       "display": "Japan ETF",
       "cluster": "index",
-      "group": "S&P/Nasdaq"
+      "group": "S&P/Nasdaq",
+      "chart_url": "https://www.tradingview.com/symbols/AMEX-EWJ/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AEWJ",
+      "news_items": [
+        {
+          "title": "The Best Index Funds",
+          "source": "Morningstar",
+          "age": "27d ago",
+          "link": ""
+        },
+        {
+          "title": "Japan ETFs Can Thrill Again in 2026",
+          "source": "ETF Trends",
+          "age": "112d ago",
+          "link": ""
+        },
+        {
+          "title": "ETFGI reports that assets invested in the ETFs industry in Asia Pacific (ex-Japan) hit a new record of 1.41 trillion US Dollars with Strong July Inflows",
+          "source": "ETFGI",
+          "age": "261d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "cfdad3c3-COIN",
@@ -2614,7 +4665,41 @@
       "reason": "older_than_resolve_window",
       "display": "COIN",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-COIN/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACOIN",
+      "news_items": [
+        {
+          "title": "Coinbase cuts headcount by 14% citing AI acceleration",
+          "source": "CNBC",
+          "age": "20h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase stock rating held at Hold by US Tiger Securities",
+          "source": "Investing.com",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Stock Analysis: 3 Signals After Restructuring News",
+          "source": "The Cryptonomist",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Slashes Workforce For AI Pivot; Bullish Rallies On $4.2 Billion Buyout",
+          "source": "Investor's Business Daily",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Cuts 14% Of Staff as Bitcoin Breaks $80,000",
+          "source": "Moby",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "cfdad3c3-MSTR",
@@ -2642,7 +4727,41 @@
       "reason": "older_than_resolve_window",
       "display": "MSTR",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-MSTR/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMSTR",
+      "news_items": [
+        {
+          "title": "MSTR Stock Surges in Spotlight: What Investors Need to Know Right Now",
+          "source": "sebd.in",
+          "age": "3h ago",
+          "link": ""
+        },
+        {
+          "title": "Dear MicroStrategy Stock Fans, Mark Your Calendars for May 5",
+          "source": "Barchart.com",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "MicroStrategy to Fund Dividends with Bitcoin Sales, Stock Drops",
+          "source": "Whalesbook",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "MSTR Stock Price Falls Over 4% as Michael Saylor Considers Selling Strategy\u2019s Bitcoin",
+          "source": "CoinGape",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Strategy considers selling Bitcoin after outsized Q1 loss",
+          "source": "Investing.com",
+          "age": "4h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "37135ffe-HOOD",
@@ -2669,7 +4788,41 @@
       "reason": "older_than_resolve_window",
       "display": "HOOD",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-HOOD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AHOOD",
+      "news_items": [
+        {
+          "title": "Overseas demand for U.S. equities is growing, says Robinhood's Johan Kerbrart",
+          "source": "CoinDesk",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood Stock Sinks as Earnings Hit by Plunge in Crypto Revenue",
+          "source": "Investopedia",
+          "age": "6d ago",
+          "link": ""
+        },
+        {
+          "title": "Mercury Systems Q3 Earnings Call Highlights",
+          "source": "MarketBeat",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "Robinhood CEO issues bold outlook on prediction markets business",
+          "source": "TheStreet",
+          "age": "10h ago",
+          "link": ""
+        },
+        {
+          "title": "Watch: Robinhood CEO Defends Math Behind 'Trump Accounts\u2019 Partnership",
+          "source": "The Wall Street Journal",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "37135ffe-COIN",
@@ -2696,7 +4849,41 @@
       "reason": "older_than_resolve_window",
       "display": "COIN",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-COIN/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ACOIN",
+      "news_items": [
+        {
+          "title": "Coinbase cuts headcount by 14% citing AI acceleration",
+          "source": "CNBC",
+          "age": "20h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase stock rating held at Hold by US Tiger Securities",
+          "source": "Investing.com",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Stock Analysis: 3 Signals After Restructuring News",
+          "source": "The Cryptonomist",
+          "age": "14h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Slashes Workforce For AI Pivot; Bullish Rallies On $4.2 Billion Buyout",
+          "source": "Investor's Business Daily",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Coinbase Cuts 14% Of Staff as Bitcoin Breaks $80,000",
+          "source": "Moby",
+          "age": "11h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "37135ffe-MSTR",
@@ -2723,7 +4910,41 @@
       "reason": "older_than_resolve_window",
       "display": "MSTR",
       "cluster": "crypto-proxy",
-      "group": "Crypto plays"
+      "group": "Crypto plays",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-MSTR/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMSTR",
+      "news_items": [
+        {
+          "title": "MSTR Stock Surges in Spotlight: What Investors Need to Know Right Now",
+          "source": "sebd.in",
+          "age": "3h ago",
+          "link": ""
+        },
+        {
+          "title": "Dear MicroStrategy Stock Fans, Mark Your Calendars for May 5",
+          "source": "Barchart.com",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "MicroStrategy to Fund Dividends with Bitcoin Sales, Stock Drops",
+          "source": "Whalesbook",
+          "age": "5h ago",
+          "link": ""
+        },
+        {
+          "title": "MSTR Stock Price Falls Over 4% as Michael Saylor Considers Selling Strategy\u2019s Bitcoin",
+          "source": "CoinGape",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Strategy considers selling Bitcoin after outsized Q1 loss",
+          "source": "Investing.com",
+          "age": "4h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "e25a18b8-PLATINUM",
@@ -2752,7 +4973,29 @@
       "reason": "older_than_resolve_window",
       "display": "Platinum",
       "cluster": "commodity",
-      "group": "Commodities"
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/TVC-PLATINUM/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3APLATINUM",
+      "news_items": [
+        {
+          "title": "Platinum price is benefited from the stability of the support\u2013 Forecast today \u2013 6-5-2026",
+          "source": "Economies.com",
+          "age": "2h ago",
+          "link": ""
+        },
+        {
+          "title": "Platinum Price Today: Platinum Becomes Cheaper Again on April 21; Check Latest Rates Across India",
+          "source": "Dailyhunt",
+          "age": "14d ago",
+          "link": ""
+        },
+        {
+          "title": "Platinum Price Today [18 February, 2026]: MCX Platinum Falls to \u20b958,863/10g; Check City-Wise Rates in Delhi, Mumbai, Chennai, Kolkata & More",
+          "source": "The Sunday Guardian",
+          "age": "76d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "e25a18b8-SILVER",
@@ -2781,7 +5024,29 @@
       "reason": "older_than_resolve_window",
       "display": "SILVER",
       "cluster": "commodity",
-      "group": "Commodities"
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/TVC-SILVER/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ASILVER",
+      "news_items": [
+        {
+          "title": "Gold, Silver Rate Today Live Updates: Gold prices dip in international trade; all eyes on US-Iran talks",
+          "source": "The Times of India",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "Gold price prediction today: Will gold, silver price rally on May 6, 2026 sustain? Check near-term outloo",
+          "source": "The Times of India",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Silver Rate Today, May 4: What is the price of 100 g 999 silver in your city?",
+          "source": "Upstox",
+          "age": "1d ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "e25a18b8-GOLD",
@@ -2810,7 +5075,29 @@
       "reason": "older_than_resolve_window",
       "display": "GOLD",
       "cluster": "commodity",
-      "group": "Commodities"
+      "group": "Commodities",
+      "chart_url": "https://www.tradingview.com/symbols/TVC-GOLD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AGOLD",
+      "news_items": [
+        {
+          "title": "Gold price prediction today: Will gold, silver price rally on May 6, 2026 sustain? Check near-term outloo",
+          "source": "The Times of India",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Gold Rate Today, May 5: How much you have to pay for 18, 22, 24 carat gold jewellery",
+          "source": "Upstox",
+          "age": "20h ago",
+          "link": ""
+        },
+        {
+          "title": "Gold Rate Today: Check 24K, 22K Prices In Mumbai, Delhi, Chennai, Kolkata, Bengaluru, Other Cities On May 6",
+          "source": "NDTV Profit",
+          "age": "5h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "104de07b-GOOGL",
@@ -2837,7 +5124,41 @@
       "reason": "older_than_resolve_window",
       "display": "GOOGL",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-GOOGL/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AGOOGL",
+      "news_items": [
+        {
+          "title": "Google (GOOGL) Live Share Price, Invest from India",
+          "source": "INDmoney",
+          "age": "11h ago",
+          "link": ""
+        },
+        {
+          "title": "Alphabet Inc. (GOOGL) Stock Price, News, Quote & History",
+          "source": "Yahoo Finance",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "Dow Jones Futures Rise; Trump Hits Hormuz Pause; AMD, Lumentum, Arista Lead AI Earnings Movers",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": "https://finance.yahoo.com/m/69a7ddbb-994e-3c97-a841-d6d030026ca3/dow-jones-futures-rise%3B-trump.html"
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": "https://finance.yahoo.com/m/8b64978d-9dcb-3f38-8a44-e2246fc7367b/magnificent-seven%2C-markets%2C.html"
+        },
+        {
+          "title": "Exclusive-Rivian mulls making its own lidar sensors, possibly in partnership with Chinese firms",
+          "source": "Reuters",
+          "age": "7h ago",
+          "link": "https://finance.yahoo.com/sectors/technology/articles/exclusive-rivian-mulls-making-own-001144199.html"
+        }
+      ]
     },
     {
       "pn_id": "104de07b-MSFT",
@@ -2864,7 +5185,41 @@
       "reason": "older_than_resolve_window",
       "display": "MSFT",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-MSFT/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AMSFT",
+      "news_items": [
+        {
+          "title": "Analysts See 41% Upside for Microsoft Stock After Nearly 100% Backlog Growth",
+          "source": "24/7 Wall St.",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "Here's How Much Traders Expect Microsoft's Stock to Move After Earnings",
+          "source": "Investopedia",
+          "age": "6d ago",
+          "link": ""
+        },
+        {
+          "title": "MSFT Stock Quote Price and Forecast",
+          "source": "CNN",
+          "age": "2d ago",
+          "link": ""
+        },
+        {
+          "title": "Microsoft Finds Just 13% of Firms Reward AI-Driven Workplace Reinvention",
+          "source": "BeInCrypto",
+          "age": "3h ago",
+          "link": "https://finance.yahoo.com/m/9f903c3c-a6a3-3a9d-8d0d-030cce89a8a8/microsoft-finds-just-13%25-of.html"
+        },
+        {
+          "title": "Magnificent Seven, Markets, and Mailbag with CEO Tom Gardner",
+          "source": "Motley Fool",
+          "age": "5h ago",
+          "link": "https://finance.yahoo.com/m/8b64978d-9dcb-3f38-8a44-e2246fc7367b/magnificent-seven%2C-markets%2C.html"
+        }
+      ]
     },
     {
       "pn_id": "104de07b-AAPL",
@@ -2891,7 +5246,35 @@
       "reason": "older_than_resolve_window",
       "display": "AAPL",
       "cluster": "mega-tech",
-      "group": "Big Tech"
+      "group": "Big Tech",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-AAPL/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AAAPL",
+      "news_items": [
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Samsung Hits $1 Trillion Valuation, Joining TSMC in Elite Club",
+          "source": "Bloomberg",
+          "age": "24m ago",
+          "link": ""
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Intel Joined Elon Musk's Terafab. Will This Catalyst Cement the Stock's Turnaround?",
+          "source": "Motley Fool",
+          "age": "9h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "617d32b0-INTC",
@@ -2919,7 +5302,41 @@
       "reason": "older_than_resolve_window",
       "display": "INTC",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-INTC/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AINTC",
+      "news_items": [
+        {
+          "title": "Intel stock jumps 12% to all-time high: why are INTC shares surging big today as Intel stock climbs from $",
+          "source": "The Economic Times",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Intel soars 13% on report of Apple chip talks, hits new all-time high",
+          "source": "CNBC",
+          "age": "17h ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "617d32b0-AMD",
@@ -2947,7 +5364,41 @@
       "reason": "older_than_resolve_window",
       "display": "AMD",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-AMD/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3AAMD",
+      "news_items": [
+        {
+          "title": "AMD Stock price jumps big after Advanced Micro Devices earnings call forecast second-quarter revenue above",
+          "source": "The Economic Times",
+          "age": "7h ago",
+          "link": ""
+        },
+        {
+          "title": "Futures Rise; AMD Soars, Trump Hits Hormuz Pause",
+          "source": "Investor's Business Daily",
+          "age": "4h ago",
+          "link": ""
+        },
+        {
+          "title": "AMD\u2019s stock rises on surging demand for CPUs and GPUs for AI workloads",
+          "source": "SiliconANGLE",
+          "age": "6h ago",
+          "link": ""
+        },
+        {
+          "title": "Peter Sarlin\u2019s QuTwo reaches $380M valuation in angel round",
+          "source": "TechCrunch",
+          "age": "1h ago",
+          "link": ""
+        },
+        {
+          "title": "Arm Reports Earnings as It Shifts Its Business Model",
+          "source": "Barrons.com",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     },
     {
       "pn_id": "617d32b0-NVDA",
@@ -2975,7 +5426,41 @@
       "reason": "older_than_resolve_window",
       "display": "NVDA",
       "cluster": "semi",
-      "group": "Chips"
+      "group": "Chips",
+      "chart_url": "https://www.tradingview.com/symbols/NASDAQ-NVDA/",
+      "trade_url": "https://app.hyperliquid.xyz/trade/xyz%3ANVDA",
+      "news_items": [
+        {
+          "title": "US market today: Alphabet closes in on Nvidia's spot as world's biggest company",
+          "source": "The Economic Times",
+          "age": "16h ago",
+          "link": ""
+        },
+        {
+          "title": "Nvidia stock holds steady amid major asset managers control over 65% of shares",
+          "source": "Traders Union",
+          "age": "1d ago",
+          "link": ""
+        },
+        {
+          "title": "TotalEnergies Develops Pangea 5, a Next-Generation Supercomputer That Will Increase its Computing Power Sixfold",
+          "source": "Business Wire",
+          "age": "10m ago",
+          "link": ""
+        },
+        {
+          "title": "Social Security Rule Deals Early Filers a Double Whammy",
+          "source": "Motley Fool",
+          "age": "17m ago",
+          "link": ""
+        },
+        {
+          "title": "Prediction: Sandisk Stock Is Going to $4,000 in 1 Year",
+          "source": "Motley Fool",
+          "age": "1h ago",
+          "link": ""
+        }
+      ]
     }
   ]
 }

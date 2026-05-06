@@ -1,36 +1,43 @@
 {
-  "as_of": "2026-05-06T07:30:35+00:00",
+  "as_of": "2026-05-06T07:55:49+00:00",
   "method": "TP1=+1\u00d7ATR \u00b7 SL=-1.5\u00d7ATR \u00b7 16-bar (4h) timeout",
   "overall": {
-    "n": 57,
-    "wins": 29,
-    "win_rate_pct": 50.9,
-    "avg_pnl_pct": -0.251,
-    "total_pnl_pct": -14.3
+    "n": 42,
+    "wins": 24,
+    "win_rate_pct": 57.1,
+    "avg_pnl_pct": -0.129,
+    "total_pnl_pct": -5.42
   },
   "by_kind": {
-    "breakout": {
-      "n": 18,
-      "wins": 10,
-      "win_rate_pct": 55.6,
-      "avg_pnl_pct": -0.093,
-      "total_pnl_pct": -1.68
-    },
     "volume_spike": {
-      "n": 39,
-      "wins": 19,
-      "win_rate_pct": 48.7,
-      "avg_pnl_pct": -0.324,
-      "total_pnl_pct": -12.62
+      "n": 30,
+      "wins": 16,
+      "win_rate_pct": 53.3,
+      "avg_pnl_pct": -0.193,
+      "total_pnl_pct": -5.8
+    },
+    "breakout": {
+      "n": 12,
+      "wins": 8,
+      "win_rate_pct": 66.7,
+      "avg_pnl_pct": 0.032,
+      "total_pnl_pct": 0.39
     }
   },
   "by_ticker": {
-    "COIN": {
-      "n": 2,
+    "GME": {
+      "n": 1,
       "wins": 0,
       "win_rate_pct": 0.0,
-      "avg_pnl_pct": -0.74,
-      "total_pnl_pct": -1.48
+      "avg_pnl_pct": -0.496,
+      "total_pnl_pct": -0.5
+    },
+    "COIN": {
+      "n": 1,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.211,
+      "total_pnl_pct": -0.21
     },
     "NFLX": {
       "n": 1,
@@ -40,11 +47,11 @@
       "total_pnl_pct": 0.06
     },
     "META": {
-      "n": 6,
+      "n": 3,
       "wins": 2,
-      "win_rate_pct": 33.3,
-      "avg_pnl_pct": -0.147,
-      "total_pnl_pct": -0.88
+      "win_rate_pct": 66.7,
+      "avg_pnl_pct": 0.071,
+      "total_pnl_pct": 0.21
     },
     "CRWV": {
       "n": 1,
@@ -75,11 +82,11 @@
       "total_pnl_pct": -0.61
     },
     "AMZN": {
-      "n": 2,
+      "n": 1,
       "wins": 0,
       "win_rate_pct": 0.0,
-      "avg_pnl_pct": -0.514,
-      "total_pnl_pct": -1.03
+      "avg_pnl_pct": -0.368,
+      "total_pnl_pct": -0.37
     },
     "MSTR": {
       "n": 1,
@@ -96,11 +103,11 @@
       "total_pnl_pct": -0.18
     },
     "XYZ100": {
-      "n": 6,
-      "wins": 5,
-      "win_rate_pct": 83.3,
-      "avg_pnl_pct": 0.067,
-      "total_pnl_pct": 0.4
+      "n": 5,
+      "wins": 4,
+      "win_rate_pct": 80.0,
+      "avg_pnl_pct": 0.055,
+      "total_pnl_pct": 0.28
     },
     "COST": {
       "n": 1,
@@ -110,25 +117,25 @@
       "total_pnl_pct": 0.11
     },
     "HOOD": {
-      "n": 2,
+      "n": 1,
       "wins": 1,
-      "win_rate_pct": 50.0,
-      "avg_pnl_pct": -0.283,
-      "total_pnl_pct": -0.57
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.608,
+      "total_pnl_pct": 0.61
     },
     "INTC": {
-      "n": 3,
+      "n": 1,
       "wins": 1,
-      "win_rate_pct": 33.3,
-      "avg_pnl_pct": -1.391,
-      "total_pnl_pct": -4.17
+      "win_rate_pct": 100.0,
+      "avg_pnl_pct": 0.883,
+      "total_pnl_pct": 0.88
     },
     "NVDA": {
-      "n": 7,
-      "wins": 1,
-      "win_rate_pct": 14.3,
-      "avg_pnl_pct": -0.488,
-      "total_pnl_pct": -3.42
+      "n": 3,
+      "wins": 0,
+      "win_rate_pct": 0.0,
+      "avg_pnl_pct": -0.578,
+      "total_pnl_pct": -1.73
     },
     "BABA": {
       "n": 3,
@@ -178,20 +185,6 @@
       "win_rate_pct": 100.0,
       "avg_pnl_pct": 1.087,
       "total_pnl_pct": 2.17
-    },
-    "LLY": {
-      "n": 2,
-      "wins": 2,
-      "win_rate_pct": 100.0,
-      "avg_pnl_pct": 0.417,
-      "total_pnl_pct": 0.83
-    },
-    "TSLA": {
-      "n": 1,
-      "wins": 1,
-      "win_rate_pct": 100.0,
-      "avg_pnl_pct": 0.602,
-      "total_pnl_pct": 0.6
     }
   }
 }
